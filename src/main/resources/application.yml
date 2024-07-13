@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:h2:~/test;MODE=MYSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;
+    username: sa
+
+oauth:
+  apple:
+    grant-type: authorization_code
+    aud: https://appleid.apple.com
+    client-id: ${OAUTH_APPLE_CLIENT_ID}
+    key-id: ${OAUTH_APPLE_KEY_ID}
+    team-id: ${OAUTH_APPLE_TEAM_ID}
+    private-key: ${OAUTH_APPLE_PRIVATE_KEY}
