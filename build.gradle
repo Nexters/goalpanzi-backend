@@ -24,13 +24,26 @@ repositories {
 }
 
 dependencies {
+	// spring
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
-	compileOnly 'org.projectlombok:lombok'
+	// H2
+	runtimeOnly 'com.h2database:h2'
+
+	// MySQL
 	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// jwt
+	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
