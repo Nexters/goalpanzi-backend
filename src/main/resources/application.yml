@@ -13,8 +13,9 @@ spring:
 oauth:
   apple:
     grant-type: authorization_code
-    aud: https://appleid.apple.com
+    iss: https://appleid.apple.com
     client-id: ${OAUTH_APPLE_CLIENT_ID}
+    nonce: nonce
     key-id: ${OAUTH_APPLE_KEY_ID}
     team-id: ${OAUTH_APPLE_TEAM_ID}
     private-key: ${OAUTH_APPLE_PRIVATE_KEY}
