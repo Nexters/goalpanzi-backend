@@ -14,6 +14,8 @@ import java.util.Map;
 @Component
 public class AppleUserProvider implements SocialUserProvider {
 
+    private static final String EMAIL = "email";
+
     private final AppleTokenManager appleTokenManager;
     private final ApplePublicKeyGenerator applePublicKeyGenerator;
     private final AppleClaimsValidator appleClaimsValidator;
@@ -31,7 +33,7 @@ public class AppleUserProvider implements SocialUserProvider {
         Claims claims = appleTokenManager.getClaimsIfValid(identityToken, publicKey);
         validateClaims(claims);
 
-        return new SocialUserInfo(claims.get("email", String.class));
+        return new SocialUserInfo(claims.get(EMAIL, String.class));
     }
 
     private void validateClaims(Claims claims) {
