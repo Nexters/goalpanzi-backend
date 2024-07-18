@@ -14,10 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 @RestController
-public class AuthController {
+public class AuthController implements AuthControllerDocs {
 
     private final AuthService authService;
 
+    @Override
     @PostMapping("/login/apple")
     public ResponseEntity<JwtTokenResponse> loginApple(
             @RequestBody @Valid AppleLoginRequest appleLoginRequest

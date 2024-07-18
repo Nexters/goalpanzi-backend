@@ -43,10 +43,6 @@ public class Member extends BaseEntity {
         this.email = email;
     }
 
-    public Boolean isProfileSet() {
-        return (characterType != null) && (nickname != null);
-    }
-
     public static Member socialLogin(String socialId, String email) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("사용자 정보가 올바르지 않습니다.");
@@ -58,5 +54,9 @@ public class Member extends BaseEntity {
 
     private static String generateKey() {
         return MEMBER_KEY_PREFIX + UUID.randomUUID();
+    }
+
+    public Boolean isProfileSet() {
+        return (characterType != null) && (nickname != null);
     }
 }
