@@ -19,11 +19,11 @@ public class AuthService {
         SocialUserProvider appleUserProvider = socialUserProviderFactory.getProvider(SocialType.APPLE);
         SocialUserInfo socialUserInfo = appleUserProvider.getSocialUserInfo(request.identityToken());
 
-        memberRepository.save(Member.init(socialUserInfo.email()));
+        Member member = memberRepository.save(Member.socialLogin(socialUserInfo.socialId(), socialUserInfo.email()));
 
         // TODO: accessToken, refreshToken 발급
 
-        return new JwtTokenResponse("TODO","TODO");
+        return new JwtTokenResponse("TODO", "TODO", member.isProfileSet());
     }
 
     public void googleOAuthLogin() {

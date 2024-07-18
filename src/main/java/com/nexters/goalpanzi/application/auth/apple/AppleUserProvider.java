@@ -33,7 +33,7 @@ public class AppleUserProvider implements SocialUserProvider {
         Claims claims = appleTokenManager.getClaimsIfValid(identityToken, publicKey);
         validateClaims(claims);
 
-        return new SocialUserInfo(claims.get(EMAIL, String.class));
+        return new SocialUserInfo(claims.getSubject(),claims.get(EMAIL, String.class));
     }
 
     private void validateClaims(Claims claims) {
