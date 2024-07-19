@@ -15,7 +15,7 @@ public class AuthService {
     private final SocialUserProviderFactory socialUserProviderFactory;
     private final MemberRepository memberRepository;
 
-    public JwtTokenResponse appleOAuthLogin(AppleLoginRequest request) {
+    public JwtTokenResponse appleOAuthLogin(final AppleLoginRequest request) {
         SocialUserProvider appleUserProvider = socialUserProviderFactory.getProvider(SocialType.APPLE);
         SocialUserInfo socialUserInfo = appleUserProvider.getSocialUserInfo(request.identityToken());
 

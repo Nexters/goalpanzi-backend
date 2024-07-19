@@ -2,7 +2,7 @@ package com.nexters.goalpanzi.application.auth.apple;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nexters.goalpanzi.exception.BusinessException;
+import com.nexters.goalpanzi.exception.BaseException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
@@ -21,17 +21,17 @@ public class AppleTokenManager {
 
     private final AppleClaimsValidator appleClaimsValidator;
 
-    public Map<String, String> getHeader(String identityToken) {
+    public Map<String, String> getHeader(final String identityToken) {
         try {
             String encodedHeader = identityToken.split(IDENTITY_TOKEN_VALUE_DELIMITER)[0];
             String decodedHeader = new String(Base64.getUrlDecoder().decode(encodedHeader));
             return OBJECT_MAPPER.readValue(decodedHeader, Map.class);
         } catch (JsonProcessingException | ArrayIndexOutOfBoundsException e) {
-            throw new BusinessException(ErrorCode.INVALID_APPLE_TOKEN);
+            throw new BaseException(ErrorCode.INVALID_APPLE_TOKEN);
         }
     }
 
-    public Claims getClaimsIfValid(String idToken, PublicKey publicKey) {
+    public Claims getClaimsIfValid(final String idToken, final PublicKey publicKey) {
         try {
             Claims claims = Jwts.parser()
                     .setSigningKey(publicKey)
@@ -40,13 +40,13 @@ public class AppleTokenManager {
             validateClaims(claims);
             return claims;
         } catch (ExpiredJwtException e) {
-            throw new BusinessException(ErrorCode.EXPIRED_APPLE_TOKEN);
+            throw new BaseException(ErrorCode.EXPIRED_APPLE_TOKEN);
         } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
-            throw new BusinessException(ErrorCode.INVALID_APPLE_TOKEN);
+            throw new BaseException(ErrorCode.INVALID_APPLE_TOKEN);
         }
     }
 
-    private void validateClaims(Claims claims) {
+    private void validateClaims(final Claims claims) {
         if (!appleClaimsValidator.isValid(claims)) {
             throw new RuntimeException("Apple OAuth Claims 값이 올바르지 않습니다.");
         }

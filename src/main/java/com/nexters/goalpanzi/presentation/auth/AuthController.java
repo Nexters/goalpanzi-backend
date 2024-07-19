@@ -21,7 +21,7 @@ public class AuthController implements AuthControllerDocs {
     @Override
     @PostMapping("/login/apple")
     public ResponseEntity<JwtTokenResponse> loginApple(
-            @RequestBody @Valid AppleLoginRequest appleLoginRequest
+            @RequestBody @Valid final AppleLoginRequest appleLoginRequest
     ) {
         JwtTokenResponse response = authService.appleOAuthLogin(appleLoginRequest);
 

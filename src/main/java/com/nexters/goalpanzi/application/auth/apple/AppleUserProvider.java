@@ -23,7 +23,7 @@ public class AppleUserProvider implements SocialUserProvider {
         return SocialType.APPLE;
     }
 
-    public SocialUserInfo getSocialUserInfo(String identityToken) {
+    public SocialUserInfo getSocialUserInfo(final String identityToken) {
         PublicKey publicKey = applePublicKeyGenerator.generatePublicKey(identityToken);
         Claims claims = appleTokenManager.getClaimsIfValid(identityToken, publicKey);
 

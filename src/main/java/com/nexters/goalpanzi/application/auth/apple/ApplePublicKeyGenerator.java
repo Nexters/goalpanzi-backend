@@ -24,7 +24,7 @@ public class ApplePublicKeyGenerator {
     private final AppleApiCaller appleApiCaller;
     private final AppleTokenManager appleTokenManager;
 
-    public PublicKey generatePublicKey(String identityToken) {
+    public PublicKey generatePublicKey(final String identityToken) {
         Map<String, String> tokenHeaders = appleTokenManager.getHeader(identityToken);
         ApplePublicKeys applePublicKeys = appleApiCaller.getApplePublicKeys();
         ApplePublicKey matchesKey =
@@ -33,7 +33,7 @@ public class ApplePublicKeyGenerator {
         return generatePublicKeyWithApplePublicKey(matchesKey);
     }
 
-    private PublicKey generatePublicKeyWithApplePublicKey(ApplePublicKey applePublicKey) {
+    private PublicKey generatePublicKeyWithApplePublicKey(final ApplePublicKey applePublicKey) {
         byte[] n = Base64.getUrlDecoder().decode(applePublicKey.n());
         byte[] e = Base64.getUrlDecoder().decode(applePublicKey.e());
         RSAPublicKeySpec publicKeySpec =

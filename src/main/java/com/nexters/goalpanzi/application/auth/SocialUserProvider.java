@@ -5,5 +5,6 @@ import com.nexters.goalpanzi.domain.member.SocialType;
 public interface SocialUserProvider {
 
     SocialType getSocialType();
-    SocialUserInfo getSocialUserInfo(String identityToken);
+
+    SocialUserInfo getSocialUserInfo(final String identityToken);
 }

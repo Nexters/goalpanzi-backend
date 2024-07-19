@@ -21,6 +21,6 @@ public interface AuthControllerDocs {
 
     @PostMapping("/login/apple")
     ResponseEntity<JwtTokenResponse> loginApple(
-            @RequestBody @Valid AppleLoginRequest appleLoginRequest
+            @RequestBody @Valid final AppleLoginRequest appleLoginRequest
     );
 }

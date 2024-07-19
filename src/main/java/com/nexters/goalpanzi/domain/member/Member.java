@@ -39,11 +39,11 @@ public class Member extends BaseEntity {
     @Column(name = "character_type")
     private String characterType;
 
-    private Member(String socialId, String email, String altKey) {
+    private Member(final String socialId, final String email, final String altKey) {
         this.email = email;
     }
 
-    public static Member socialLogin(String socialId, String email) {
+    public static Member socialLogin(final String socialId, final String email) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("사용자 정보가 올바르지 않습니다.");
         }

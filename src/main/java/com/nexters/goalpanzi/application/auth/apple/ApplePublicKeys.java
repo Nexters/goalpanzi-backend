@@ -14,7 +14,7 @@ public class ApplePublicKeys {
 
     private List<ApplePublicKey> keys;
 
-    public ApplePublicKey getMatchesKey(String alg, String kid) {
+    public ApplePublicKey getMatchesKey(final String alg, final String kid) {
         return this.keys
                 .stream()
                 .filter(k -> k.alg().equals(alg) && k.kid().equals(kid))

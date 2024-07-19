@@ -21,7 +21,7 @@ public class AppleClaimsValidator {
         this.clientId = clientId;
     }
 
-    public boolean isValid(Claims claims) {
+    public boolean isValid(final Claims claims) {
         return claims.getIssuer().contains(iss) &&
                 claims.getAudience().equals(clientId) &&
                 Nonce.isValid(claims.get(NONCE_KEY, String.class));
