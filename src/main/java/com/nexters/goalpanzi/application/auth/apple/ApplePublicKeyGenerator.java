@@ -1,5 +1,6 @@
 package com.nexters.goalpanzi.application.auth.apple;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
@@ -12,6 +13,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
+@RequiredArgsConstructor
 @Component
 public class ApplePublicKeyGenerator {
 
@@ -19,12 +21,16 @@ public class ApplePublicKeyGenerator {
     private static final String KID_HEADER_KEY = "kid";
     private static final int POSITIVE_SIGNUM = 1;
 
-    public PublicKey generatePublicKey(Map<String, String> tokenHeaders, ApplePublicKeys applePublicKeys) {
-        ApplePublicKey applePublicKey = applePublicKeys.getMatchesKey(
-                tokenHeaders.get(ALG_HEADER_KEY), tokenHeaders.get(KID_HEADER_KEY)
-        );
+    private final AppleApiCaller appleApiCaller;
+    private final AppleTokenManager appleTokenManager;
 
-        return generatePublicKeyWithApplePublicKey(applePublicKey);
+    public PublicKey generatePublicKey(String identityToken) {
+        Map<String, String> tokenHeaders = appleTokenManager.getHeader(identityToken);
+        ApplePublicKeys applePublicKeys = appleApiCaller.getApplePublicKeys();
+        ApplePublicKey matchesKey =
+                applePublicKeys.getMatchesKey(tokenHeaders.get(ALG_HEADER_KEY), tokenHeaders.get(KID_HEADER_KEY));
+
+        return generatePublicKeyWithApplePublicKey(matchesKey);
     }
 
     private PublicKey generatePublicKeyWithApplePublicKey(ApplePublicKey applePublicKey) {

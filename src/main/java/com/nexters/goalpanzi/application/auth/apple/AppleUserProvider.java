@@ -18,27 +18,15 @@ public class AppleUserProvider implements SocialUserProvider {
 
     private final AppleTokenManager appleTokenManager;
     private final ApplePublicKeyGenerator applePublicKeyGenerator;
-    private final AppleClaimsValidator appleClaimsValidator;
-    private final AppleApiCaller appleApiCaller;
 
     public SocialType getSocialType() {
         return SocialType.APPLE;
     }
 
     public SocialUserInfo getSocialUserInfo(String identityToken) {
-        Map<String, String> tokenHeader = appleTokenManager.getHeader(identityToken);
-        ApplePublicKeys applePublicKeys = appleApiCaller.getApplePublicKeys();
-
-        PublicKey publicKey = applePublicKeyGenerator.generatePublicKey(tokenHeader, applePublicKeys);
+        PublicKey publicKey = applePublicKeyGenerator.generatePublicKey(identityToken);
         Claims claims = appleTokenManager.getClaimsIfValid(identityToken, publicKey);
-        validateClaims(claims);
 
         return new SocialUserInfo(claims.getSubject(), claims.get(EMAIL, String.class));
-    }
-
-    private void validateClaims(Claims claims) {
-        if (!appleClaimsValidator.isValid(claims)) {
-            throw new RuntimeException("Apple OAuth Claims 값이 올바르지 않습니다.");
-        }
     }
 }

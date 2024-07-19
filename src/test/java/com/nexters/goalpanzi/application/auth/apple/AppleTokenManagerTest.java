@@ -1,8 +1,10 @@
 package com.nexters.goalpanzi.application.auth.apple;
 
+import com.nexters.goalpanzi.util.Nonce;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.hamcrest.core.Is;
 import org.junit.jupiter.api.Test;
 
 import java.security.KeyPair;
@@ -12,11 +14,16 @@ import java.security.PrivateKey;
 import java.util.Date;
 import java.util.Map;
 
+import static com.nexters.goalpanzi.application.auth.apple.AppleClaimsValidator.NONCE_KEY;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AppleTokenManagerTest {
 
-    private final AppleTokenManager appleTokenManager = new AppleTokenManager();
+    private static final String ISS = "iss";
+    private static final String CLIENT_ID = "com.test.test";
+
+    private final AppleClaimsValidator appleClaimsValidator = new AppleClaimsValidator(ISS, CLIENT_ID);
+    private final AppleTokenManager appleTokenManager = new AppleTokenManager(appleClaimsValidator);
 
     @Test
     void 애플_JWT_토큰_헤더를_파싱한다() throws NoSuchAlgorithmException {
@@ -49,10 +56,10 @@ class AppleTokenManagerTest {
 
         String identityToken = Jwts.builder()
                 .setHeaderParam("kid", "86D88Kf")
-                .claim("email", "test@test.com")
+                .addClaims(Map.of("email", "test@test.com", NONCE_KEY, Nonce.generate()))
                 .setIssuer("iss")
                 .setIssuedAt(issuedAt)
-                .setAudience("aud")
+                .setAudience(CLIENT_ID)
                 .setExpiration(new Date(issuedAt.getTime() + 1000 * 60 * 60 * 24))
                 .signWith(SignatureAlgorithm.RS256, privateKey)
                 .compact();

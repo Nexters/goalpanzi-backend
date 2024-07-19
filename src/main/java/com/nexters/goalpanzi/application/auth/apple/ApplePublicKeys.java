@@ -19,6 +19,6 @@ public class ApplePublicKeys {
                 .stream()
                 .filter(k -> k.alg().equals(alg) && k.kid().equals(kid))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Apple JWT 값의 alg, kid 정보가 올바르지 않습니다."));
+                .orElseThrow(() -> new RuntimeException("Apple JWT 값의 alg, kid 정보가 올바르지 않습니다."));
     }
 }
