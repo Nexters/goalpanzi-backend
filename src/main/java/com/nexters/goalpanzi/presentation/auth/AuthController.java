@@ -2,7 +2,7 @@ package com.nexters.goalpanzi.presentation.auth;
 
 import com.nexters.goalpanzi.application.auth.AuthService;
 import com.nexters.goalpanzi.application.auth.dto.AppleLoginRequest;
-import com.nexters.goalpanzi.application.auth.dto.JwtTokenResponse;
+import com.nexters.goalpanzi.application.auth.dto.JwtResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +20,10 @@ public class AuthController implements AuthControllerDocs {
 
     @Override
     @PostMapping("/login/apple")
-    public ResponseEntity<JwtTokenResponse> loginApple(
+    public ResponseEntity<JwtResponse> loginApple(
             @RequestBody @Valid final AppleLoginRequest appleLoginRequest
     ) {
-        JwtTokenResponse response = authService.appleOAuthLogin(appleLoginRequest);
+        JwtResponse response = authService.appleOAuthLogin(appleLoginRequest);
 
         return ResponseEntity.ok(response);
     }

@@ -2,7 +2,7 @@ package com.nexters.goalpanzi.application.auth.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record JwtTokenResponse(
+public record JwtResponse(
         @Schema(description = "access token", requiredMode = Schema.RequiredMode.REQUIRED)
         String accessToken,
         @Schema(description = "refresh token", requiredMode = Schema.RequiredMode.REQUIRED)
