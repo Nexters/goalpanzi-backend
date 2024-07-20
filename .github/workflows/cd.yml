@@ -1,0 +1,67 @@
+name: Backend CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Execute Gradle build
+        run: ./gradlew clean build
+
+      - name: Set up Docker Build
+        uses: docker/setup-buildx-action@v2
+
+      - name: Docker build and push to NCP container registry
+        run: |
+          sudo docker build --build-arg DEPENDENCY=build/dependency -t ${{ secrets.NCP_CONTAINER_REGISTRY_API }}/goalpanzi-api --platform linux/amd64 .
+          sudo docker login ${{ secrets.NCP_CONTAINER_REGISTRY_API }} -u ${{ secrets.NCP_ACCESS_KEY }} -p ${{ secrets.NCP_SECRET_KEY }}
+          sudo docker push ${{ secrets.NCP_CONTAINER_REGISTRY_API }}/goalpanzi-api
+
+        shell: bash
+
+  deploy-to-server:
+    name: Connect api server ssh and pull from container registry
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      ## docker compose up
+      - name: Deploy to api server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.API_SERVER_HOST }}
+          username: ${{ secrets.API_SERVER_USERNAME }}
+          password: ${{ secrets.API_SERVER_PASSWORD }}
+          script: |
+            export DB_HOSTNAME=${{ secrets.DB_HOSTNAME }}
+            export DB_PORT=${{ secrets.DB_PORT }}
+            export DB_DATABASE=${{ secrets.DB_DATABASE }}
+            export DB_USERNAME=${{ secrets.DB_USERNAME }}
+            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            export FMP_API_KEY=${{ secrets.FMP_API_KEY }}
+            export NCP_CONTAINER_REGISTRY_API=${{ secrets.NCP_CONTAINER_REGISTRY_API }}
+            export NCP_CONTAINER_REGISTRY_BATCH=${{ secrets.NCP_CONTAINER_REGISTRY_BATCH }}
+            
+            sudo docker rm -f $(docker ps -qa)
+            
+            sudo docker login ${{ secrets.NCP_CONTAINER_REGISTRY_API }} -u ${{ secrets.NCP_ACCESS_KEY }} -p ${{ secrets.NCP_SECRET_KEY }}
+            sudo docker pull ${{ secrets.NCP_CONTAINER_REGISTRY_API }}/goalpanzi-api
+            
+            docker run -d --name goalpanzi-api -e OAUTH_APPLE_CLIENT_ID=${{ secrets.OAUTH_APPLE_CLIENT_ID }} -p 8080:8080 -i ${{ secrets.NCP_CONTAINER_REGISTRY_API }}/goalpanzi-api
+            docker image prune -f
+            docker logout ${{ vars.NCP_ENDPOINT }}
