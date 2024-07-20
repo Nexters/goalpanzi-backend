@@ -24,14 +24,14 @@ public class Member extends BaseEntity {
     @Column(name = "alt_key", nullable = false)
     private String altKey;
 
-    @Column(name = "social_id", nullable = false)
-    private String socialId;
-
-    @Column(name = "social_type", nullable = false)
-    private SocialType socialType;
-
     @Column(name = "email", nullable = false)
     private String email;
+
+    @Column(name = "social_id")
+    private String socialId;
+
+    @Column(name = "social_type")
+    private SocialType socialType;
 
     @Column(name = "nickname")
     private String nickname;
@@ -39,11 +39,11 @@ public class Member extends BaseEntity {
     @Column(name = "character_type")
     private String characterType;
 
-    private Member(String socialId, String email, String altKey) {
+    private Member(final String socialId, final String email, final String altKey) {
         this.email = email;
     }
 
-    public static Member init(String socialId, String email) {
+    public static Member socialLogin(final String socialId, final String email) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("사용자 정보가 올바르지 않습니다.");
         }
@@ -54,5 +54,9 @@ public class Member extends BaseEntity {
 
     private static String generateKey() {
         return MEMBER_KEY_PREFIX + UUID.randomUUID();
+    }
+
+    public Boolean isProfileSet() {
+        return (characterType != null) && (nickname != null);
     }
 }

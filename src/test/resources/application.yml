@@ -10,13 +10,7 @@ spring:
     hibernate:
       ddl-auto: create-drop
 
-springdoc:
-  swagger-ui:
-    path: /missionmate-docs.html
-    query-config-enabled: true
-    enabled: true
-
 oauth:
   apple:
     iss: https://appleid.apple.com
-    client-id: ${OAUTH_APPLE_CLIENT_ID}
+    client-id: test
