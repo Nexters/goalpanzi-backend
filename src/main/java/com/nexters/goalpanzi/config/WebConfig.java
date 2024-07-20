@@ -8,17 +8,17 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class WebConfig {
-  private final JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
-  public WebConfig(JwtUtil jwtUtil) {
-    this.jwtUtil = jwtUtil;
-  }
+    public WebConfig(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
 
-  @Bean
-  public FilterRegistrationBean<JwtFilter> JwtFilter() {
-    FilterRegistrationBean<JwtFilter> filterRegistrationBean = new FilterRegistrationBean<>();
-    filterRegistrationBean.setFilter(new JwtFilter(jwtUtil));
-    filterRegistrationBean.addUrlPatterns("/api/*");
-    return filterRegistrationBean;
-  }
+    @Bean
+    public FilterRegistrationBean<JwtFilter> JwtFilter() {
+        FilterRegistrationBean<JwtFilter> filterRegistrationBean = new FilterRegistrationBean<>();
+        filterRegistrationBean.setFilter(new JwtFilter(jwtUtil));
+        filterRegistrationBean.addUrlPatterns("/api/*");
+        return filterRegistrationBean;
+    }
 }

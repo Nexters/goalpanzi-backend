@@ -19,7 +19,7 @@ jwt:
   access-token:
     expires-in: 86400000
   refresh-token:
-    expires-in: 1209600000 # TODO 논의사항 : 2592000000 - 한달이 long 범위 초과
+    expires-in: 1209600000
 
 springdoc:
   swagger-ui:
