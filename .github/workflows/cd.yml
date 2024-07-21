@@ -42,7 +42,7 @@ jobs:
     steps:
       ## docker compose up
       - name: Deploy to api server
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.API_SERVER_HOST }}
           username: ${{ secrets.API_SERVER_USERNAME }}
