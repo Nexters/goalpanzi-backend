@@ -1,8 +1,9 @@
 package com.nexters.goalpanzi.config.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.nexters.goalpanzi.exception.BaseException;
+import com.nexters.goalpanzi.exception.ErrorCode;
+import io.jsonwebtoken.*;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -10,17 +11,17 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Slf4j
+@Builder
 @Component
-public class JwtUtil {
-    private enum TokenType {ACCESS, REFRESH}
+public class JwtManager {
 
-    ;
+    private enum TokenType {ACCESS, REFRESH}
 
     private final String secret;
     private final long accessExpiresIn;
     private final long refreshExpiresIn;
 
-    public JwtUtil(
+    public JwtManager(
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.access-token.expires-in}") long accessExpiresIn,
             @Value("${jwt.refresh-token.expires-in}") long refreshExpiresIn
@@ -58,15 +59,27 @@ public class JwtUtil {
     }
 
     public String getSubject(String token) {
-        return getClaims(token).getSubject();
+        return getClaims(token)
+                .getSubject();
     }
 
     public Boolean isExpired(String token) {
         Date now = new Date();
-        return getClaims(token).getExpiration().before(now);
+        return getClaims(token)
+                .getExpiration()
+                .before(now);
     }
 
     private Claims getClaims(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        try {
+            return Jwts.parser()
+                    .setSigningKey(secret)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
+            throw new BaseException(ErrorCode.INVALID_TOKEN);
+        }
     }
 }
