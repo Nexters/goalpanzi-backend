@@ -38,8 +38,8 @@ public class JwtManagerTest {
         Boolean isValidAccessToken = jwtManager.validateToken(jwt.accessToken());
         Boolean isValidRefreshToken = jwtManager.validateToken(jwt.refreshToken());
 
-        assertThat(isValidAccessToken).isEqualTo(true);
-        assertThat(isValidRefreshToken).isEqualTo(true);
+        assertThat(isValidAccessToken).isTrue();
+        assertThat(isValidRefreshToken).isTrue();
     }
 
     @Test
@@ -71,8 +71,8 @@ public class JwtManagerTest {
         Boolean isExpiredAccessToken = jwtManager.validateToken(jwt.accessToken());
         Boolean isExpiredRefreshToken = jwtManager.validateToken(jwt.refreshToken());
 
-        assertThat(isExpiredAccessToken).isEqualTo(false);
-        assertThat(isExpiredRefreshToken).isEqualTo(false);
+        assertThat(isExpiredAccessToken).isFalse();
+        assertThat(isExpiredRefreshToken).isFalse();
     }
 
     @Test
