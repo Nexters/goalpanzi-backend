@@ -32,7 +32,8 @@ jobs:
           sudo docker build --build-arg DEPENDENCY=build/dependency -t ${{ secrets.NCP_CONTAINER_REGISTRY_API }}/goalpanzi-api --platform linux/amd64 .
           sudo docker login ${{ secrets.NCP_CONTAINER_REGISTRY_API }} -u ${{ secrets.NCP_ACCESS_KEY }} -p ${{ secrets.NCP_SECRET_KEY }}
           sudo docker push ${{ secrets.NCP_CONTAINER_REGISTRY_API }}/goalpanzi-api
-
+        
+          sshpass -p ${{ secrets.API_SERVER_PASSWORD }} scp -o StrictHostKeyChecking=no ./docker-compose.yml ${{ secrets.API_SERVER_USERNAME }}@${{ secrets.API_SERVER_HOST }}:${{ secrets.DOCKER_COMPOSE_PATH }}
         shell: bash
 
   deploy-to-server:
@@ -53,7 +54,7 @@ jobs:
             export DB_DATABASE=${{ secrets.DB_DATABASE }}
             export DB_USERNAME=${{ secrets.DB_USERNAME }}
             export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            export FMP_API_KEY=${{ secrets.FMP_API_KEY }}
+            export OAUTH_APPLE_CLIENT_ID=${{ secrets.OAUTH_APPLE_CLIENT_ID }}
             export NCP_CONTAINER_REGISTRY_API=${{ secrets.NCP_CONTAINER_REGISTRY_API }}
             export NCP_CONTAINER_REGISTRY_BATCH=${{ secrets.NCP_CONTAINER_REGISTRY_BATCH }}
             
@@ -62,6 +63,5 @@ jobs:
             sudo docker login ${{ secrets.NCP_CONTAINER_REGISTRY_API }} -u ${{ secrets.NCP_ACCESS_KEY }} -p ${{ secrets.NCP_SECRET_KEY }}
             sudo docker pull ${{ secrets.NCP_CONTAINER_REGISTRY_API }}/goalpanzi-api
             
-            docker run -d --name goalpanzi-api -e OAUTH_APPLE_CLIENT_ID=${{ secrets.OAUTH_APPLE_CLIENT_ID }} -p 8080:8080 -i ${{ secrets.NCP_CONTAINER_REGISTRY_API }}/goalpanzi-api
+            docker-compose -f ${{ secrets.DOCKER_COMPOSE_PATH }}/docker-compose.yml up -d
             docker image prune -f
-            docker logout ${{ vars.NCP_ENDPOINT }}
