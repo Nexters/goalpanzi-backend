@@ -40,6 +40,7 @@ public class AuthController implements AuthControllerDocs {
     }
 
     @Override
+    @PostMapping("/logout")
     public ResponseEntity<Void> logout(final HttpServletRequest request) {
         authService.logout(request.getHeader("altKey"));
 
