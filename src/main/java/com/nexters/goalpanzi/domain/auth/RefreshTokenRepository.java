@@ -26,7 +26,8 @@ public class RefreshTokenRepository implements RedisRepository {
     }
 
     public Boolean delete(String altKey) {
-        return redisTemplate.delete(altKey);
+        String key = makeKey(altKey);
+        return redisTemplate.delete(key);
     }
 
     private String makeKey(String altKey) {
