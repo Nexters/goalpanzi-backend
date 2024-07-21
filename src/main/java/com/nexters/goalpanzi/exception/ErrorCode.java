@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 @Getter
 public enum ErrorCode {
     INVALID_APPLE_TOKEN("애플 토큰 검증에 실패하였습니다."),
-    EXPIRED_APPLE_TOKEN("애플 토큰이 만료되었습니다");
+    EXPIRED_APPLE_TOKEN("애플 토큰이 만료되었습니다."),
+
+    INVALID_TOKEN("토큰 검증에 실패하였습니다.");
 
     private String message;
 }
