@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - feat/#6-ci-cd
 
 jobs:
   build-and-push:
