@@ -30,6 +30,7 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       OAUTH_APPLE_CLIENT_ID: ${OAUTH_APPLE_CLIENT_ID}
+      JWT_SECRET: ${JWT_SECRET}
     restart: always
     volumes:
       - ./logs:/logs
