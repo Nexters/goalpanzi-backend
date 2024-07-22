@@ -1,5 +1,6 @@
-//package com.nexters.goalpanzi.domain.auth;
+//package com.nexters.goalpanzi.infrastructure.auth;
 //
+//import com.nexters.goalpanzi.domain.auth.RefreshTokenRepository;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@
 //import static org.assertj.core.api.Assertions.assertThat;
 //
 //@DataRedisTest
-//public class RefreshTokenRepositoryTest {
+//public class RefreshTokenRepositoryImplTest {
 //
 //    @Autowired
 //    private RefreshTokenRepository refreshTokenRepository;
@@ -23,7 +24,7 @@
 //    static class RedisTestConfig {
 //        @Bean
 //        public RefreshTokenRepository refreshTokenRepository(RedisTemplate<String, String> redisTemplate) {
-//            return new RefreshTokenRepository(redisTemplate);
+//            return new RefreshTokenRepositoryImpl(redisTemplate);
 //        }
 //    }
 //
