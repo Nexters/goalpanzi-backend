@@ -14,7 +14,7 @@ public class WebConfig {
     private final JwtManager jwtManager;
 
     @Bean
-    public FilterRegistrationBean<JwtFilter> JwtFilter() {
+    public FilterRegistrationBean<JwtFilter> jwtFilter() {
         FilterRegistrationBean<JwtFilter> filterRegistrationBean = new FilterRegistrationBean<>();
         filterRegistrationBean.setFilter(new JwtFilter(jwtManager));
         filterRegistrationBean.addUrlPatterns("/api/*");
