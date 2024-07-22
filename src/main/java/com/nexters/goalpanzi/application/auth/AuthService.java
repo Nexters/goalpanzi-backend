@@ -10,6 +10,7 @@ import com.nexters.goalpanzi.domain.auth.RefreshTokenRepository;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.MemberRepository;
 import com.nexters.goalpanzi.domain.member.SocialType;
+import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -50,14 +51,8 @@ public class AuthService {
         refreshTokenRepository.delete(altKey);
     }
 
-    public TokenResponse reissueToken(final String altKey, final String refreshToken) throws UnauthorizedException {
-        if (!isValidRefreshToken(altKey, refreshToken)) {
-            throw new UnauthorizedException("refresh 토큰이 갱신되어 더 이상 유효하지 않은 refresh 토큰입니다.");
-        }
-
-        if (!jwtManager.validateToken(refreshToken)) {
-            throw new UnauthorizedException("만료된 refresh 토큰입니다.");
-        }
+    public TokenResponse reissueToken(final String altKey, final String refreshToken) {
+        validateRefreshToken(altKey, refreshToken);
 
         Jwt jwt = jwtManager.generateTokens(altKey);
         refreshTokenRepository.save(altKey, jwt.refreshToken(), jwt.refreshExpiresIn());
@@ -65,8 +60,15 @@ public class AuthService {
         return new TokenResponse(jwt.accessToken(), jwt.refreshToken());
     }
 
-    private Boolean isValidRefreshToken(final String altKey, final String refreshToken) {
+    private void validateRefreshToken(final String altKey, final String refreshToken) {
         String storedRefreshToken = refreshTokenRepository.find(altKey);
-        return refreshToken.equals(storedRefreshToken);
+        
+        if (!refreshToken.equals(storedRefreshToken)) {
+            throw new UnauthorizedException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        if (!jwtManager.validateToken(refreshToken)) {
+            throw new UnauthorizedException(ErrorCode.EXPIRED_REFRESH_TOKEN);
+        }
     }
 }
