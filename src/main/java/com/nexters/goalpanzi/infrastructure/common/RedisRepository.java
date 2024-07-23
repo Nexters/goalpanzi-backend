@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.domain.common;
+package com.nexters.goalpanzi.infrastructure.common;
 
 public interface RedisRepository {
 

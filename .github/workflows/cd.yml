@@ -16,8 +16,8 @@ jobs:
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          java-version: "21"
+          distribution: "temurin"
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -33,7 +33,7 @@ jobs:
           sudo docker build --build-arg DEPENDENCY=build/dependency -t ${{ secrets.NCP_CONTAINER_REGISTRY_API }}/goalpanzi-api --platform linux/amd64 .
           sudo docker login ${{ secrets.NCP_CONTAINER_REGISTRY_API }} -u ${{ secrets.NCP_ACCESS_KEY }} -p ${{ secrets.NCP_SECRET_KEY }}
           sudo docker push ${{ secrets.NCP_CONTAINER_REGISTRY_API }}/goalpanzi-api
-        
+
           sshpass -p ${{ secrets.API_SERVER_PASSWORD }} scp -P ${{ secrets.SSH_PORT }} -o StrictHostKeyChecking=no ./docker-compose.yml ${{ secrets.API_SERVER_USERNAME }}@${{ secrets.API_SERVER_HOST }}:${{ secrets.DOCKER_COMPOSE_PATH }}
         shell: bash
 
@@ -60,11 +60,11 @@ jobs:
             export NCP_CONTAINER_REGISTRY_API=${{ secrets.NCP_CONTAINER_REGISTRY_API }}
             export NCP_CONTAINER_REGISTRY_BATCH=${{ secrets.NCP_CONTAINER_REGISTRY_BATCH }}
             export JWT_SECRET=${{ secrets.JWT_SECRET }}
-          
+
             sudo docker rm -f $(docker ps -qa)
-            
+
             sudo docker login ${{ secrets.NCP_CONTAINER_REGISTRY_API }} -u ${{ secrets.NCP_ACCESS_KEY }} -p ${{ secrets.NCP_SECRET_KEY }}
             sudo docker pull ${{ secrets.NCP_CONTAINER_REGISTRY_API }}/goalpanzi-api
-            
+
             docker-compose -f ${{ secrets.DOCKER_COMPOSE_PATH }}/docker-compose.yml up -d
             docker image prune -f
