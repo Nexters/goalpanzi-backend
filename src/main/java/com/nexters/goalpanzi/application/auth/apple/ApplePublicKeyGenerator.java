@@ -10,7 +10,6 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
-import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -22,10 +21,10 @@ public class ApplePublicKeyGenerator {
     private static final int POSITIVE_SIGNUM = 1;
 
     private final AppleApiCaller appleApiCaller;
-    private final AppleTokenManager appleTokenManager;
+    private final AppleTokenProvider appleTokenProvider;
 
     public PublicKey generatePublicKey(final String identityToken) {
-        Map<String, String> tokenHeaders = appleTokenManager.getHeader(identityToken);
+        Map<String, String> tokenHeaders = appleTokenProvider.getHeader(identityToken);
         ApplePublicKeys applePublicKeys = appleApiCaller.getApplePublicKeys();
         ApplePublicKey matchesKey =
                 applePublicKeys.getMatchesKey(tokenHeaders.get(ALG_HEADER_KEY), tokenHeaders.get(KID_HEADER_KEY));

@@ -2,7 +2,6 @@ package com.nexters.goalpanzi.application.auth.apple;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nexters.goalpanzi.exception.BaseException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.UnauthorizedException;
 import io.jsonwebtoken.*;
@@ -15,7 +14,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
-public class AppleTokenManager {
+public class AppleTokenProvider {
 
     private static final String IDENTITY_TOKEN_VALUE_DELIMITER = "\\.";
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();

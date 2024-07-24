@@ -4,8 +4,8 @@ import com.nexters.goalpanzi.application.auth.dto.AppleLoginRequest;
 import com.nexters.goalpanzi.application.auth.dto.GoogleLoginRequest;
 import com.nexters.goalpanzi.application.auth.dto.LoginResponse;
 import com.nexters.goalpanzi.application.auth.dto.TokenResponse;
-import com.nexters.goalpanzi.config.jwt.Jwt;
-import com.nexters.goalpanzi.config.jwt.JwtManager;
+import com.nexters.goalpanzi.common.jwt.Jwt;
+import com.nexters.goalpanzi.common.jwt.JwtProvider;
 import com.nexters.goalpanzi.domain.auth.RefreshTokenRepository;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.MemberRepository;
@@ -22,7 +22,7 @@ public class AuthService {
     private final SocialUserProviderFactory socialUserProviderFactory;
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final JwtManager jwtManager;
+    private final JwtProvider jwtProvider;
 
     public LoginResponse appleOAuthLogin(final AppleLoginRequest request) {
         SocialUserProvider appleUserProvider = socialUserProviderFactory.getProvider(SocialType.APPLE);
@@ -41,7 +41,7 @@ public class AuthService {
         Member member = memberRepository.save(Member.socialLogin(socialId, email));
 
         String altKey = member.getAltKey();
-        Jwt jwt = jwtManager.generateTokens(altKey);
+        Jwt jwt = jwtProvider.generateTokens(altKey);
         refreshTokenRepository.save(altKey, jwt.refreshToken(), jwt.refreshExpiresIn());
 
         return new LoginResponse(jwt.accessToken(), jwt.refreshToken(), member.isProfileSet());
@@ -54,7 +54,7 @@ public class AuthService {
     public TokenResponse reissueToken(final String altKey, final String refreshToken) {
         validateRefreshToken(altKey, refreshToken);
 
-        Jwt jwt = jwtManager.generateTokens(altKey);
+        Jwt jwt = jwtProvider.generateTokens(altKey);
         refreshTokenRepository.save(altKey, jwt.refreshToken(), jwt.refreshExpiresIn());
 
         return new TokenResponse(jwt.accessToken(), jwt.refreshToken());
@@ -67,7 +67,7 @@ public class AuthService {
             throw new UnauthorizedException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
-        if (!jwtManager.validateToken(refreshToken)) {
+        if (!jwtProvider.validateToken(refreshToken)) {
             throw new UnauthorizedException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
     }
