@@ -40,7 +40,9 @@ public class Member extends BaseEntity {
     private String characterType;
 
     private Member(final String socialId, final String email, final String altKey) {
+        this.socialId = socialId;
         this.email = email;
+        this.altKey = altKey;
     }
 
     public static Member socialLogin(final String socialId, final String email) {
