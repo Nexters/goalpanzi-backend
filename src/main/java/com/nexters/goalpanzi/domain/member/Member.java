@@ -21,13 +21,13 @@ public class Member extends BaseEntity {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "alt_key", nullable = false)
+    @Column(name = "alt_key", unique = true, nullable = false)
     private String altKey;
 
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "social_id")
+    @Column(name = "social_id", unique = true)
     private String socialId;
 
     @Column(name = "social_type")
