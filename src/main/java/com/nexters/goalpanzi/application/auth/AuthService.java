@@ -28,18 +28,20 @@ public class AuthService {
         SocialUserProvider appleUserProvider = socialUserProviderFactory.getProvider(SocialType.APPLE);
         SocialUserInfo socialUserInfo = appleUserProvider.getSocialUserInfo(request.identityToken());
 
-        return login(socialUserInfo.socialId(), socialUserInfo.email());
+        return socialLogin(socialUserInfo, SocialType.APPLE);
     }
 
     public LoginResponse googleOAuthLogin(final GoogleLoginRequest request) {
         SocialUserInfo socialUserInfo = new SocialUserInfo(request.identityToken(), request.email());
 
-        return login(socialUserInfo.socialId(), socialUserInfo.email());
+        return socialLogin(socialUserInfo, SocialType.GOOGLE);
     }
 
-    private LoginResponse login(final String socialId, final String email) {
-        Member member = memberRepository.findBySocialId(socialId)
-                .orElseGet(() -> memberRepository.save(Member.socialLogin(socialId, email)));
+    private LoginResponse socialLogin(final SocialUserInfo socialUserInfo, final SocialType socialType) {
+        Member member = memberRepository.findBySocialId(socialUserInfo.socialId())
+                .orElseGet(() ->
+                        memberRepository.save(Member.socialLogin(socialUserInfo.socialId(), socialUserInfo.email(), socialType))
+                );
 
         String altKey = member.getAltKey();
         Jwt jwt = jwtProvider.generateTokens(altKey);

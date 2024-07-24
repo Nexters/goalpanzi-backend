@@ -39,19 +39,20 @@ public class Member extends BaseEntity {
     @Column(name = "character_type")
     private String characterType;
 
-    private Member(final String socialId, final String email, final String altKey) {
+    private Member(final String socialId, final String email, final String altKey, final SocialType socialType) {
         this.socialId = socialId;
         this.email = email;
         this.altKey = altKey;
+        this.socialType = socialType;
     }
 
-    public static Member socialLogin(final String socialId, final String email) {
+    public static Member socialLogin(final String socialId, final String email, final SocialType socialType) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("사용자 정보가 올바르지 않습니다.");
         }
         String altKey = generateKey();
 
-        return new Member(socialId, email, altKey);
+        return new Member(socialId, email, altKey, socialType);
     }
 
     private static String generateKey() {
