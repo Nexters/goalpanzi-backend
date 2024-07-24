@@ -38,7 +38,8 @@ public class AuthService {
     }
 
     private LoginResponse login(final String socialId, final String email) {
-        Member member = memberRepository.save(Member.socialLogin(socialId, email));
+        Member member = memberRepository.findBySocialId(socialId)
+                .orElseGet(() -> memberRepository.save(Member.socialLogin(socialId, email)));
 
         String altKey = member.getAltKey();
         Jwt jwt = jwtProvider.generateTokens(altKey);
@@ -62,7 +63,7 @@ public class AuthService {
 
     private void validateRefreshToken(final String altKey, final String refreshToken) {
         String storedRefreshToken = refreshTokenRepository.find(altKey);
-        
+
         if (!refreshToken.equals(storedRefreshToken)) {
             throw new UnauthorizedException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
