@@ -53,6 +53,8 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    testImplementation 'io.rest-assured:rest-assured'
 }
 
 tasks.named('test') {

@@ -1,5 +1,6 @@
 package com.nexters.goalpanzi.application.auth.apple;
 
+import com.nexters.goalpanzi.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -42,7 +43,7 @@ public class ApplePublicKeyGenerator {
             KeyFactory keyFactory = KeyFactory.getInstance(applePublicKey.kty());
             return keyFactory.generatePublic(publicKeySpec);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException exception) {
-            throw new RuntimeException("응답 받은 Apple Public Key로 PublicKey를 생성할 수 없습니다.");
+            throw new UnauthorizedException("응답 받은 Apple Public Key로 PublicKey를 생성할 수 없습니다.");
         }
     }
 }

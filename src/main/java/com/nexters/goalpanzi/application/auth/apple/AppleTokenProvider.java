@@ -41,7 +41,8 @@ public class AppleTokenProvider {
             return claims;
         } catch (ExpiredJwtException e) {
             throw new UnauthorizedException(ErrorCode.EXPIRED_APPLE_TOKEN);
-        } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
+        } catch (UnauthorizedException | UnsupportedJwtException |
+                 MalformedJwtException | SignatureException | IllegalArgumentException e) {
             throw new UnauthorizedException(ErrorCode.INVALID_APPLE_TOKEN);
         }
     }
