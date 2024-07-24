@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nexters.goalpanzi.exception.BaseException;
 import com.nexters.goalpanzi.exception.ErrorCode;
+import com.nexters.goalpanzi.exception.UnauthorizedException;
 import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,7 @@ public class AppleTokenManager {
             String decodedHeader = new String(Base64.getUrlDecoder().decode(encodedHeader));
             return OBJECT_MAPPER.readValue(decodedHeader, Map.class);
         } catch (JsonProcessingException | ArrayIndexOutOfBoundsException e) {
-            throw new BaseException(ErrorCode.INVALID_APPLE_TOKEN);
+            throw new UnauthorizedException(ErrorCode.INVALID_APPLE_TOKEN);
         }
     }
 
@@ -40,15 +41,15 @@ public class AppleTokenManager {
             validateClaims(claims);
             return claims;
         } catch (ExpiredJwtException e) {
-            throw new BaseException(ErrorCode.EXPIRED_APPLE_TOKEN);
+            throw new UnauthorizedException(ErrorCode.EXPIRED_APPLE_TOKEN);
         } catch (UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException e) {
-            throw new BaseException(ErrorCode.INVALID_APPLE_TOKEN);
+            throw new UnauthorizedException(ErrorCode.INVALID_APPLE_TOKEN);
         }
     }
 
     private void validateClaims(final Claims claims) {
         if (!appleClaimsValidator.isValid(claims)) {
-            throw new RuntimeException("Apple OAuth Claims 값이 올바르지 않습니다.");
+            throw new UnauthorizedException(ErrorCode.INVALID_APPLE_TOKEN);
         }
     }
 }

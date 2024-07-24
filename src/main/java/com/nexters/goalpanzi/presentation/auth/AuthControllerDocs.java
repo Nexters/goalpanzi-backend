@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 )
 public interface AuthControllerDocs {
 
+    @Operation(summary = "Apple 로그인", description = "Apple 로그인을 처리합니다.")
     @PostMapping("/login/apple")
     ResponseEntity<LoginResponse> loginApple(
             @RequestBody @Valid final AppleLoginRequest appleLoginRequest
