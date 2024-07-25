@@ -3,7 +3,6 @@ package com.nexters.goalpanzi.presentation.member;
 import com.nexters.goalpanzi.application.member.MemberService;
 import com.nexters.goalpanzi.application.member.dto.ProfileRequest;
 import com.nexters.goalpanzi.common.argumentresolver.LoginUserId;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,6 @@ public class MemberController implements MemberControllerDocs {
     private final MemberService memberService;
 
     @Override
-    @SecurityRequirement(name = "JWT")
     @PatchMapping("/profile")
     public ResponseEntity<Void> updateProfile(
             @LoginUserId final Long userId,
