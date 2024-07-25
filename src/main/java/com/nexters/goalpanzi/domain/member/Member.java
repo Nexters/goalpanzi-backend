@@ -6,8 +6,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Entity
 @Table(name = "member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -25,14 +23,16 @@ public class Member extends BaseEntity {
     @Column(name = "social_id", unique = true)
     private String socialId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "social_type")
     private SocialType socialType;
 
     @Column(name = "nickname")
     private String nickname;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "character_type")
-    private String characterType;
+    private CharacterType characterType;
 
     private Member(final String socialId, final String email, final SocialType socialType) {
         this.socialId = socialId;
@@ -50,5 +50,10 @@ public class Member extends BaseEntity {
 
     public Boolean isProfileSet() {
         return (characterType != null) && (nickname != null);
+    }
+
+    public void updateProfile(final String nickname, final CharacterType characterType) {
+        this.nickname = nickname;
+        this.characterType = characterType;
     }
 }
