@@ -13,14 +13,14 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @RequiredArgsConstructor
 @Component
-public class UserKeyResolver implements HandlerMethodArgumentResolver {
+public class UserIdResolver implements HandlerMethodArgumentResolver {
 
     private final JwtParser jwtParser;
     private final JwtProvider jwtProvider;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(LoginUserKey.class);
+        return parameter.hasParameterAnnotation(LoginUserId.class);
     }
 
     @Override
@@ -30,6 +30,6 @@ public class UserKeyResolver implements HandlerMethodArgumentResolver {
 
         String token = jwtParser.resolveToken(request);
 
-        return jwtProvider.getSubject(token);
+        return Long.parseLong(jwtProvider.getSubject(token));
     }
 }

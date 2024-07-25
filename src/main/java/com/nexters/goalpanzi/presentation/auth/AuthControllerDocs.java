@@ -1,13 +1,12 @@
 package com.nexters.goalpanzi.presentation.auth;
 
 import com.nexters.goalpanzi.application.auth.dto.*;
-import com.nexters.goalpanzi.common.argumentresolver.LoginUserKey;
+import com.nexters.goalpanzi.common.argumentresolver.LoginUserId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,7 +44,7 @@ public interface AuthControllerDocs {
             @ApiResponse(responseCode = "401", description = "인증 실패"),
     })
     @PostMapping("/logout")
-    ResponseEntity<Void> logout(@Parameter(hidden = true) @LoginUserKey final String userKey);
+    ResponseEntity<Void> logout(@Parameter(hidden = true) @LoginUserId final String userKey);
 
     @Operation(summary = "토큰 재발급", description = "access 토큰과 refresh 토큰을 재발급합니다.")
     @ApiResponses({
@@ -56,6 +55,6 @@ public interface AuthControllerDocs {
     @PostMapping("/token:reissue")
     ResponseEntity<TokenResponse> reissueToken(
             @RequestBody @Valid final TokenRequest tokenRequest,
-            @Parameter(hidden = true) @LoginUserKey final String userKey
+            @Parameter(hidden = true) @LoginUserId final String userId
     );
 }
