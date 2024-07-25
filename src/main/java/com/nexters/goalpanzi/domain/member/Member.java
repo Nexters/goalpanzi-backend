@@ -14,20 +14,15 @@ import java.util.UUID;
 @Getter
 public class Member extends BaseEntity {
 
-    private static final String MEMBER_KEY_PREFIX = "ME_";
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "alt_key", nullable = false)
-    private String altKey;
-
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "social_id")
+    @Column(name = "social_id", unique = true)
     private String socialId;
 
     @Column(name = "social_type")
@@ -39,21 +34,18 @@ public class Member extends BaseEntity {
     @Column(name = "character_type")
     private String characterType;
 
-    private Member(final String socialId, final String email, final String altKey) {
+    private Member(final String socialId, final String email, final SocialType socialType) {
+        this.socialId = socialId;
         this.email = email;
+        this.socialType = socialType;
     }
 
-    public static Member socialLogin(final String socialId, final String email) {
+    public static Member socialLogin(final String socialId, final String email, final SocialType socialType) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("사용자 정보가 올바르지 않습니다.");
         }
-        String altKey = generateKey();
 
-        return new Member(socialId, email, altKey);
-    }
-
-    private static String generateKey() {
-        return MEMBER_KEY_PREFIX + UUID.randomUUID();
+        return new Member(socialId, email, socialType);
     }
 
     public Boolean isProfileSet() {

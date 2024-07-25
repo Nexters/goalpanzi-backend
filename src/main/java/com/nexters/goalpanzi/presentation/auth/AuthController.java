@@ -2,7 +2,7 @@ package com.nexters.goalpanzi.presentation.auth;
 
 import com.nexters.goalpanzi.application.auth.AuthService;
 import com.nexters.goalpanzi.application.auth.dto.*;
-import jakarta.servlet.http.HttpServletRequest;
+import com.nexters.goalpanzi.common.argumentresolver.LoginUserId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -41,8 +41,10 @@ public class AuthController implements AuthControllerDocs {
 
     @Override
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(final HttpServletRequest request) {
-        authService.logout(request.getHeader("altKey"));
+    public ResponseEntity<Void> logout(
+            @LoginUserId final String userKey
+    ) {
+        authService.logout(userKey);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -51,9 +53,9 @@ public class AuthController implements AuthControllerDocs {
     @PostMapping("/token:reissue")
     public ResponseEntity<TokenResponse> reissueToken(
             @RequestBody @Valid final TokenRequest tokenRequest,
-            final HttpServletRequest request
+            @LoginUserId final String userId
     ) {
-        TokenResponse tokenResponse = authService.reissueToken(request.getHeader("altKey"), tokenRequest.refreshToken());
+        TokenResponse tokenResponse = authService.reissueToken(userId, tokenRequest.refreshToken());
 
         return ResponseEntity.ok(tokenResponse);
     }

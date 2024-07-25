@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.application.auth.apple;
 
-import com.nexters.goalpanzi.util.Nonce;
+import com.nexters.goalpanzi.common.util.Nonce;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AppleClaimsValidator {
 
-    static final String NONCE_KEY = "nonce";
+    public static final String NONCE_KEY = "nonce";
 
     private final String iss;
     private final String clientId;

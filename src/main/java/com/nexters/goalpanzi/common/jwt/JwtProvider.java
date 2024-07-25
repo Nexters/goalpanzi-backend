@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.config.jwt;
+package com.nexters.goalpanzi.common.jwt;
 
 import com.nexters.goalpanzi.exception.BaseException;
 import com.nexters.goalpanzi.exception.ErrorCode;
@@ -13,7 +13,7 @@ import java.util.Date;
 @Slf4j
 @Builder
 @Component
-public class JwtManager {
+public class JwtProvider {
 
     private enum TokenType {ACCESS, REFRESH}
 
@@ -21,7 +21,7 @@ public class JwtManager {
     private final long accessExpiresIn;
     private final long refreshExpiresIn;
 
-    public JwtManager(
+    public JwtProvider(
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.access-token.expires-in}") long accessExpiresIn,
             @Value("${jwt.refresh-token.expires-in}") long refreshExpiresIn

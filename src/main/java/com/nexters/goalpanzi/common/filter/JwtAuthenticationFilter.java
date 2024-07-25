@@ -1,5 +1,7 @@
-package com.nexters.goalpanzi.config.jwt;
+package com.nexters.goalpanzi.common.filter;
 
+import com.nexters.goalpanzi.common.jwt.JwtParser;
+import com.nexters.goalpanzi.common.jwt.JwtProvider;
 import com.nexters.goalpanzi.exception.BaseException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,10 +15,8 @@ import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class JwtFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String AUTHORIZATION_SCHEMA = "Bearer ";
     private static final String TOKEN_REISSUE_URI = "/api/auth/token:reissue";
     private static final String CONTENT_TYPE = "application/json";
     private static final String ATTRIBUTE_NAME = "altKey";
@@ -24,7 +24,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private static final List<String> whitelist = List.of("/api/auth/login");
 
-    private final JwtManager jwtManager;
+    private final JwtProvider jwtProvider;
+    private final JwtParser jwtParser;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -35,15 +36,15 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         try {
-            String token = resolveToken(request);
+            String token = jwtParser.resolveToken(request);
             if (isTokenReissueRequest(requestURI, token)) {
-                request.setAttribute(ATTRIBUTE_NAME, jwtManager.getSubject(token));
+                request.setAttribute(ATTRIBUTE_NAME, jwtProvider.getSubject(token));
                 filterChain.doFilter(request, response);
                 return;
             }
 
             if (isAuthenticated(token)) {
-                request.setAttribute(ATTRIBUTE_NAME, jwtManager.getSubject(token));
+                request.setAttribute(ATTRIBUTE_NAME, jwtProvider.getSubject(token));
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -58,26 +59,14 @@ public class JwtFilter extends OncePerRequestFilter {
         }
     }
 
-    private String resolveToken(HttpServletRequest request) {
-        String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
-        if (isBearerToken(authorizationHeader)) {
-            return authorizationHeader.substring(AUTHORIZATION_SCHEMA.length());
-        }
-        return null;
-    }
-
-    private Boolean isBearerToken(String header) {
-        return StringUtils.hasText(header) && header.startsWith(AUTHORIZATION_SCHEMA);
-    }
-
     private Boolean isTokenReissueRequest(String requestURI, String token) {
         return requestURI.equals(TOKEN_REISSUE_URI)
                 && StringUtils.hasText(token)
-                && jwtManager.isExpired(token);
+                && jwtProvider.isExpired(token);
     }
 
     private Boolean isAuthenticated(String token) {
-        return StringUtils.hasText(token) && jwtManager.validateToken(token);
+        return StringUtils.hasText(token) && jwtProvider.validateToken(token);
     }
 
     private Boolean isWhitelisted(String requestURI) {

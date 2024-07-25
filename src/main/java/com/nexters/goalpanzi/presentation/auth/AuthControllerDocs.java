@@ -1,11 +1,12 @@
 package com.nexters.goalpanzi.presentation.auth;
 
 import com.nexters.goalpanzi.application.auth.dto.*;
+import com.nexters.goalpanzi.common.argumentresolver.LoginUserId;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 )
 public interface AuthControllerDocs {
 
+    @Operation(summary = "Apple 로그인", description = "Apple 로그인을 처리합니다.")
     @PostMapping("/login/apple")
     ResponseEntity<LoginResponse> loginApple(
             @RequestBody @Valid final AppleLoginRequest appleLoginRequest
@@ -42,7 +44,7 @@ public interface AuthControllerDocs {
             @ApiResponse(responseCode = "401", description = "인증 실패"),
     })
     @PostMapping("/logout")
-    ResponseEntity<Void> logout(final HttpServletRequest request);
+    ResponseEntity<Void> logout(@Parameter(hidden = true) @LoginUserId final String userKey);
 
     @Operation(summary = "토큰 재발급", description = "access 토큰과 refresh 토큰을 재발급합니다.")
     @ApiResponses({
@@ -53,6 +55,6 @@ public interface AuthControllerDocs {
     @PostMapping("/token:reissue")
     ResponseEntity<TokenResponse> reissueToken(
             @RequestBody @Valid final TokenRequest tokenRequest,
-            final HttpServletRequest request
+            @Parameter(hidden = true) @LoginUserId final String userId
     );
 }

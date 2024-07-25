@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.security.PublicKey;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
@@ -16,7 +15,7 @@ public class AppleUserProvider implements SocialUserProvider {
 
     private static final String EMAIL = "email";
 
-    private final AppleTokenManager appleTokenManager;
+    private final AppleTokenProvider appleTokenProvider;
     private final ApplePublicKeyGenerator applePublicKeyGenerator;
 
     public SocialType getSocialType() {
@@ -25,7 +24,7 @@ public class AppleUserProvider implements SocialUserProvider {
 
     public SocialUserInfo getSocialUserInfo(final String identityToken) {
         PublicKey publicKey = applePublicKeyGenerator.generatePublicKey(identityToken);
-        Claims claims = appleTokenManager.getClaimsIfValid(identityToken, publicKey);
+        Claims claims = appleTokenProvider.getClaimsIfValid(identityToken, publicKey);
 
         return new SocialUserInfo(claims.getSubject(), claims.get(EMAIL, String.class));
     }

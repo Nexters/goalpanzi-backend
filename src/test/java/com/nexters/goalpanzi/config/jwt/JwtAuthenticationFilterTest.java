@@ -1,5 +1,8 @@
 package com.nexters.goalpanzi.config.jwt;
 
+import com.nexters.goalpanzi.common.filter.JwtAuthenticationFilter;
+import com.nexters.goalpanzi.common.jwt.JwtParser;
+import com.nexters.goalpanzi.common.jwt.JwtProvider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -14,7 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
-public class JwtFilterTest {
+public class JwtAuthenticationFilterTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -23,8 +26,8 @@ public class JwtFilterTest {
     static class TestConfig implements WebMvcConfigurer {
 
         @Bean
-        public JwtManager jwtManager() {
-            return JwtManager.builder()
+        public JwtProvider jwtProvider() {
+            return JwtProvider.builder()
                     .secret("secret")
                     .accessExpiresIn(60000)
                     .refreshExpiresIn(60000)
@@ -32,9 +35,15 @@ public class JwtFilterTest {
         }
 
         @Bean
-        public FilterRegistrationBean<JwtFilter> jwtFilter() {
-            FilterRegistrationBean<JwtFilter> filterRegistrationBean = new FilterRegistrationBean<>();
-            filterRegistrationBean.setFilter(new JwtFilter(jwtManager()));
+        public JwtParser jwtParser() {
+            return new JwtParser();
+        }
+
+
+        @Bean
+        public FilterRegistrationBean<JwtAuthenticationFilter> jwtFilter() {
+            FilterRegistrationBean<JwtAuthenticationFilter> filterRegistrationBean = new FilterRegistrationBean<>();
+            filterRegistrationBean.setFilter(new JwtAuthenticationFilter(jwtProvider(), jwtParser()));
             filterRegistrationBean.addUrlPatterns("/api/*");
             return filterRegistrationBean;
         }

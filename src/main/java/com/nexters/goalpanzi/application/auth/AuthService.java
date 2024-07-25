@@ -4,8 +4,8 @@ import com.nexters.goalpanzi.application.auth.dto.AppleLoginRequest;
 import com.nexters.goalpanzi.application.auth.dto.GoogleLoginRequest;
 import com.nexters.goalpanzi.application.auth.dto.LoginResponse;
 import com.nexters.goalpanzi.application.auth.dto.TokenResponse;
-import com.nexters.goalpanzi.config.jwt.Jwt;
-import com.nexters.goalpanzi.config.jwt.JwtManager;
+import com.nexters.goalpanzi.common.jwt.Jwt;
+import com.nexters.goalpanzi.common.jwt.JwtProvider;
 import com.nexters.goalpanzi.domain.auth.RefreshTokenRepository;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.MemberRepository;
@@ -22,27 +22,29 @@ public class AuthService {
     private final SocialUserProviderFactory socialUserProviderFactory;
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final JwtManager jwtManager;
+    private final JwtProvider jwtProvider;
 
     public LoginResponse appleOAuthLogin(final AppleLoginRequest request) {
         SocialUserProvider appleUserProvider = socialUserProviderFactory.getProvider(SocialType.APPLE);
         SocialUserInfo socialUserInfo = appleUserProvider.getSocialUserInfo(request.identityToken());
 
-        return login(socialUserInfo.socialId(), socialUserInfo.email());
+        return socialLogin(socialUserInfo, SocialType.APPLE);
     }
 
     public LoginResponse googleOAuthLogin(final GoogleLoginRequest request) {
         SocialUserInfo socialUserInfo = new SocialUserInfo(request.identityToken(), request.email());
 
-        return login(socialUserInfo.socialId(), socialUserInfo.email());
+        return socialLogin(socialUserInfo, SocialType.GOOGLE);
     }
 
-    private LoginResponse login(final String socialId, final String email) {
-        Member member = memberRepository.save(Member.socialLogin(socialId, email));
+    private LoginResponse socialLogin(final SocialUserInfo socialUserInfo, final SocialType socialType) {
+        Member member = memberRepository.findBySocialId(socialUserInfo.socialId())
+                .orElseGet(() ->
+                        memberRepository.save(Member.socialLogin(socialUserInfo.socialId(), socialUserInfo.email(), socialType))
+                );
 
-        String altKey = member.getAltKey();
-        Jwt jwt = jwtManager.generateTokens(altKey);
-        refreshTokenRepository.save(altKey, jwt.refreshToken(), jwt.refreshExpiresIn());
+        Jwt jwt = jwtProvider.generateTokens(member.getId().toString());
+        refreshTokenRepository.save(member.getId().toString(), jwt.refreshToken(), jwt.refreshExpiresIn());
 
         return new LoginResponse(jwt.accessToken(), jwt.refreshToken(), member.isProfileSet());
     }
@@ -54,7 +56,7 @@ public class AuthService {
     public TokenResponse reissueToken(final String altKey, final String refreshToken) {
         validateRefreshToken(altKey, refreshToken);
 
-        Jwt jwt = jwtManager.generateTokens(altKey);
+        Jwt jwt = jwtProvider.generateTokens(altKey);
         refreshTokenRepository.save(altKey, jwt.refreshToken(), jwt.refreshExpiresIn());
 
         return new TokenResponse(jwt.accessToken(), jwt.refreshToken());
@@ -62,12 +64,12 @@ public class AuthService {
 
     private void validateRefreshToken(final String altKey, final String refreshToken) {
         String storedRefreshToken = refreshTokenRepository.find(altKey);
-        
+
         if (!refreshToken.equals(storedRefreshToken)) {
             throw new UnauthorizedException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
-        if (!jwtManager.validateToken(refreshToken)) {
+        if (!jwtProvider.validateToken(refreshToken)) {
             throw new UnauthorizedException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
     }
