@@ -9,7 +9,7 @@ import java.util.Set;
 import static java.util.stream.Collectors.toMap;
 
 @Component
-class SocialUserProviderFactory {
+public class SocialUserProviderFactory {
 
     public Map<SocialType, SocialUserProvider> providers;
 

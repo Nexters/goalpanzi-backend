@@ -43,9 +43,8 @@ public class AuthService {
                         memberRepository.save(Member.socialLogin(socialUserInfo.socialId(), socialUserInfo.email(), socialType))
                 );
 
-        String altKey = member.getAltKey();
-        Jwt jwt = jwtProvider.generateTokens(altKey);
-        refreshTokenRepository.save(altKey, jwt.refreshToken(), jwt.refreshExpiresIn());
+        Jwt jwt = jwtProvider.generateTokens(member.getId().toString());
+        refreshTokenRepository.save(member.getId().toString(), jwt.refreshToken(), jwt.refreshExpiresIn());
 
         return new LoginResponse(jwt.accessToken(), jwt.refreshToken(), member.isProfileSet());
     }

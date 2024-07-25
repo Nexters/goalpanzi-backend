@@ -31,7 +31,7 @@ public class JwtProvider {
         this.refreshExpiresIn = refreshExpiresIn;
     }
 
-    public com.nexters.goalpanzi.common.jwt.Jwt generateTokens(String subject) {
+    public Jwt generateTokens(String subject) {
         return Jwt.builder()
                 .accessToken(createToken(subject, TokenType.ACCESS))
                 .refreshToken(createToken(subject, TokenType.REFRESH))
