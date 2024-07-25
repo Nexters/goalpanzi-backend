@@ -1,9 +1,10 @@
 spring:
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:test;MODE=MySQL
+    url: jdbc:h2:~/test;MODE=MYSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;
     username: sa
-    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
   data:
     redis:
       host: localhost
