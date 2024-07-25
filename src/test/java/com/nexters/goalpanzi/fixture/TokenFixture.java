@@ -1,5 +1,6 @@
-package com.nexters.goalpanzi.acceptance.fixture;
+package com.nexters.goalpanzi.fixture;
 
+import com.nexters.goalpanzi.common.jwt.JwtProvider;
 import com.nexters.goalpanzi.common.util.Nonce;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -14,6 +15,8 @@ import java.util.Map;
 import static com.nexters.goalpanzi.application.auth.apple.AppleClaimsValidator.NONCE_KEY;
 
 public class TokenFixture {
+    public static final String SECRET = "secret";
+    private static final JwtProvider jwtProvider = new JwtProvider("testtest", 86400000, 1209600000);
 
     public static String generateAppleToken() throws NoSuchAlgorithmException {
         Date issuedAt = new Date();
@@ -30,5 +33,9 @@ public class TokenFixture {
                 .setExpiration(new Date(issuedAt.getTime() + 1000 * 60 * 60 * 24))
                 .signWith(SignatureAlgorithm.RS256, privateKey)
                 .compact();
+    }
+
+    public static String generateAccessToken(Long userId) {
+        return jwtProvider.generateTokens(userId.toString()).accessToken();
     }
 }

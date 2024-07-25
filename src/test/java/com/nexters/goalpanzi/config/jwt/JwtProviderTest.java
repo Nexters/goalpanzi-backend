@@ -10,20 +10,23 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
+import static com.nexters.goalpanzi.fixture.MemberFixture.USER_ID;
+import static com.nexters.goalpanzi.fixture.TokenFixture.SECRET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class JwtProviderTest {
 
     @Test
     void JWT_토큰을_생성한다() {
         JwtProvider jwtProvider = JwtProvider.builder()
-                .secret("secret")
-                .accessExpiresIn(60000)
+                .secret(SECRET)
+                .accessExpiresIn(60000000)
                 .refreshExpiresIn(60000)
                 .build();
 
-        Jwt jwt = jwtProvider.generateTokens("subject");
+        Jwt jwt = jwtProvider.generateTokens(USER_ID.toString());
 
         assertThat(jwt).isNotNull();
     }
@@ -31,73 +34,81 @@ public class JwtProviderTest {
     @Test
     void 유효한_JWT_토큰을_검증한다() {
         JwtProvider jwtProvider = JwtProvider.builder()
-                .secret("secret")
+                .secret(SECRET)
                 .accessExpiresIn(60000)
                 .refreshExpiresIn(60000)
                 .build();
 
-        Jwt jwt = jwtProvider.generateTokens("subject");
+        Jwt jwt = jwtProvider.generateTokens(USER_ID.toString());
         Boolean isValidAccessToken = jwtProvider.validateToken(jwt.accessToken());
         Boolean isValidRefreshToken = jwtProvider.validateToken(jwt.refreshToken());
 
-        assertThat(isValidAccessToken).isTrue();
-        assertThat(isValidRefreshToken).isTrue();
+        assertAll(
+                () -> assertThat(isValidAccessToken).isTrue(),
+                () -> assertThat(isValidRefreshToken).isTrue()
+        );
     }
 
     @Test
     void 유효한_JWT_토큰에서_subject를_추출한다() {
         JwtProvider jwtProvider = JwtProvider.builder()
-                .secret("secret")
+                .secret(SECRET)
                 .accessExpiresIn(60000)
                 .refreshExpiresIn(60000)
                 .build();
 
-        Jwt jwt = jwtProvider.generateTokens("subject");
+        Jwt jwt = jwtProvider.generateTokens(USER_ID.toString());
         String accessTokenSubject = jwtProvider.getSubject(jwt.accessToken());
         String refreshTokenSubject = jwtProvider.getSubject(jwt.refreshToken());
 
-        assertThat(accessTokenSubject).isEqualTo("subject");
-        assertThat(refreshTokenSubject).isEqualTo("subject");
+        assertAll(
+                () -> assertThat(accessTokenSubject).isEqualTo(USER_ID.toString()),
+                () -> assertThat(refreshTokenSubject).isEqualTo(USER_ID.toString())
+        );
     }
 
     @Test
     void 만료된_JWT_토큰을_검증한다() throws InterruptedException {
         JwtProvider jwtProvider = JwtProvider.builder()
-                .secret("secret")
+                .secret(SECRET)
                 .accessExpiresIn(1000)
                 .refreshExpiresIn(1000)
                 .build();
 
-        Jwt jwt = jwtProvider.generateTokens("subject");
+        Jwt jwt = jwtProvider.generateTokens(USER_ID.toString());
         Thread.sleep(2000);
         Boolean isExpiredAccessToken = jwtProvider.validateToken(jwt.accessToken());
         Boolean isExpiredRefreshToken = jwtProvider.validateToken(jwt.refreshToken());
 
-        assertThat(isExpiredAccessToken).isFalse();
-        assertThat(isExpiredRefreshToken).isFalse();
+        assertAll(
+                () -> assertThat(isExpiredAccessToken).isFalse(),
+                () -> assertThat(isExpiredRefreshToken).isFalse()
+        );
     }
 
     @Test
     void 만료된_JWT_토큰에서_subject를_추출한다() throws InterruptedException {
         JwtProvider jwtProvider = JwtProvider.builder()
-                .secret("secret")
+                .secret(SECRET)
                 .accessExpiresIn(1000)
                 .refreshExpiresIn(1000)
                 .build();
 
-        Jwt jwt = jwtProvider.generateTokens("subject");
+        Jwt jwt = jwtProvider.generateTokens(USER_ID.toString());
         Thread.sleep(2000);
         String accessTokenSubject = jwtProvider.getSubject(jwt.accessToken());
         String refreshTokenSubject = jwtProvider.getSubject(jwt.refreshToken());
 
-        assertThat(accessTokenSubject).isEqualTo("subject");
-        assertThat(refreshTokenSubject).isEqualTo("subject");
+        assertAll(
+                () -> assertThat(accessTokenSubject).isEqualTo(USER_ID.toString()),
+                () -> assertThat(refreshTokenSubject).isEqualTo(USER_ID.toString())
+        );
     }
 
     @Test
     void 서명이_잘못된_JWT_토큰을_검증한다() {
         JwtProvider jwtProvider = JwtProvider.builder()
-                .secret("secret")
+                .secret(SECRET)
                 .accessExpiresIn(60000)
                 .refreshExpiresIn(60000)
                 .build();
@@ -107,7 +118,7 @@ public class JwtProviderTest {
         Date exp = new Date(currMillis + 60000);
 
         String invalidSignatureToken = Jwts.builder()
-                .setSubject("subject")
+                .setSubject(USER_ID.toString())
                 .setIssuedAt(iat)
                 .setExpiration(exp)
                 .signWith(SignatureAlgorithm.HS256, "wrongSecret")
@@ -122,7 +133,7 @@ public class JwtProviderTest {
     @Test
     void 잘못된_형식의_JWT_토큰을_검증한다() {
         JwtProvider jwtProvider = JwtProvider.builder()
-                .secret("secret")
+                .secret(SECRET)
                 .accessExpiresIn(60000)
                 .refreshExpiresIn(60000)
                 .build();

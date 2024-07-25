@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public interface MemberControllerDocs {
 
-    @Operation(summary = "프로필 설정", description = "캐릭터, 닉네임을 생성합니다.")
+    @Operation(summary = "프로필 생성", description = "캐릭터, 닉네임을 생성합니다.")
     @PatchMapping("/profile")
     ResponseEntity<Void> updateProfile(
             @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginUserId final Long userId,

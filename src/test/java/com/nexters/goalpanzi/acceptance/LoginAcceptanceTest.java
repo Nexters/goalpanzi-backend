@@ -1,12 +1,11 @@
 package com.nexters.goalpanzi.acceptance;
 
-import com.nexters.goalpanzi.acceptance.fixture.TokenFixture;
+import com.nexters.goalpanzi.fixture.TokenFixture;
 import com.nexters.goalpanzi.application.auth.SocialUserInfo;
 import com.nexters.goalpanzi.application.auth.SocialUserProvider;
 import com.nexters.goalpanzi.application.auth.SocialUserProviderFactory;
 import com.nexters.goalpanzi.application.auth.dto.AppleLoginRequest;
 import com.nexters.goalpanzi.application.auth.dto.LoginResponse;
-import groovy.util.logging.Slf4j;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -46,6 +45,7 @@ public class LoginAcceptanceTest extends AcceptanceTest {
                 .statusCode(HttpStatus.OK.value())
                 .extract()
                 .as(LoginResponse.class);
+
         assertAll(
                 () -> assertThat(actual.accessToken()).isNotEmpty(),
                 () -> assertThat(actual.refreshToken()).isNotEmpty(),
