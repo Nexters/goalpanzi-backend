@@ -1,7 +1,7 @@
 package com.nexters.goalpanzi.presentation.auth;
 
 import com.nexters.goalpanzi.application.auth.dto.*;
-import com.nexters.goalpanzi.common.argumentresolver.LoginUserId;
+import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -44,7 +44,7 @@ public interface AuthControllerDocs {
             @ApiResponse(responseCode = "401", description = "인증 실패"),
     })
     @PostMapping("/logout")
-    ResponseEntity<Void> logout(@Parameter(hidden = true) @LoginUserId final String userKey);
+    ResponseEntity<Void> logout(@Parameter(hidden = true) @LoginMemberId final String userKey);
 
     @Operation(summary = "토큰 재발급", description = "access 토큰과 refresh 토큰을 재발급합니다.")
     @ApiResponses({
@@ -55,6 +55,6 @@ public interface AuthControllerDocs {
     @PostMapping("/token:reissue")
     ResponseEntity<TokenResponse> reissueToken(
             @RequestBody @Valid final TokenRequest tokenRequest,
-            @Parameter(hidden = true) @LoginUserId final String userId
+            @Parameter(hidden = true) @LoginMemberId final String userId
     );
 }

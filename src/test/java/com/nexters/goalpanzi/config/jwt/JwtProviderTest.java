@@ -28,6 +28,8 @@ public class JwtProviderTest {
 
         Jwt jwt = jwtProvider.generateTokens(USER_ID.toString());
 
+        System.out.println(jwt.accessToken());
+
         assertThat(jwt).isNotNull();
     }
 

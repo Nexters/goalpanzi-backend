@@ -20,7 +20,7 @@ public class UserIdResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(LoginUserId.class);
+        return parameter.hasParameterAnnotation(LoginMemberId.class);
     }
 
     @Override

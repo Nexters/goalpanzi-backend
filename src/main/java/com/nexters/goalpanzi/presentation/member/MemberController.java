@@ -2,7 +2,7 @@ package com.nexters.goalpanzi.presentation.member;
 
 import com.nexters.goalpanzi.application.member.MemberService;
 import com.nexters.goalpanzi.application.member.dto.ProfileRequest;
-import com.nexters.goalpanzi.common.argumentresolver.LoginUserId;
+import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +21,10 @@ public class MemberController implements MemberControllerDocs {
     @Override
     @PatchMapping("/profile")
     public ResponseEntity<Void> updateProfile(
-            @LoginUserId final Long userId,
+            @LoginMemberId final Long memberId,
             @RequestBody @Valid final ProfileRequest request
     ) {
-        memberService.updateProfile(userId, request);
+        memberService.updateProfile(memberId, request);
 
         return ResponseEntity.ok().build();
     }

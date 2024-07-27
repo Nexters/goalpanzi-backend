@@ -2,7 +2,7 @@ package com.nexters.goalpanzi.presentation.auth;
 
 import com.nexters.goalpanzi.application.auth.AuthService;
 import com.nexters.goalpanzi.application.auth.dto.*;
-import com.nexters.goalpanzi.common.argumentresolver.LoginUserId;
+import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -42,7 +42,7 @@ public class AuthController implements AuthControllerDocs {
     @Override
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
-            @LoginUserId final String userKey
+            @LoginMemberId final String userKey
     ) {
         authService.logout(userKey);
 
@@ -53,7 +53,7 @@ public class AuthController implements AuthControllerDocs {
     @PostMapping("/token:reissue")
     public ResponseEntity<TokenResponse> reissueToken(
             @RequestBody @Valid final TokenRequest tokenRequest,
-            @LoginUserId final String userId
+            @LoginMemberId final String userId
     ) {
         TokenResponse tokenResponse = authService.reissueToken(userId, tokenRequest.refreshToken());
 

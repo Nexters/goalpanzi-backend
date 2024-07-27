@@ -8,7 +8,7 @@ import com.nexters.goalpanzi.common.jwt.Jwt;
 import com.nexters.goalpanzi.common.jwt.JwtProvider;
 import com.nexters.goalpanzi.domain.auth.RefreshTokenRepository;
 import com.nexters.goalpanzi.domain.member.Member;
-import com.nexters.goalpanzi.domain.member.MemberRepository;
+import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.member.SocialType;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.UnauthorizedException;
