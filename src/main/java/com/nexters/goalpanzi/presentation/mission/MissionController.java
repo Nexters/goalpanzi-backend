@@ -19,8 +19,8 @@ public class MissionController implements MissionControllerDocs {
 
     private final MissionService missionService;
 
-    @PostMapping
     @Override
+    @PostMapping
     public ResponseEntity<MissionResponse> createMission(
             @LoginMemberId final Long memberId,
             @Valid @RequestBody final CreateMissionRequest request
