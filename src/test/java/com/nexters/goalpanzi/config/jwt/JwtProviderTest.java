@@ -30,6 +30,8 @@ public class JwtProviderTest {
 
         System.out.println(jwt.accessToken());
 
+        System.out.println(jwt.accessToken());
+
         assertThat(jwt).isNotNull();
     }
 
