@@ -17,6 +17,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       OAUTH_APPLE_CLIENT_ID: ${OAUTH_APPLE_CLIENT_ID}
       JWT_SECRET: ${JWT_SECRET}
+      REDIS_HOST: ${REDIS_HOST}
     restart: always
     volumes:
       - ./logs:/logs

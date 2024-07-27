@@ -1,5 +1,7 @@
 package com.nexters.goalpanzi.common.util;
 
+import com.nexters.goalpanzi.exception.ErrorCode;
+import com.nexters.goalpanzi.exception.UnauthorizedException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.text.ParseException;
@@ -22,7 +24,7 @@ public class Nonce {
             if (target == null || !target.contains(DELIMITER)) {
                 return false;
             }
-            var nonceTime = DATE_FORMAT.parse(target.split(DELIMITER)[1]).getTime();
+            long nonceTime = parseDateFromString(target);
 
             return isIssuedInThreeMinutes(nonceTime);
 
@@ -34,7 +36,17 @@ public class Nonce {
 
     private static boolean isIssuedInThreeMinutes(long nonceTime) {
         var currentTime = new Date().getTime();
-        var threeMinutesInMillis = 3 * 60 * 1000;
+        var threeMinutesInMillis = 30 * 60 * 1000; // 30분 = 30 * 60 * 1000 밀리초
         return currentTime - nonceTime <= threeMinutesInMillis;
+    }
+
+    private static long parseDateFromString(String target) throws ParseException {
+        String[] parts = target.split(DELIMITER);
+        if (parts.length != 2) {
+            throw new UnauthorizedException(ErrorCode.INVALID_APPLE_TOKEN);
+        }
+        String dateString = parts[1];
+        Date date = DATE_FORMAT.parse(dateString);
+        return date.getTime();
     }
 }

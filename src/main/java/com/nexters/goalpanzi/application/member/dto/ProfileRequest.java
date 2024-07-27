@@ -5,9 +5,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
 public record ProfileRequest(
-        @Schema(description = "닉네임", requiredMode = Schema.RequiredMode.REQUIRED)
-        @NotNull String nickname,
-        @Schema(description = "캐릭터 타입", requiredMode = Schema.RequiredMode.REQUIRED)
+        @Schema(description = "닉네임", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        String nickname,
+        @Schema(description = "캐릭터 타입", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
         @NotNull CharacterType characterType
 ) {
 }
