@@ -60,6 +60,7 @@ jobs:
             export NCP_CONTAINER_REGISTRY_API=${{ secrets.NCP_CONTAINER_REGISTRY_API }}
             export NCP_CONTAINER_REGISTRY_BATCH=${{ secrets.NCP_CONTAINER_REGISTRY_BATCH }}
             export JWT_SECRET=${{ secrets.JWT_SECRET }}
+            export REDIS_HOST=${{ secrets.REDIS_HOST }}
 
             sudo docker rm -f $(docker ps -qa)
 
