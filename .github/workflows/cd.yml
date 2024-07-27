@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - feat/#11/-refactor-apple-login
 
 jobs:
   build-and-push:
