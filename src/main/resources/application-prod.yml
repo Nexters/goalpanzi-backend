@@ -7,7 +7,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -15,7 +15,7 @@ spring:
     open-in-view: false
   data:
     redis:
-      host: localhost
+      host: ${REDIS_HOST}
       port: 6379
 
 jwt:
