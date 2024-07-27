@@ -13,9 +13,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(
         name = "미션 인증",
@@ -36,10 +36,10 @@ public interface MissionVerificationControllerDocs {
     @GetMapping("/{number}")
     ResponseEntity<MissionVerificationResponse> getVerificationImage(
             @LoginUserId @Parameter(hidden = true) final Long userId,
-            @Schema(name = "mission id", description = "미션 아이디", type = "integer", requiredMode = Schema.RequiredMode.REQUIRED)
-            @RequestParam final Long missionId,
-            @Schema(name = "number", description = "보드판 번호", type = "integer", requiredMode = Schema.RequiredMode.REQUIRED)
-            @RequestParam final Integer number);
+            @Schema(description = "미션 아이디", type = "integer", requiredMode = Schema.RequiredMode.REQUIRED)
+            @PathVariable(name = "missionId") final Long missionId,
+            @Schema(description = "보드판 번호", type = "integer", requiredMode = Schema.RequiredMode.REQUIRED)
+            @PathVariable(name = "number") final Integer number);
 
     @Operation(summary = "미션 인증", description = "미션 인증을 위해 이미지를 업로드합니다.")
     @ApiResponses({
@@ -51,7 +51,7 @@ public interface MissionVerificationControllerDocs {
     @PostMapping
     ResponseEntity<Void> uploadVerificationImage(
             @LoginUserId @Parameter(hidden = true) final Long userId,
-            @Schema(name = "mission id", description = "미션 아이디", type = "integer")
-            @RequestParam final Long missionId,
+            @Schema(description = "미션 아이디", type = "integer")
+            @PathVariable(name = "missionId") final Long missionId,
             @RequestBody @Valid MissionVerificationUploadRequest uploadRequest);
 }

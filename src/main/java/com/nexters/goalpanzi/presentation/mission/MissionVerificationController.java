@@ -15,14 +15,20 @@ public class MissionVerificationController implements MissionVerificationControl
     private MissionVerificationService missionVerificationService;
 
     @GetMapping("/{number}")
-    public ResponseEntity<MissionVerificationResponse> getVerificationImage(@LoginUserId final Long userId, @RequestParam final Long missionId, @RequestParam final Integer number) {
+    public ResponseEntity<MissionVerificationResponse> getVerificationImage(
+            @LoginUserId final Long userId,
+            @PathVariable(name = "missionId") final Long missionId,
+            @PathVariable(name = "number") final Integer number) {
         MissionVerificationResponse response = missionVerificationService.getVerificationImage(userId, missionId, number);
 
         return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<Void> uploadVerificationImage(@LoginUserId final Long userId, @RequestParam final Long missionId, @RequestBody @Valid MissionVerificationUploadRequest uploadRequest) {
+    public ResponseEntity<Void> uploadVerificationImage(
+            @LoginUserId final Long userId,
+            @PathVariable(name = "missionId") final Long missionId,
+            @RequestBody @Valid MissionVerificationUploadRequest uploadRequest) {
         missionVerificationService.uploadVerificationImage(userId, missionId, uploadRequest);
 
         return ResponseEntity.ok().build();
