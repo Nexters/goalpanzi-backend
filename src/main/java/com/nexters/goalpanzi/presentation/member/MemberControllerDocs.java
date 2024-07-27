@@ -1,7 +1,7 @@
 package com.nexters.goalpanzi.presentation.member;
 
-import com.nexters.goalpanzi.application.member.dto.ProfileRequest;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
+import com.nexters.goalpanzi.presentation.member.dto.UpdateProfileRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -18,6 +18,6 @@ public interface MemberControllerDocs {
     @PatchMapping("/profile")
     ResponseEntity<Void> updateProfile(
             @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long userId,
-            @RequestBody @Valid final ProfileRequest request
+            @RequestBody @Valid final UpdateProfileRequest request
     );
 }
