@@ -1,5 +1,6 @@
-package com.nexters.goalpanzi.application.mission.dto;
+package com.nexters.goalpanzi.presentation.mission.dto;
 
+import com.nexters.goalpanzi.application.mission.dto.MissionDto;
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.TimeOfDay;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,4 +29,16 @@ public record CreateMissionRequest(
         @Schema(description = "보드 칸 개수", requiredMode = Schema.RequiredMode.REQUIRED)
         Integer boardCount
 ) {
+
+    public MissionDto.Create toServiceDto(final Long memberId) {
+        return new MissionDto.Create(
+                memberId,
+                description,
+                missionStartDate,
+                missionEndDate,
+                timeOfDay,
+                missionDays,
+                boardCount
+        );
+    }
 }

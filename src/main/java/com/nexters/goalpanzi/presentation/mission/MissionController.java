@@ -1,9 +1,9 @@
 package com.nexters.goalpanzi.presentation.mission;
 
 import com.nexters.goalpanzi.application.mission.MissionService;
-import com.nexters.goalpanzi.application.mission.dto.CreateMissionRequest;
-import com.nexters.goalpanzi.application.mission.dto.MissionResponse;
+import com.nexters.goalpanzi.application.mission.dto.MissionDto;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
+import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +21,11 @@ public class MissionController implements MissionControllerDocs {
 
     @Override
     @PostMapping
-    public ResponseEntity<MissionResponse> createMission(
+    public ResponseEntity<MissionDto.MissionResponse> createMission(
             @LoginMemberId final Long memberId,
             @Valid @RequestBody final CreateMissionRequest request
     ) {
-        MissionResponse response = missionService.createMission(memberId, request);
+        MissionDto.MissionResponse response = missionService.createMission(request.toServiceDto(memberId));
 
         return ResponseEntity.ok(response);
     }

@@ -1,7 +1,6 @@
 package com.nexters.goalpanzi.application.mission;
 
-import com.nexters.goalpanzi.application.mission.dto.CreateMissionRequest;
-import com.nexters.goalpanzi.application.mission.dto.MissionResponse;
+import com.nexters.goalpanzi.application.mission.dto.MissionDto;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +12,9 @@ public class MissionService {
 
     private final MissionRepository missionRepository;
 
-    public MissionResponse createMission(final Long hostId, final CreateMissionRequest request) {
+    public MissionDto.MissionResponse createMission(final MissionDto.Create request) {
         Mission mission = Mission.create(
-                hostId,
+                request.hostMemberId(),
                 request.description(),
                 request.missionStartDate(),
                 request.missionEndDate(),
@@ -24,6 +23,6 @@ public class MissionService {
                 request.boardCount()
         );
 
-        return MissionResponse.from(missionRepository.save(mission));
+        return MissionDto.MissionResponse.from(missionRepository.save(mission));
     }
 }
