@@ -5,6 +5,7 @@ import com.nexters.goalpanzi.application.mission.dto.MissionVerificationUploadRe
 import com.nexters.goalpanzi.common.argumentresolver.LoginUserId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -16,14 +17,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@Tag(name = "미션 인증")
+@Tag(
+        name = "미션 인증",
+        description = """
+                미션 인증과 관련된 그룹입니다.
+                                
+                미션 인증을 위한 사진을 업로드하고 조회합니다.
+                """
+)
 public interface MissionVerificationControllerDocs {
 
     @Operation(summary = "미션 인증 조회", description = "보드판에 해당하는 미션 인증 이미지를 조회합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "미션 인증 조회 성공"),
-            @ApiResponse(responseCode = "401", description = "인증 실패"),
-            @ApiResponse(responseCode = "404", description = "조회 실패 - 정보에 해당하는 이미지가 존재하지 않음"),
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "404", description = "Not Found - 정보에 해당하는 이미지가 존재하지 않음", content = @Content(schema = @Schema(hidden = true))),
     })
     @GetMapping("/{number}")
     ResponseEntity<MissionVerificationResponse> getVerificationImage(
@@ -35,10 +43,10 @@ public interface MissionVerificationControllerDocs {
 
     @Operation(summary = "미션 인증", description = "미션 인증을 위해 이미지를 업로드합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "미션 인증 이미지 업로드 성공"),
-            @ApiResponse(responseCode = "400", description = "업로드 실패 - 이미 완료한 미션이거나 오늘 인증을 마쳤음"),
-            @ApiResponse(responseCode = "401", description = "인증 실패"),
-            @ApiResponse(responseCode = "404", description = "업로드 실패 - 정보에 해당하는 미션이 존재하지 않음"),
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "400", description = "Bad Request - 이미 완료한 미션이거나 오늘 인증을 마쳤음"),
+            @ApiResponse(responseCode = "401"),
+            @ApiResponse(responseCode = "404", description = "Not Found - 정보에 해당하는 미션이 존재하지 않음"),
     })
     @PostMapping
     ResponseEntity<Void> uploadVerificationImage(
