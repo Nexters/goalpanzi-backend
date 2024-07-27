@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.application.auth.apple;
 
-import com.nexters.goalpanzi.acceptance.fixture.TokenFixture;
+import com.nexters.goalpanzi.fixture.TokenFixture;
 import com.nexters.goalpanzi.common.util.Nonce;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
