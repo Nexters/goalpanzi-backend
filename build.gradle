@@ -41,6 +41,9 @@ dependencies {
     // MySQL
     runtimeOnly 'com.mysql:mysql-connector-j'
 
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-mysql'
+
     // jwt
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
@@ -55,6 +58,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     testImplementation 'io.rest-assured:rest-assured'
+
 }
 
 tasks.named('test') {
