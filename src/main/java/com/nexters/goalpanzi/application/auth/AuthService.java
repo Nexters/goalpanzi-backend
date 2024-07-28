@@ -24,15 +24,15 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProvider jwtProvider;
 
-    public LoginResponse appleOAuthLogin(final AppleLoginCommand request) {
+    public LoginResponse appleOAuthLogin(final AppleLoginCommand command) {
         SocialUserProvider appleUserProvider = socialUserProviderFactory.getProvider(SocialType.APPLE);
-        SocialUserInfo socialUserInfo = appleUserProvider.getSocialUserInfo(request.identityToken());
+        SocialUserInfo socialUserInfo = appleUserProvider.getSocialUserInfo(command.identityToken());
 
         return socialLogin(socialUserInfo, SocialType.APPLE);
     }
 
-    public LoginResponse googleOAuthLogin(final GoogleLoginCommand request) {
-        SocialUserInfo socialUserInfo = new SocialUserInfo(request.identityToken(), request.email());
+    public LoginResponse googleOAuthLogin(final GoogleLoginCommand command) {
+        SocialUserInfo socialUserInfo = new SocialUserInfo(command.identityToken(), command.email());
 
         return socialLogin(socialUserInfo, SocialType.GOOGLE);
     }

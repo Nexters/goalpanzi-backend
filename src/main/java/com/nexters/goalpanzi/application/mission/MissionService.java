@@ -13,15 +13,15 @@ public class MissionService {
 
     private final MissionRepository missionRepository;
 
-    public MissionResponse createMission(final CreateMissionCommand request) {
+    public MissionResponse createMission(final CreateMissionCommand command) {
         Mission mission = Mission.create(
-                request.hostMemberId(),
-                request.description(),
-                request.missionStartDate(),
-                request.missionEndDate(),
-                request.timeOfDay(),
-                request.missionDays(),
-                request.boardCount()
+                command.hostMemberId(),
+                command.description(),
+                command.missionStartDate(),
+                command.missionEndDate(),
+                command.timeOfDay(),
+                command.missionDays(),
+                command.boardCount()
         );
 
         return MissionResponse.from(missionRepository.save(mission));
