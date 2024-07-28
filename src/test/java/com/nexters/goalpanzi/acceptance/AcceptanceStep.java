@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.acceptance;
 
-import com.nexters.goalpanzi.application.auth.dto.GoogleLoginRequest;
+import com.nexters.goalpanzi.application.auth.dto.GoogleLoginCommand;
 import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionRequest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -13,7 +13,7 @@ import static com.nexters.goalpanzi.fixture.TokenFixture.BEARER;
 
 public class AcceptanceStep {
 
-    public static ExtractableResponse<Response> 구글_로그인(GoogleLoginRequest request) {
+    public static ExtractableResponse<Response> 구글_로그인(GoogleLoginCommand request) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)

@@ -26,7 +26,7 @@ public interface AuthControllerDocs {
     @Operation(summary = "Apple 로그인", description = "Apple 로그인을 처리합니다.")
     @PostMapping("/login/apple")
     ResponseEntity<LoginResponse> loginApple(
-            @RequestBody @Valid final AppleLoginRequest appleLoginRequest
+            @RequestBody @Valid final AppleLoginCommand appleLoginCommand
     );
 
     @Operation(summary = "Google 로그인", description = "Google 로그인을 처리합니다.")
@@ -35,7 +35,7 @@ public interface AuthControllerDocs {
     })
     @PostMapping("/login/google")
     ResponseEntity<LoginResponse> loginGoogle(
-            @RequestBody @Valid final GoogleLoginRequest googleLoginRequest
+            @RequestBody @Valid final GoogleLoginCommand googleLoginCommand
     );
 
     @Operation(summary = "로그아웃", description = "로그아웃합니다.")
@@ -54,7 +54,7 @@ public interface AuthControllerDocs {
     })
     @PostMapping("/token:reissue")
     ResponseEntity<TokenResponse> reissueToken(
-            @RequestBody @Valid final TokenRequest tokenRequest,
+            @RequestBody @Valid final RefreshTokenCommand refreshTokenCommand,
             @Parameter(hidden = true) @LoginMemberId final String userId
     );
 }

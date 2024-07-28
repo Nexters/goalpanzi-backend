@@ -1,7 +1,7 @@
 package com.nexters.goalpanzi.application.auth;
 
-import com.nexters.goalpanzi.application.auth.dto.AppleLoginRequest;
-import com.nexters.goalpanzi.application.auth.dto.GoogleLoginRequest;
+import com.nexters.goalpanzi.application.auth.dto.AppleLoginCommand;
+import com.nexters.goalpanzi.application.auth.dto.GoogleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.LoginResponse;
 import com.nexters.goalpanzi.application.auth.dto.TokenResponse;
 import com.nexters.goalpanzi.common.jwt.Jwt;
@@ -24,14 +24,14 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProvider jwtProvider;
 
-    public LoginResponse appleOAuthLogin(final AppleLoginRequest request) {
+    public LoginResponse appleOAuthLogin(final AppleLoginCommand request) {
         SocialUserProvider appleUserProvider = socialUserProviderFactory.getProvider(SocialType.APPLE);
         SocialUserInfo socialUserInfo = appleUserProvider.getSocialUserInfo(request.identityToken());
 
         return socialLogin(socialUserInfo, SocialType.APPLE);
     }
 
-    public LoginResponse googleOAuthLogin(final GoogleLoginRequest request) {
+    public LoginResponse googleOAuthLogin(final GoogleLoginCommand request) {
         SocialUserInfo socialUserInfo = new SocialUserInfo(request.identityToken(), request.email());
 
         return socialLogin(socialUserInfo, SocialType.GOOGLE);

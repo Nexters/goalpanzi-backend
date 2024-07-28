@@ -3,8 +3,8 @@ package com.nexters.goalpanzi.acceptance;
 import com.nexters.goalpanzi.application.auth.SocialUserInfo;
 import com.nexters.goalpanzi.application.auth.SocialUserProvider;
 import com.nexters.goalpanzi.application.auth.SocialUserProviderFactory;
-import com.nexters.goalpanzi.application.auth.dto.AppleLoginRequest;
-import com.nexters.goalpanzi.application.auth.dto.GoogleLoginRequest;
+import com.nexters.goalpanzi.application.auth.dto.AppleLoginCommand;
+import com.nexters.goalpanzi.application.auth.dto.GoogleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.LoginResponse;
 import com.nexters.goalpanzi.fixture.TokenFixture;
 import io.restassured.RestAssured;
@@ -34,7 +34,7 @@ public class LoginAcceptanceTest extends AcceptanceTest {
     @Test
     void 사용자가_애플_로그인을_정상적으로_한다() throws NoSuchAlgorithmException {
         String appleToken = TokenFixture.generateAppleToken();
-        AppleLoginRequest request = new AppleLoginRequest(appleToken);
+        AppleLoginCommand request = new AppleLoginCommand(appleToken);
 
         when(socialUserProviderFactory.getProvider(any()))
                 .thenReturn(socialUserProvider);
@@ -59,7 +59,7 @@ public class LoginAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 사용자가_구글_로그인을_정상적으로_한다()  {
-        GoogleLoginRequest request = new GoogleLoginRequest(ID_TOKEN, EMAIL);
+        GoogleLoginCommand request = new GoogleLoginCommand(ID_TOKEN, EMAIL);
 
         LoginResponse actual = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

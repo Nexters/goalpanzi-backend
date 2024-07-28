@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.presentation.member.dto;
 
-import com.nexters.goalpanzi.application.member.dto.UpdateProfileDto;
+import com.nexters.goalpanzi.application.member.dto.UpdateProfileCommand;
 import com.nexters.goalpanzi.domain.member.CharacterType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -11,8 +11,8 @@ public record UpdateProfileRequest(
         CharacterType characterType
 ) {
 
-    public UpdateProfileDto toServiceDto(Long memberId) {
-        return new UpdateProfileDto(
+    public UpdateProfileCommand toServiceDto(Long memberId) {
+        return new UpdateProfileCommand(
                 memberId,
                 nickname,
                 characterType

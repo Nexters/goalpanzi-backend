@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.presentation.mission.dto;
 
-import com.nexters.goalpanzi.application.mission.dto.CreateMissionDto;
+import com.nexters.goalpanzi.application.mission.dto.CreateMissionCommand;
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.TimeOfDay;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,8 +30,8 @@ public record CreateMissionRequest(
         Integer boardCount
 ) {
 
-    public CreateMissionDto toServiceDto(final Long memberId) {
-        return new CreateMissionDto(
+    public CreateMissionCommand toServiceDto(final Long memberId) {
+        return new CreateMissionCommand(
                 memberId,
                 description,
                 missionStartDate,

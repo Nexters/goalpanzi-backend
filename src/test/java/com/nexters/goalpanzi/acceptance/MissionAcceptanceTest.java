@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.acceptance;
 
-import com.nexters.goalpanzi.application.auth.dto.GoogleLoginRequest;
+import com.nexters.goalpanzi.application.auth.dto.GoogleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.LoginResponse;
 import com.nexters.goalpanzi.application.mission.dto.MissionResponse;
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
@@ -23,7 +23,7 @@ public class MissionAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 미션을_생성한다() {
-        LoginResponse loginResponse = 구글_로그인(new GoogleLoginRequest(ID_TOKEN, EMAIL)).as(LoginResponse.class);
+        LoginResponse loginResponse = 구글_로그인(new GoogleLoginCommand(ID_TOKEN, EMAIL)).as(LoginResponse.class);
 
         CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(), LocalDateTime.now().plusDays(5), TimeOfDay.EVERYDAY, List.of(DayOfWeek.FRIDAY), 5);
 

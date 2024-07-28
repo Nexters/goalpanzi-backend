@@ -6,7 +6,7 @@ import com.nexters.goalpanzi.domain.mission.TimeOfDay;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record CreateMissionDto(
+public record CreateMissionCommand(
         Long hostMemberId,
         String description,
         LocalDateTime missionStartDate,

@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.application.mission;
 
-import com.nexters.goalpanzi.application.mission.dto.CreateMissionDto;
+import com.nexters.goalpanzi.application.mission.dto.CreateMissionCommand;
 import com.nexters.goalpanzi.application.mission.dto.MissionResponse;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
@@ -13,7 +13,7 @@ public class MissionService {
 
     private final MissionRepository missionRepository;
 
-    public MissionResponse createMission(final CreateMissionDto request) {
+    public MissionResponse createMission(final CreateMissionCommand request) {
         Mission mission = Mission.create(
                 request.hostMemberId(),
                 request.description(),
