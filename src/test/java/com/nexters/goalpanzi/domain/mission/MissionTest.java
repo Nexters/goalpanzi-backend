@@ -10,6 +10,7 @@ import static com.nexters.goalpanzi.fixture.MissionFixture.BOARD_COUNT;
 import static com.nexters.goalpanzi.fixture.MissionFixture.DESCRIPTION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MissionTest {
 
@@ -30,5 +31,31 @@ class MissionTest {
                 () -> assertThat(mission.getUploadStartTime()).isEqualTo("00:00"),
                 () -> assertThat(mission.getUploadEndTime()).isEqualTo("24:00"))
         ;
+    }
+
+    @Test
+    void 미션_보드칸수는_최소_1개_이다() {
+        assertThrows(IllegalArgumentException.class, () -> Mission.create(
+                MEMBER_ID,
+                DESCRIPTION,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(7),
+                TimeOfDay.EVERYDAY,
+                List.of(DayOfWeek.FRIDAY),
+                0
+        ));
+    }
+
+    @Test
+    void 미션_시작일보다_종료일이_더_커야한다() {
+        assertThrows(IllegalArgumentException.class, () -> Mission.create(
+                MEMBER_ID,
+                DESCRIPTION,
+                LocalDateTime.now(),
+                LocalDateTime.now().minusDays(7),
+                TimeOfDay.EVERYDAY,
+                List.of(DayOfWeek.FRIDAY),
+                BOARD_COUNT
+        ));
     }
 }

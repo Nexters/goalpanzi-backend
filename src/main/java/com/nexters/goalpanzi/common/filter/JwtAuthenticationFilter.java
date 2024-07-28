@@ -2,7 +2,6 @@ package com.nexters.goalpanzi.common.filter;
 
 import com.nexters.goalpanzi.common.jwt.JwtParser;
 import com.nexters.goalpanzi.common.jwt.JwtProvider;
-import com.nexters.goalpanzi.exception.BaseException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

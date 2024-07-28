@@ -16,6 +16,7 @@ import static com.nexters.goalpanzi.application.auth.apple.AppleClaimsValidator.
 
 public class TokenFixture {
     public static final String SECRET = "secret";
+    public static final String BEARER = "Bearer ";
     private static final JwtProvider jwtProvider = new JwtProvider("testtest", 86400000, 1209600000);
 
     public static String generateAppleToken() throws NoSuchAlgorithmException {
