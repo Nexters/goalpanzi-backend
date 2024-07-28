@@ -1,4 +1,4 @@
-create table if not exists nexters.member
+create table if not exists member
 (
     member_id      bigint auto_increment
         primary key,
@@ -14,7 +14,7 @@ create table if not exists nexters.member
         unique (social_id)
 );
 
-create table if not exists nexters.mission
+create table if not exists mission
 (
     mission_id         bigint auto_increment
         primary key,
