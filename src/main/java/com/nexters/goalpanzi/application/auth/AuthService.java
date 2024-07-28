@@ -1,14 +1,14 @@
 package com.nexters.goalpanzi.application.auth;
 
-import com.nexters.goalpanzi.application.auth.dto.AppleLoginRequest;
-import com.nexters.goalpanzi.application.auth.dto.GoogleLoginRequest;
+import com.nexters.goalpanzi.application.auth.dto.AppleLoginCommand;
+import com.nexters.goalpanzi.application.auth.dto.GoogleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.LoginResponse;
 import com.nexters.goalpanzi.application.auth.dto.TokenResponse;
 import com.nexters.goalpanzi.common.jwt.Jwt;
 import com.nexters.goalpanzi.common.jwt.JwtProvider;
 import com.nexters.goalpanzi.domain.auth.RefreshTokenRepository;
 import com.nexters.goalpanzi.domain.member.Member;
-import com.nexters.goalpanzi.domain.member.MemberRepository;
+import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.member.SocialType;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.UnauthorizedException;
@@ -24,15 +24,15 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProvider jwtProvider;
 
-    public LoginResponse appleOAuthLogin(final AppleLoginRequest request) {
+    public LoginResponse appleOAuthLogin(final AppleLoginCommand command) {
         SocialUserProvider appleUserProvider = socialUserProviderFactory.getProvider(SocialType.APPLE);
-        SocialUserInfo socialUserInfo = appleUserProvider.getSocialUserInfo(request.identityToken());
+        SocialUserInfo socialUserInfo = appleUserProvider.getSocialUserInfo(command.identityToken());
 
         return socialLogin(socialUserInfo, SocialType.APPLE);
     }
 
-    public LoginResponse googleOAuthLogin(final GoogleLoginRequest request) {
-        SocialUserInfo socialUserInfo = new SocialUserInfo(request.identityToken(), request.email());
+    public LoginResponse googleOAuthLogin(final GoogleLoginCommand command) {
+        SocialUserInfo socialUserInfo = new SocialUserInfo(command.identityToken(), command.email());
 
         return socialLogin(socialUserInfo, SocialType.GOOGLE);
     }

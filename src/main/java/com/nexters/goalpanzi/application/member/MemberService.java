@@ -1,8 +1,8 @@
 package com.nexters.goalpanzi.application.member;
 
-import com.nexters.goalpanzi.application.member.dto.ProfileRequest;
+import com.nexters.goalpanzi.application.member.dto.UpdateProfileCommand;
 import com.nexters.goalpanzi.domain.member.Member;
-import com.nexters.goalpanzi.domain.member.MemberRepository;
+import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.exception.AlreadyExistsException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
@@ -17,9 +17,9 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void updateProfile(final Long userId, final ProfileRequest request) {
+    public void updateProfile(final UpdateProfileCommand request) {
         validateNickname(request.nickname());
-        Member member = getMember(userId);
+        Member member = getMember(request.memberId());
 
         member.updateProfile(request.nickname(), request.characterType());
     }

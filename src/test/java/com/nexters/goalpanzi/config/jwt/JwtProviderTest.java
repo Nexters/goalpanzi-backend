@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
-import static com.nexters.goalpanzi.fixture.MemberFixture.USER_ID;
+import static com.nexters.goalpanzi.fixture.MemberFixture.MEMBER_ID;
 import static com.nexters.goalpanzi.fixture.TokenFixture.SECRET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -26,7 +26,9 @@ public class JwtProviderTest {
                 .refreshExpiresIn(60000)
                 .build();
 
-        Jwt jwt = jwtProvider.generateTokens(USER_ID.toString());
+        Jwt jwt = jwtProvider.generateTokens(MEMBER_ID.toString());
+
+        System.out.println(jwt.accessToken());
 
         assertThat(jwt).isNotNull();
     }
@@ -39,7 +41,7 @@ public class JwtProviderTest {
                 .refreshExpiresIn(60000)
                 .build();
 
-        Jwt jwt = jwtProvider.generateTokens(USER_ID.toString());
+        Jwt jwt = jwtProvider.generateTokens(MEMBER_ID.toString());
         Boolean isValidAccessToken = jwtProvider.validateToken(jwt.accessToken());
         Boolean isValidRefreshToken = jwtProvider.validateToken(jwt.refreshToken());
 
@@ -57,13 +59,13 @@ public class JwtProviderTest {
                 .refreshExpiresIn(60000)
                 .build();
 
-        Jwt jwt = jwtProvider.generateTokens(USER_ID.toString());
+        Jwt jwt = jwtProvider.generateTokens(MEMBER_ID.toString());
         String accessTokenSubject = jwtProvider.getSubject(jwt.accessToken());
         String refreshTokenSubject = jwtProvider.getSubject(jwt.refreshToken());
 
         assertAll(
-                () -> assertThat(accessTokenSubject).isEqualTo(USER_ID.toString()),
-                () -> assertThat(refreshTokenSubject).isEqualTo(USER_ID.toString())
+                () -> assertThat(accessTokenSubject).isEqualTo(MEMBER_ID.toString()),
+                () -> assertThat(refreshTokenSubject).isEqualTo(MEMBER_ID.toString())
         );
     }
 
@@ -75,7 +77,7 @@ public class JwtProviderTest {
                 .refreshExpiresIn(1000)
                 .build();
 
-        Jwt jwt = jwtProvider.generateTokens(USER_ID.toString());
+        Jwt jwt = jwtProvider.generateTokens(MEMBER_ID.toString());
         Thread.sleep(2000);
         Boolean isExpiredAccessToken = jwtProvider.validateToken(jwt.accessToken());
         Boolean isExpiredRefreshToken = jwtProvider.validateToken(jwt.refreshToken());
@@ -94,14 +96,14 @@ public class JwtProviderTest {
                 .refreshExpiresIn(1000)
                 .build();
 
-        Jwt jwt = jwtProvider.generateTokens(USER_ID.toString());
+        Jwt jwt = jwtProvider.generateTokens(MEMBER_ID.toString());
         Thread.sleep(2000);
         String accessTokenSubject = jwtProvider.getSubject(jwt.accessToken());
         String refreshTokenSubject = jwtProvider.getSubject(jwt.refreshToken());
 
         assertAll(
-                () -> assertThat(accessTokenSubject).isEqualTo(USER_ID.toString()),
-                () -> assertThat(refreshTokenSubject).isEqualTo(USER_ID.toString())
+                () -> assertThat(accessTokenSubject).isEqualTo(MEMBER_ID.toString()),
+                () -> assertThat(refreshTokenSubject).isEqualTo(MEMBER_ID.toString())
         );
     }
 
@@ -118,7 +120,7 @@ public class JwtProviderTest {
         Date exp = new Date(currMillis + 60000);
 
         String invalidSignatureToken = Jwts.builder()
-                .setSubject(USER_ID.toString())
+                .setSubject(MEMBER_ID.toString())
                 .setIssuedAt(iat)
                 .setExpiration(exp)
                 .signWith(SignatureAlgorithm.HS256, "wrongSecret")

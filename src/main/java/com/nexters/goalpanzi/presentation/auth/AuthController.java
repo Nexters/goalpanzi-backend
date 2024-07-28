@@ -2,7 +2,7 @@ package com.nexters.goalpanzi.presentation.auth;
 
 import com.nexters.goalpanzi.application.auth.AuthService;
 import com.nexters.goalpanzi.application.auth.dto.*;
-import com.nexters.goalpanzi.common.argumentresolver.LoginUserId;
+import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,9 +22,9 @@ public class AuthController implements AuthControllerDocs {
     @Override
     @PostMapping("/login/apple")
     public ResponseEntity<LoginResponse> loginApple(
-            @RequestBody @Valid final AppleLoginRequest appleLoginRequest
+            @RequestBody @Valid final AppleLoginCommand appleLoginCommand
     ) {
-        LoginResponse response = authService.appleOAuthLogin(appleLoginRequest);
+        LoginResponse response = authService.appleOAuthLogin(appleLoginCommand);
 
         return ResponseEntity.ok(response);
     }
@@ -32,9 +32,9 @@ public class AuthController implements AuthControllerDocs {
     @Override
     @PostMapping("/login/google")
     public ResponseEntity<LoginResponse> loginGoogle(
-            @RequestBody @Valid final GoogleLoginRequest googleLoginRequest
+            @RequestBody @Valid final GoogleLoginCommand googleLoginCommand
     ) {
-        LoginResponse response = authService.googleOAuthLogin(googleLoginRequest);
+        LoginResponse response = authService.googleOAuthLogin(googleLoginCommand);
 
         return ResponseEntity.ok(response);
     }
@@ -42,7 +42,7 @@ public class AuthController implements AuthControllerDocs {
     @Override
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
-            @LoginUserId final String userKey
+            @LoginMemberId final String userKey
     ) {
         authService.logout(userKey);
 
@@ -52,10 +52,10 @@ public class AuthController implements AuthControllerDocs {
     @Override
     @PostMapping("/token:reissue")
     public ResponseEntity<TokenResponse> reissueToken(
-            @RequestBody @Valid final TokenRequest tokenRequest,
-            @LoginUserId final String userId
+            @RequestBody @Valid final RefreshTokenCommand refreshTokenCommand,
+            @LoginMemberId final String userId
     ) {
-        TokenResponse tokenResponse = authService.reissueToken(userId, tokenRequest.refreshToken());
+        TokenResponse tokenResponse = authService.reissueToken(userId, refreshTokenCommand.refreshToken());
 
         return ResponseEntity.ok(tokenResponse);
     }

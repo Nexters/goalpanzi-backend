@@ -1,7 +1,7 @@
 package com.nexters.goalpanzi.presentation.auth;
 
 import com.nexters.goalpanzi.application.auth.dto.*;
-import com.nexters.goalpanzi.common.argumentresolver.LoginUserId;
+import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,7 +26,7 @@ public interface AuthControllerDocs {
     @Operation(summary = "Apple 로그인", description = "Apple 로그인을 처리합니다.")
     @PostMapping("/login/apple")
     ResponseEntity<LoginResponse> loginApple(
-            @RequestBody @Valid final AppleLoginRequest appleLoginRequest
+            @RequestBody @Valid final AppleLoginCommand appleLoginCommand
     );
 
     @Operation(summary = "Google 로그인", description = "Google 로그인을 처리합니다.")
@@ -35,7 +35,7 @@ public interface AuthControllerDocs {
     })
     @PostMapping("/login/google")
     ResponseEntity<LoginResponse> loginGoogle(
-            @RequestBody @Valid final GoogleLoginRequest googleLoginRequest
+            @RequestBody @Valid final GoogleLoginCommand googleLoginCommand
     );
 
     @Operation(summary = "로그아웃", description = "로그아웃합니다.")
@@ -44,7 +44,7 @@ public interface AuthControllerDocs {
             @ApiResponse(responseCode = "401", description = "인증 실패"),
     })
     @PostMapping("/logout")
-    ResponseEntity<Void> logout(@Parameter(hidden = true) @LoginUserId final String userKey);
+    ResponseEntity<Void> logout(@Parameter(hidden = true) @LoginMemberId final String userKey);
 
     @Operation(summary = "토큰 재발급", description = "access 토큰과 refresh 토큰을 재발급합니다.")
     @ApiResponses({
@@ -54,7 +54,7 @@ public interface AuthControllerDocs {
     })
     @PostMapping("/token:reissue")
     ResponseEntity<TokenResponse> reissueToken(
-            @RequestBody @Valid final TokenRequest tokenRequest,
-            @Parameter(hidden = true) @LoginUserId final String userId
+            @RequestBody @Valid final RefreshTokenCommand refreshTokenCommand,
+            @Parameter(hidden = true) @LoginMemberId final String userId
     );
 }

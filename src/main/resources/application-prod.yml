@@ -4,19 +4,29 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
     show-sql: false
     open-in-view: false
+
   data:
     redis:
       host: ${REDIS_HOST}
       port: 6379
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    url: jdbc:mysql://${DB_HOSTNAME}:${DB_PORT}/${DB_DATABASE}
+    user: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    baseline-version: 0
 
 jwt:
   secret: ${JWT_SECRET}
@@ -35,3 +45,4 @@ oauth:
   apple:
     iss: https://appleid.apple.com
     client-id: ${OAUTH_APPLE_CLIENT_ID}
+

@@ -1,5 +1,6 @@
-package com.nexters.goalpanzi.domain.member;
+package com.nexters.goalpanzi.domain.member.repository;
 
+import com.nexters.goalpanzi.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
