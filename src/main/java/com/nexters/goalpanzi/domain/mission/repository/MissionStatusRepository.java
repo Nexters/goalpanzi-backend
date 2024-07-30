@@ -1,5 +1,6 @@
-package com.nexters.goalpanzi.domain.mission;
+package com.nexters.goalpanzi.domain.mission.repository;
 
+import com.nexters.goalpanzi.domain.mission.MissionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
