@@ -34,8 +34,8 @@ public interface MissionVerificationControllerDocs {
     @GetMapping
     ResponseEntity<List<MissionVerificationResponse>> getTodayVerification(
             @Parameter(hidden = true) @LoginMemberId final Long memberId,
-            @Schema(description = "미션 아이디", type = "integer", requiredMode = Schema.RequiredMode.REQUIRED)
-            @PathVariable final Long missionId
+            @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
+            @PathVariable(name = "missionId") final Long missionId
     );
 
     @Operation(summary = "나의 미션 인증 현황 조회", description = "보드판에 해당하는 미션 인증 현황을 조회합니다.")
@@ -47,10 +47,10 @@ public interface MissionVerificationControllerDocs {
     @GetMapping("/me/{number}")
     ResponseEntity<MissionVerificationResponse> getMyVerification(
             @Parameter(hidden = true) @LoginMemberId final Long memberId,
-            @Schema(description = "미션 아이디", type = "integer", requiredMode = Schema.RequiredMode.REQUIRED)
-            @PathVariable final Long missionId,
-            @Schema(description = "보드판 번호", type = "integer", requiredMode = Schema.RequiredMode.REQUIRED)
-            @PathVariable final Integer number);
+            @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
+            @PathVariable(name = "missionId") final Long missionId,
+            @Schema(description = "보드판 번호", type = "integer", format = "int32", requiredMode = Schema.RequiredMode.REQUIRED)
+            @PathVariable(name = "number") final Integer number);
 
     @Operation(summary = "미션 인증", description = "미션 인증을 위해 이미지를 업로드합니다.")
     @ApiResponses({
@@ -62,7 +62,7 @@ public interface MissionVerificationControllerDocs {
     @PostMapping("/me")
     ResponseEntity<Void> createVerification(
             @Parameter(hidden = true) @LoginMemberId final Long memberId,
-            @Schema(description = "미션 아이디", type = "integer")
-            @PathVariable final Long missionId,
+            @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
+            @PathVariable(name = "missionId") final Long missionId,
             @RequestBody @Valid final CreateMissionVerificationRequest request);
 }

@@ -23,7 +23,7 @@ public class MissionVerificationController implements MissionVerificationControl
     @GetMapping
     public ResponseEntity<List<MissionVerificationResponse>> getTodayVerification(
             @LoginMemberId final Long memberId,
-            @PathVariable final Long missionId
+            @PathVariable(name = "missionId") final Long missionId
     ) {
         List<MissionVerificationResponse> response = missionVerificationService.getTodayVerification(new MissionVerificationCommand(memberId, missionId));
 
@@ -33,8 +33,8 @@ public class MissionVerificationController implements MissionVerificationControl
     @GetMapping("/me/{number}")
     public ResponseEntity<MissionVerificationResponse> getMyVerification(
             @LoginMemberId final Long memberId,
-            @PathVariable final Long missionId,
-            @PathVariable final Integer number) {
+            @PathVariable(name = "missionId") final Long missionId,
+            @PathVariable(name = "number") final Integer number) {
         MissionVerificationResponse response = missionVerificationService.getMyVerification(
                 new MyMissionVerificationCommand(memberId, missionId, number));
 
@@ -44,7 +44,7 @@ public class MissionVerificationController implements MissionVerificationControl
     @PostMapping("/me")
     public ResponseEntity<Void> createVerification(
             @LoginMemberId final Long memberId,
-            @PathVariable final Long missionId,
+            @PathVariable(name = "missionId") final Long missionId,
             @RequestBody @Valid final CreateMissionVerificationRequest request) {
         missionVerificationService.createVerification(request.toServiceDto(memberId, missionId));
 
