@@ -29,9 +29,7 @@ public class JwtProviderTest {
         Jwt jwt = jwtProvider.generateTokens(MEMBER_ID.toString());
 
         System.out.println(jwt.accessToken());
-
-        System.out.println(jwt.accessToken());
-
+        
         assertThat(jwt).isNotNull();
     }
 
