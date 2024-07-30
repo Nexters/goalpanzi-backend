@@ -31,3 +31,44 @@ create table if not exists mission
     upload_end_time    varchar(255) not null,
     upload_start_time  varchar(255) not null
 );
+
+create table if not exists mission_verification
+(
+    mission_verification_id bigint auto_increment
+        primary key,
+    created_at datetime(6),
+    deleted_at datetime(6),
+    updated_at datetime(6),
+    board_number int,
+    image_url varchar(255),
+    member_id bigint not null,
+    mission_id bigint not null,
+    constraint fk_mission_verification__member_id
+        foreign key (member_id)
+        references member (member_id)
+        on delete cascade,
+    constraint fk_mission_verification__mission_id
+        foreign key (mission_id)
+        references mission (mission_id)
+        on delete cascade
+);
+
+create table if not exists mission_status
+(
+    mission_status_id bigint auto_increment
+        primary key,
+    created_at datetime(6),
+    deleted_at datetime(6),
+    updated_at datetime(6),
+    member_id bigint not null,
+    mission_id bigint not null,
+    verification_count int,
+    constraint fk_mission_status__member_id
+        foreign key (member_id)
+        references member (member_id)
+        on delete cascade,
+    constraint fk_mission_status__mission_id
+        foreign key (mission_id)
+        references mission (mission_id)
+        on delete cascade
+);
