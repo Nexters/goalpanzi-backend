@@ -1,6 +1,5 @@
 package com.nexters.goalpanzi.domain.mission;
 
-import com.nexters.goalpanzi.application.mission.dto.MissionVerificationUploadRequest;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.member.Member;
 import jakarta.persistence.*;
@@ -33,9 +32,9 @@ public class MissionVerification extends BaseEntity {
     @Column(name = "board_number")
     private Integer boardNumber;
 
-    public MissionVerification(final Member member, final Mission mission, final MissionVerificationUploadRequest uploadRequest) {
+    public MissionVerification(final Member member, final Mission mission, final String imageUrl) {
         this.member = member;
         this.mission = mission;
-        this.imageUrl = uploadRequest.imageUrl();
+        this.imageUrl = imageUrl;
     }
 }
