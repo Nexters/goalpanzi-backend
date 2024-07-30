@@ -1,6 +1,6 @@
 //package com.nexters.goalpanzi.infrastructure.auth;
 //
-//import com.nexters.goalpanzi.domain.auth.RefreshTokenRepository;
+//import com.nexters.goalpanzi.domain.auth.repository.RefreshTokenRepository;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
