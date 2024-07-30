@@ -1,35 +1,52 @@
 package com.nexters.goalpanzi.presentation.mission;
 
 import com.nexters.goalpanzi.application.mission.MissionVerificationService;
+import com.nexters.goalpanzi.application.mission.dto.MissionVerificationCommand;
 import com.nexters.goalpanzi.application.mission.dto.MissionVerificationResponse;
-import com.nexters.goalpanzi.application.mission.dto.MissionVerificationUploadRequest;
-import com.nexters.goalpanzi.common.argumentresolver.LoginUserId;
+import com.nexters.goalpanzi.application.mission.dto.MyMissionVerificationCommand;
+import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
+import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionVerificationRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+import java.util.List;
+
+@RequiredArgsConstructor
 @RequestMapping("/api/missions/{missionId}/verifications")
+@RestController
 public class MissionVerificationController implements MissionVerificationControllerDocs {
 
-    private MissionVerificationService missionVerificationService;
+    private final MissionVerificationService missionVerificationService;
 
-    @GetMapping("/{number}")
-    public ResponseEntity<MissionVerificationResponse> getVerificationImage(
-            @LoginUserId final Long userId,
-            @PathVariable(name = "missionId") final Long missionId,
-            @PathVariable(name = "number") final Integer number) {
-        MissionVerificationResponse response = missionVerificationService.getVerificationImage(userId, missionId, number);
+    @GetMapping
+    public ResponseEntity<List<MissionVerificationResponse>> getTodayVerification(
+            @LoginMemberId final Long memberId,
+            @PathVariable final Long missionId
+    ) {
+        List<MissionVerificationResponse> response = missionVerificationService.getTodayVerification(new MissionVerificationCommand(memberId, missionId));
 
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping
-    public ResponseEntity<Void> uploadVerificationImage(
-            @LoginUserId final Long userId,
-            @PathVariable(name = "missionId") final Long missionId,
-            @RequestBody @Valid MissionVerificationUploadRequest uploadRequest) {
-        missionVerificationService.uploadVerificationImage(userId, missionId, uploadRequest);
+    @GetMapping("/me/{number}")
+    public ResponseEntity<MissionVerificationResponse> getMyVerification(
+            @LoginMemberId final Long memberId,
+            @PathVariable final Long missionId,
+            @PathVariable final Integer number) {
+        MissionVerificationResponse response = missionVerificationService.getMyVerification(
+                new MyMissionVerificationCommand(memberId, missionId, number));
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/me")
+    public ResponseEntity<Void> createVerification(
+            @LoginMemberId final Long memberId,
+            @PathVariable final Long missionId,
+            @RequestBody @Valid final CreateMissionVerificationRequest request) {
+        missionVerificationService.createVerification(request.toServiceDto(memberId, missionId));
 
         return ResponseEntity.ok().build();
     }
