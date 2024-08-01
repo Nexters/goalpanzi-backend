@@ -1,8 +1,12 @@
 package com.nexters.goalpanzi.application.mission;
 
+import com.nexters.goalpanzi.application.member.dto.ProfileResponse;
 import com.nexters.goalpanzi.application.mission.dto.CreateMissionVerificationCommand;
+import com.nexters.goalpanzi.application.mission.dto.MissionDetailResponse;
+import com.nexters.goalpanzi.application.mission.dto.MissionResponse;
 import com.nexters.goalpanzi.application.mission.dto.MissionVerificationCommand;
 import com.nexters.goalpanzi.application.mission.dto.MissionVerificationResponse;
+import com.nexters.goalpanzi.application.mission.dto.MissionsResponse;
 import com.nexters.goalpanzi.application.mission.dto.MyMissionVerificationCommand;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
@@ -27,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class MissionVerificationService {
@@ -62,7 +67,11 @@ public class MissionVerificationService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
+    private Member getMember(final Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MEMBER));
+    }
+
     public MissionVerificationResponse getMyVerification(final MyMissionVerificationCommand command) {
         Member member =
                 memberRepository.findById(command.memberId())

@@ -2,7 +2,7 @@ package com.nexters.goalpanzi.acceptance;
 
 import com.nexters.goalpanzi.application.auth.dto.GoogleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.LoginResponse;
-import com.nexters.goalpanzi.application.mission.dto.MissionResponse;
+import com.nexters.goalpanzi.application.mission.dto.MissionDetailResponse;
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.TimeOfDay;
 import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionRequest;
@@ -27,7 +27,7 @@ public class MissionAcceptanceTest extends AcceptanceTest {
 
         CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(), LocalDateTime.now().plusDays(5), TimeOfDay.EVERYDAY, List.of(DayOfWeek.FRIDAY), 5);
 
-        MissionResponse actual = 미션_생성(request, loginResponse.accessToken()).as(MissionResponse.class);
+        MissionDetailResponse actual = 미션_생성(request, loginResponse.accessToken()).as(MissionDetailResponse.class);
 
         assertAll(
                 () -> assertThat(actual.description()).isEqualTo(DESCRIPTION),
