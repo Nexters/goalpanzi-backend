@@ -1,11 +1,10 @@
 package com.nexters.goalpanzi.presentation.mission;
 
 import com.nexters.goalpanzi.application.mission.MissionVerificationService;
-import com.nexters.goalpanzi.application.mission.dto.MissionResponse;
-import com.nexters.goalpanzi.application.mission.dto.MissionVerificationCommand;
-import com.nexters.goalpanzi.application.mission.dto.MissionVerificationResponse;
-import com.nexters.goalpanzi.application.mission.dto.MissionsResponse;
-import com.nexters.goalpanzi.application.mission.dto.MyMissionVerificationCommand;
+import com.nexters.goalpanzi.application.mission.dto.request.MissionVerificationCommand;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
+import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificationCommand;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionVerificationRequest;
 import jakarta.validation.Valid;

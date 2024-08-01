@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.application.mission.dto;
+package com.nexters.goalpanzi.application.mission.dto.response;
 
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.Mission;

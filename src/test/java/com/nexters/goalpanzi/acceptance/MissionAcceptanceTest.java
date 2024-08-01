@@ -1,8 +1,8 @@
 package com.nexters.goalpanzi.acceptance;
 
-import com.nexters.goalpanzi.application.auth.dto.GoogleLoginCommand;
-import com.nexters.goalpanzi.application.auth.dto.LoginResponse;
-import com.nexters.goalpanzi.application.mission.dto.MissionDetailResponse;
+import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
+import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.TimeOfDay;
 import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionRequest;

@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.application.mission.dto;
+package com.nexters.goalpanzi.application.mission.dto.request;
 
 import java.time.LocalDate;
 

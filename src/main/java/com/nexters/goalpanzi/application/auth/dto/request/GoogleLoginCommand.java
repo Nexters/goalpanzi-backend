@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.application.auth.dto;
+package com.nexters.goalpanzi.application.auth.dto.request;
 
 import jakarta.validation.constraints.NotEmpty;
 

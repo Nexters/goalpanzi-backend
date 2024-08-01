@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.application.member.dto;
+package com.nexters.goalpanzi.application.member.dto.response;
 
 import com.nexters.goalpanzi.domain.member.CharacterType;
 import io.swagger.v3.oas.annotations.media.Schema;

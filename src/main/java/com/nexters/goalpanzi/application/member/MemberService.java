@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.application.member;
 
-import com.nexters.goalpanzi.application.member.dto.UpdateProfileCommand;
+import com.nexters.goalpanzi.application.member.dto.request.UpdateProfileCommand;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.exception.AlreadyExistsException;

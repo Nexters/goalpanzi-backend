@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.acceptance;
 
-import com.nexters.goalpanzi.application.auth.dto.GoogleLoginCommand;
+import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
 import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionRequest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;

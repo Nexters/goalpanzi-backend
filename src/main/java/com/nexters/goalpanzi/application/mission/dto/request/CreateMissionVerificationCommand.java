@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.application.mission.dto;
+package com.nexters.goalpanzi.application.mission.dto.request;
 
 import org.springframework.web.multipart.MultipartFile;
 

@@ -1,7 +1,7 @@
 package com.nexters.goalpanzi.presentation.mission;
 
 import com.nexters.goalpanzi.application.mission.MissionService;
-import com.nexters.goalpanzi.application.mission.dto.MissionDetailResponse;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionRequest;
 import jakarta.validation.Valid;

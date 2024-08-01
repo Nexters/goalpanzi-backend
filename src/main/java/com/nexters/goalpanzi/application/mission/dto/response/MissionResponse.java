@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.application.mission.dto;
+package com.nexters.goalpanzi.application.mission.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

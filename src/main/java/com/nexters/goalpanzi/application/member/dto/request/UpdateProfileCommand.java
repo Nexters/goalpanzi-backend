@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.application.member.dto;
+package com.nexters.goalpanzi.application.member.dto.request;
 
 import com.nexters.goalpanzi.domain.member.CharacterType;
 

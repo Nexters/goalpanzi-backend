@@ -1,7 +1,7 @@
 package com.nexters.goalpanzi.application.mission;
 
-import com.nexters.goalpanzi.application.mission.dto.CreateMissionCommand;
-import com.nexters.goalpanzi.application.mission.dto.MissionDetailResponse;
+import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionCommand;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import lombok.RequiredArgsConstructor;
