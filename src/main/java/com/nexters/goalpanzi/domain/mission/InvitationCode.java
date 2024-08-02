@@ -20,7 +20,7 @@ public class InvitationCode {
     @Column(name = "invitation_code", nullable = false)
     private String code;
 
-    private InvitationCode(final String code) {
+    public InvitationCode(final String code) {
         this.code = code;
     }
 

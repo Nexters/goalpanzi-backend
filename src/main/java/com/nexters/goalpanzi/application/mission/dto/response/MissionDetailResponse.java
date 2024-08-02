@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record MissionDetailResponse(
+        Long missionId,
         Long hostMemberId,
         String description,
         LocalDateTime missionStartDate,
@@ -20,6 +21,7 @@ public record MissionDetailResponse(
 
     public static MissionDetailResponse from(final Mission mission) {
         return new MissionDetailResponse(
+                mission.getId(),
                 mission.getHostMemberId(),
                 mission.getDescription(),
                 mission.getMissionStartDate(),

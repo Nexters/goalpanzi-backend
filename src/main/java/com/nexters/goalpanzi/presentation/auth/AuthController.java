@@ -50,7 +50,7 @@ public class AuthController implements AuthControllerDocs {
     ) {
         authService.logout(userKey);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     @Override

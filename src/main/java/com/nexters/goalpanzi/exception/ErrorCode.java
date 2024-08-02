@@ -17,8 +17,11 @@ public enum ErrorCode {
     EXPIRED_REFRESH_TOKEN("만료된 refresh 토큰입니다."),
 
     // MEMBER
-    NOT_FOUND_MEMBER("존재하지 않는 회원입니다"),
-    ALREADY_EXIST_NICKNAME("이미 존재하는 회원 닉네임입니다"),
+    NOT_FOUND_MEMBER("존재하지 않는 회원입니다."),
+    ALREADY_EXIST_NICKNAME("이미 존재하는 회원 닉네임입니다."),
+
+    // MISSION
+    NOT_FOUND_MISSION("존재하지 않는 미션입니다."),
 
     // MISSION VERIFICATION
     NOT_FOUND_VERIFICATION("존재하지 않는 미션 인증입니다."),
