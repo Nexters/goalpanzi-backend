@@ -54,11 +54,10 @@ public class MissionVerificationService {
                 .map(m -> {
                     MissionVerification v = verificationMap.get(m.getMember().getId());
                     return v != null
-                            ? toMissionVerificationResponse(true, m.getMember(), v)
-                            : toMissionVerificationResponse(false, m.getMember(), null);
+                            ? MissionVerificationResponse.verified(m.getMember(), v)
+                            : MissionVerificationResponse.notVerified(m.getMember());
                 })
                 .sorted(Comparator.comparing((MissionVerificationResponse r) -> r.nickname().equals(member.getNickname())).reversed()
-                        .thenComparing(MissionVerificationResponse::isVerified).reversed()
                         .thenComparing(MissionVerificationResponse::verifiedAt, Comparator.nullsLast(Comparator.reverseOrder())))
                 .collect(Collectors.toList());
     }
@@ -72,7 +71,7 @@ public class MissionVerificationService {
                 missionVerificationRepository.findByMemberIdAndMissionIdAndBoardNumber(command.memberId(), command.missionId(), command.number())
                         .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_VERIFICATION));
 
-        return toMissionVerificationResponse(true, member, verification);
+        return MissionVerificationResponse.verified(member, verification);
     }
 
     @Transactional
@@ -92,15 +91,6 @@ public class MissionVerificationService {
         String imageUrl = objectStorageManager.uploadFile(command.imageFile());
         missionVerificationRepository.save(new MissionVerification(member, mission, imageUrl));
         missionMember.verify();
-    }
-
-    private MissionVerificationResponse toMissionVerificationResponse(Boolean isVerified, Member member, MissionVerification verification) {
-        return new MissionVerificationResponse(
-                isVerified,
-                member.getNickname(),
-                isVerified ? verification.getImageUrl() : "",
-                isVerified ? verification.getCreatedAt() : null
-        );
     }
 
     private void checkVerificationValidation(final Long memberId, final Long missionId, final Mission mission, final MissionMember missionMember) {
