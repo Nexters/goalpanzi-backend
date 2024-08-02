@@ -11,12 +11,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Tag(
@@ -29,13 +28,15 @@ import java.util.List;
 )
 public interface MissionVerificationControllerDocs {
 
-    @Operation(summary = "오늘 미션 인증 현황 조회", description = "오늘 미션 인증 현황을 조회합니다.")
+    @Operation(summary = "미션 인증 현황 조회", description = "해당 일자의 미션 인증 현황을 조회합니다.")
     @ApiResponse(responseCode = "200")
     @GetMapping
-    ResponseEntity<List<MissionVerificationResponse>> getTodayVerification(
+    ResponseEntity<List<MissionVerificationResponse>> getVerifications(
             @Parameter(hidden = true) @LoginMemberId final Long memberId,
             @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
-            @PathVariable(name = "missionId") final Long missionId
+            @PathVariable(name = "missionId") final Long missionId,
+            @Schema(description = "미션 인증 일자", type = "string", format = "date", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+            @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate date
     );
 
     @Operation(summary = "나의 미션 인증 현황 조회", description = "보드판에 해당하는 미션 인증 현황을 조회합니다.")

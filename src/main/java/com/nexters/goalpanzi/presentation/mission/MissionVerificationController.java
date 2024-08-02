@@ -8,9 +8,11 @@ import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionVerificationRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -21,11 +23,12 @@ public class MissionVerificationController implements MissionVerificationControl
     private final MissionVerificationService missionVerificationService;
 
     @GetMapping
-    public ResponseEntity<List<MissionVerificationResponse>> getTodayVerification(
+    public ResponseEntity<List<MissionVerificationResponse>> getVerifications(
             @LoginMemberId final Long memberId,
-            @PathVariable(name = "missionId") final Long missionId
+            @PathVariable(name = "missionId") final Long missionId,
+            @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate date
     ) {
-        List<MissionVerificationResponse> response = missionVerificationService.getTodayVerification(new MissionVerificationCommand(memberId, missionId));
+        List<MissionVerificationResponse> response = missionVerificationService.getVerifications(new MissionVerificationCommand(memberId, missionId, date));
 
         return ResponseEntity.ok(response);
     }
