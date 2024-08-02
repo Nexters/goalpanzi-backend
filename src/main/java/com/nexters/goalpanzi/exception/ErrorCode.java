@@ -18,7 +18,16 @@ public enum ErrorCode {
 
     // MEMBER
     NOT_FOUND_MEMBER("존재하지 않는 회원입니다"),
-    ALREADY_EXIST_NICKNAME("이미 존재하는 회원 닉네임입니다");
+    ALREADY_EXIST_NICKNAME("이미 존재하는 회원 닉네임입니다"),
+
+    // MISSION VERIFICATION
+    NOT_FOUND_VERIFICATION("존재하지 않는 미션 인증입니다."),
+    DUPLICATE_VERIFICATION("이미 인증한 미션이므로 더 이상 인증할 수 없습니다."),
+    ALREADY_COMPLETED_MISSION("이미 완료된 미션이므로 더 이상 인증할 수 없습니다."),
+
+    // FILE UPLOAD
+    INVALID_FILE("유효하지 않은 파일입니다."),
+    FILE_UPLOAD_FAILED("파일 업로드에 실패했습니다.");
 
     private String message;
 }

@@ -4,6 +4,8 @@ import com.nexters.goalpanzi.application.auth.dto.*;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,9 +32,6 @@ public interface AuthControllerDocs {
     );
 
     @Operation(summary = "Google 로그인", description = "Google 로그인을 처리합니다.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그인 성공"),
-    })
     @PostMapping("/login/google")
     ResponseEntity<LoginResponse> loginGoogle(
             @RequestBody @Valid final GoogleLoginCommand googleLoginCommand
@@ -40,17 +39,16 @@ public interface AuthControllerDocs {
 
     @Operation(summary = "로그아웃", description = "로그아웃합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "로그아웃 성공"),
-            @ApiResponse(responseCode = "401", description = "인증 실패"),
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401"),
     })
     @PostMapping("/logout")
     ResponseEntity<Void> logout(@Parameter(hidden = true) @LoginMemberId final String userKey);
 
     @Operation(summary = "토큰 재발급", description = "access 토큰과 refresh 토큰을 재발급합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "토큰 재발급 성공"),
-            @ApiResponse(responseCode = "401", description = "인증 실패 - 갱신되어 유효하지 않은 refresh 토큰"),
-            @ApiResponse(responseCode = "401", description = "인증 실패 - 만료된 refresh 토큰")
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - 만료된 refresh 토큰이거나 갱신되어 더 이상 유효하지 않은 refresh 토큰", content = @Content(schema = @Schema(hidden = true))),
     })
     @PostMapping("/token:reissue")
     ResponseEntity<TokenResponse> reissueToken(

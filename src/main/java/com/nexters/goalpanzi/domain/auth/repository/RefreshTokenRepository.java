@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.domain.auth;
+package com.nexters.goalpanzi.domain.auth.repository;
 
 import com.nexters.goalpanzi.infrastructure.common.RedisRepository;
 

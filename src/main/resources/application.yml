@@ -31,3 +31,17 @@ oauth:
   apple:
     iss: https://appleid.apple.com
     client-id: ${OAUTH_APPLE_CLIENT_ID}
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${OBJECT_STORAGE_ACCESS_KEY_ID}
+      secret-key: ${OBJECT_STORAGE_SECRET_KEY}
+      bucket: ${OBJECT_STORAGE_BUCKET_NAME}
+    region:
+      static: ap-southeast-2
+      auto: false
+    stack:
+      auto: false
+    s3:
+      endpoint: https://kr.object.ncloudstorage.com

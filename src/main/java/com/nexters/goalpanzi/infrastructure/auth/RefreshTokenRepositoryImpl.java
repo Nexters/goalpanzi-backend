@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.infrastructure.auth;
 
-import com.nexters.goalpanzi.domain.auth.RefreshTokenRepository;
+import com.nexters.goalpanzi.domain.auth.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
