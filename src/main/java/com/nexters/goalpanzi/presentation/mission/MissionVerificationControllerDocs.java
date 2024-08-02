@@ -29,7 +29,10 @@ import java.util.List;
 public interface MissionVerificationControllerDocs {
 
     @Operation(summary = "미션 인증 현황 조회", description = "해당 일자의 미션 인증 현황을 조회합니다.")
-    @ApiResponse(responseCode = "200")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200"),
+            @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(hidden = true))),
+    })
     @GetMapping
     ResponseEntity<List<MissionVerificationResponse>> getVerifications(
             @Parameter(hidden = true) @LoginMemberId final Long memberId,
