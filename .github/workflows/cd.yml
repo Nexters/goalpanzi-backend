@@ -61,6 +61,9 @@ jobs:
             export NCP_CONTAINER_REGISTRY_BATCH=${{ secrets.NCP_CONTAINER_REGISTRY_BATCH }}
             export JWT_SECRET=${{ secrets.JWT_SECRET }}
             export REDIS_HOST=${{ secrets.REDIS_HOST }}
+            export OBJECT_STORAGE_BUCKET_NAME=${{ secrets.OBJECT_STORAGE_BUCKET_NAME }}
+            export OBJECT_STORAGE_ACCESS_KEY_ID=${{ secrets.OBJECT_STORAGE_ACCESS_KEY_ID }}
+            export OBJECT_STORAGE_SECRET_KEY=${{ secrets.OBJECT_STORAGE_SECRET_KEY }}
 
             sudo docker rm -f $(docker ps -qa)
 
