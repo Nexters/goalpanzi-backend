@@ -53,9 +53,9 @@ create table if not exists mission_verification
         on delete cascade
 );
 
-create table if not exists mission_status
+create table if not exists mission_member
 (
-    mission_status_id bigint auto_increment
+    mission_member_id bigint auto_increment
         primary key,
     created_at datetime(6),
     deleted_at datetime(6),
@@ -63,11 +63,11 @@ create table if not exists mission_status
     member_id bigint not null,
     mission_id bigint not null,
     verification_count int,
-    constraint fk_mission_status__member_id
+    constraint fk_mission_member__member_id
         foreign key (member_id)
         references member (member_id)
         on delete cascade,
-    constraint fk_mission_status__mission_id
+    constraint fk_mission_member__mission_id
         foreign key (mission_id)
         references mission (mission_id)
         on delete cascade

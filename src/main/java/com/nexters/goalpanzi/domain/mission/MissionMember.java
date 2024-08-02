@@ -8,14 +8,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "mission_status")
+@Table(name = "mission_member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class MissionStatus extends BaseEntity {
+public class MissionMember extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "mission_status_id")
+    @Column(name = "mission_member_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
