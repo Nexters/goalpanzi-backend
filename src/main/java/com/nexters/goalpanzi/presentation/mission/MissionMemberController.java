@@ -28,7 +28,7 @@ public class MissionMemberController implements MissionMemberControllerDocs {
     @PostMapping
     public ResponseEntity<Void> joinMission(
             @LoginMemberId final Long memberId,
-            @RequestBody JoinMissionRequest request
+            @RequestBody final JoinMissionRequest request
     ) {
         missionMemberService.joinMission(memberId, request.missionCode());
 

@@ -25,27 +25,22 @@ public class MissionMemberService {
     private final MissionRepository missionRepository;
     private final MemberRepository memberRepository;
 
-    public MissionsResponse findAllByMemberId(final Long memberId) {
-        List<MissionMember> missionMembers = missionMemberRepository.findAllByMemberId(memberId);
-        Member member = getMember(memberId);
-        return MissionsResponse.of(member, missionMembers);
-    }
-
     @Transactional
     public void joinMission(final Long memberId, final String invitationCode) {
-        Member member = getMember(memberId);
+        Member member = memberRepository.getMember(memberId);
         Mission mission = getMission(invitationCode);
 
         missionMemberRepository.save(MissionMember.join(member, mission));
     }
 
-    private Member getMember(final Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MEMBER));
+    public MissionsResponse findAllByMemberId(final Long memberId) {
+        List<MissionMember> missionMembers = missionMemberRepository.findAllByMemberId(memberId);
+        Member member = memberRepository.getMember(memberId);
+        return MissionsResponse.of(member, missionMembers);
     }
 
     private Mission getMission(final String invitationCode) {
         return missionRepository.findByInvitationCode(new InvitationCode(invitationCode))
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MEMBER));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MISSION));
     }
 }
