@@ -1,15 +1,13 @@
 package com.nexters.goalpanzi.application.mission.dto;
 
+import com.nexters.goalpanzi.domain.member.Member;
+import com.nexters.goalpanzi.domain.mission.MissionVerification;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.time.LocalDateTime;
 
 public record MissionVerificationResponse(
-        @Schema(description = "미션 인증 여부", requiredMode = Schema.RequiredMode.REQUIRED)
-        @NotNull Boolean isVerified,
-
         @Schema(description = "닉네임", requiredMode = Schema.RequiredMode.REQUIRED)
         @NotEmpty String nickname,
 
@@ -21,4 +19,12 @@ public record MissionVerificationResponse(
         @Schema(description = "인증 시간", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
         LocalDateTime verifiedAt
 ) {
+
+    public static MissionVerificationResponse verified(Member member, MissionVerification verification) {
+        return new MissionVerificationResponse(member.getNickname(), verification.getImageUrl(), verification.getCreatedAt());
+    }
+
+    public static MissionVerificationResponse notVerified(Member member) {
+        return new MissionVerificationResponse(member.getNickname(), "", null);
+    }
 }
