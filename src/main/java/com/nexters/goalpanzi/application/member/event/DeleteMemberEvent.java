@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.application.mission.handler;
+package com.nexters.goalpanzi.application.member.event;
 
 public record DeleteMemberEvent(
         Long memberId
