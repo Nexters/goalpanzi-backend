@@ -71,4 +71,9 @@ public class MissionAcceptanceTest extends AcceptanceTest {
         assertThat(missionMemberRepository.findByMemberIdAndMissionId(mission.hostMemberId(), mission.missionId()))
                 .isPresent();
     }
+
+    @Test
+    void 미션을_삭제한다() {
+
+    }
 }

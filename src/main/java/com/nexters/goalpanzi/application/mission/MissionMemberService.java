@@ -1,6 +1,7 @@
 package com.nexters.goalpanzi.application.mission;
 
 import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
+import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.InvitationCode;
@@ -45,6 +46,12 @@ public class MissionMemberService {
         List<MissionMember> missionMembers = missionMemberRepository.findAllByMemberId(memberId);
         Member member = memberRepository.getMember(memberId);
         return MissionsResponse.of(member, missionMembers);
+    }
+
+    @Transactional
+    public void deleteAllByMemberId(final Long memberId) {
+        missionMemberRepository.findAllByMemberId(memberId)
+                .forEach(BaseEntity::delete);
     }
 
     private Mission getMission(final InvitationCode invitationCode) {

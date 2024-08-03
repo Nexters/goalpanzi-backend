@@ -2,12 +2,14 @@ package com.nexters.goalpanzi.application.mission;
 
 import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionCommand;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
+import com.nexters.goalpanzi.application.mission.event.JoinMissionEvent;
 import com.nexters.goalpanzi.domain.mission.InvitationCode;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MissionService {
 
     private final MissionRepository missionRepository;
-    private final MissionMemberService missionMemberService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public MissionDetailResponse createMission(final CreateMissionCommand command) {
@@ -33,7 +35,8 @@ public class MissionService {
                         generateInvitationCode()
                 )
         );
-        missionMemberService.joinMission(mission.getHostMemberId(), mission.getInvitationCode());
+        eventPublisher.publishEvent(
+                new JoinMissionEvent(mission.getHostMemberId(), mission.getInvitationCode().getCode()));
 
         return MissionDetailResponse.from(mission);
     }
