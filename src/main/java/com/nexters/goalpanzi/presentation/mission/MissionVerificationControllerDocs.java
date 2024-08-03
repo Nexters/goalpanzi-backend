@@ -54,7 +54,7 @@ public interface MissionVerificationControllerDocs {
             @Parameter(hidden = true) @LoginMemberId final Long memberId,
             @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
             @PathVariable(name = "missionId") final Long missionId,
-            @Schema(description = "보드판 번호", type = "integer", format = "int32", requiredMode = Schema.RequiredMode.REQUIRED)
+            @Schema(description = "보드칸 번호", type = "integer", format = "int32", requiredMode = Schema.RequiredMode.REQUIRED)
             @PathVariable(name = "number") final Integer number);
 
     @Operation(summary = "미션 인증", description = "미션 인증을 위해 이미지를 업로드합니다.")
