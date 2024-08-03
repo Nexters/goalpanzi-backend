@@ -6,6 +6,10 @@ public class NotFoundException extends BaseException {
         super(errorCode.getMessage());
     }
 
+    public NotFoundException(final ErrorCode errorCode, final Object... args) {
+        super(errorCode.getMessage(args));
+    }
+
     public NotFoundException(final String message) {
         super(message);
     }

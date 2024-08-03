@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.presentation.mission.dto;
 
-import com.nexters.goalpanzi.application.mission.dto.CreateMissionCommand;
+import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionCommand;
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.TimeOfDay;
 import io.swagger.v3.oas.annotations.media.Schema;

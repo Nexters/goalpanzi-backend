@@ -29,6 +29,16 @@ public class MissionMember extends BaseEntity {
     @Column(name = "verification_count")
     private Integer verificationCount;
 
+    public MissionMember(final Member member, final Mission mission, final Integer verificationCount) {
+        this.member = member;
+        this.mission = mission;
+        this.verificationCount = verificationCount;
+    }
+
+    public static MissionMember join(final Member member, final Mission mission) {
+        return new MissionMember(member, mission, 0);
+    }
+
     public void verify() {
         this.verificationCount++;
     }

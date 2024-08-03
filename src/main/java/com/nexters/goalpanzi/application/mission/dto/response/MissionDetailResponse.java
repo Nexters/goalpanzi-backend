@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.application.mission.dto;
+package com.nexters.goalpanzi.application.mission.dto.response;
 
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.Mission;
@@ -7,7 +7,8 @@ import com.nexters.goalpanzi.domain.mission.TimeOfDay;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record MissionResponse(
+public record MissionDetailResponse(
+        Long missionId,
         Long hostMemberId,
         String description,
         LocalDateTime missionStartDate,
@@ -18,8 +19,9 @@ public record MissionResponse(
         String invitationCode
 ) {
 
-    public static MissionResponse from(final Mission mission) {
-        return new MissionResponse(
+    public static MissionDetailResponse from(final Mission mission) {
+        return new MissionDetailResponse(
+                mission.getId(),
                 mission.getHostMemberId(),
                 mission.getDescription(),
                 mission.getMissionStartDate(),

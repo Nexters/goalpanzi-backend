@@ -1,7 +1,11 @@
 package com.nexters.goalpanzi.presentation.auth;
 
 import com.nexters.goalpanzi.application.auth.AuthService;
-import com.nexters.goalpanzi.application.auth.dto.*;
+import com.nexters.goalpanzi.application.auth.dto.request.AppleLoginCommand;
+import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
+import com.nexters.goalpanzi.application.auth.dto.request.RefreshTokenCommand;
+import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
+import com.nexters.goalpanzi.application.auth.dto.response.TokenResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +50,7 @@ public class AuthController implements AuthControllerDocs {
     ) {
         authService.logout(userKey);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok().build();
     }
 
     @Override

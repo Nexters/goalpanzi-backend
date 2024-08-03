@@ -5,6 +5,7 @@ import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 import java.util.Random;
 
@@ -20,8 +21,9 @@ public class InvitationCode {
     @Column(name = "invitation_code", nullable = false)
     private String code;
 
-    private InvitationCode(final String code) {
+    public InvitationCode(final String code) {
         this.code = code;
+        validate();
     }
 
     public static InvitationCode generate() {
@@ -35,5 +37,11 @@ public class InvitationCode {
             sb.append(CODE_CHARACTERS.charAt(index));
         }
         return sb.toString();
+    }
+
+    private void validate() {
+        if (!StringUtils.hasText(code) || this.code.length() != CODE_LENGTH) {
+            throw new IllegalArgumentException("Invitation code is invalid");
+        }
     }
 }

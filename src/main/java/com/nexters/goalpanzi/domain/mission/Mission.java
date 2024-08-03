@@ -82,13 +82,14 @@ public class Mission extends BaseEntity {
             final LocalDateTime missionEndDate,
             final TimeOfDay timeOfDay,
             final List<DayOfWeek> missionDays,
-            final Integer boardCount
+            final Integer boardCount,
+            final InvitationCode invitationCode
     ) {
 
         return new Mission(
                 hostMemberId,
                 description,
-                InvitationCode.generate(),
+                invitationCode,
                 missionStartDate,
                 missionEndDate,
                 timeOfDay.getStartTime(),

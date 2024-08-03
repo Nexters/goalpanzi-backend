@@ -1,9 +1,10 @@
 package com.nexters.goalpanzi.presentation.mission;
 
 import com.nexters.goalpanzi.application.mission.MissionVerificationService;
-import com.nexters.goalpanzi.application.mission.dto.MissionVerificationCommand;
-import com.nexters.goalpanzi.application.mission.dto.MissionVerificationResponse;
-import com.nexters.goalpanzi.application.mission.dto.MyMissionVerificationCommand;
+import com.nexters.goalpanzi.application.mission.dto.request.MissionVerificationCommand;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
+import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificationCommand;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionVerificationRequest;
 import jakarta.validation.Valid;
@@ -16,7 +17,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/missions/{missionId}/verifications")
+@RequestMapping("/api/missions")
 @RestController
 public class MissionVerificationController implements MissionVerificationControllerDocs {
 
@@ -33,7 +34,7 @@ public class MissionVerificationController implements MissionVerificationControl
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/me/{number}")
+    @GetMapping("/{missionId}/verifications/me/{number}")
     public ResponseEntity<MissionVerificationResponse> getMyVerification(
             @LoginMemberId final Long memberId,
             @PathVariable(name = "missionId") final Long missionId,
@@ -44,7 +45,7 @@ public class MissionVerificationController implements MissionVerificationControl
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/me")
+    @PostMapping("/{missionId}/verifications/me")
     public ResponseEntity<Void> createVerification(
             @LoginMemberId final Long memberId,
             @PathVariable(name = "missionId") final Long missionId,

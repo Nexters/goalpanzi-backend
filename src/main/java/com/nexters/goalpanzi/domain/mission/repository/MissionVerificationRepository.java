@@ -1,5 +1,6 @@
 package com.nexters.goalpanzi.domain.mission.repository;
 
+import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.MissionVerification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,6 +12,9 @@ import java.util.Optional;
 
 @Repository
 public interface MissionVerificationRepository extends JpaRepository<MissionVerification, Long> {
+
+    List<MissionVerification> findByMemberId(final Long memberId);
+
     Optional<MissionVerification> findByMemberIdAndMissionIdAndBoardNumber(final Long memberId, final Long missionId, final Integer boardNumber);
 
     @Query(value = "SELECT * FROM mission_verification mv WHERE mv.mission_id = :missionId AND DATE(mv.created_at) = :date", nativeQuery = true)

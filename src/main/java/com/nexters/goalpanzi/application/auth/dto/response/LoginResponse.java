@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.application.auth.dto;
+package com.nexters.goalpanzi.application.auth.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

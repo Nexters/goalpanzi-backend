@@ -1,7 +1,8 @@
 package com.nexters.goalpanzi.application.mission;
 
-import com.nexters.goalpanzi.application.mission.dto.CreateMissionCommand;
-import com.nexters.goalpanzi.application.mission.dto.MissionResponse;
+import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionCommand;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
+import com.nexters.goalpanzi.domain.mission.InvitationCode;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ public class MissionService {
 
     private final MissionRepository missionRepository;
 
-    public MissionResponse createMission(final CreateMissionCommand command) {
+    public MissionDetailResponse createMission(final CreateMissionCommand command) {
         Mission mission = Mission.create(
                 command.hostMemberId(),
                 command.description(),
@@ -21,9 +22,28 @@ public class MissionService {
                 command.missionEndDate(),
                 command.timeOfDay(),
                 command.missionDays(),
-                command.boardCount()
+                command.boardCount(),
+                generateInvitationCode()
         );
 
-        return MissionResponse.from(missionRepository.save(mission));
+        return MissionDetailResponse.from(missionRepository.save(mission));
+    }
+
+    private InvitationCode generateInvitationCode() {
+        InvitationCode invitationCode;
+        do {
+            invitationCode = InvitationCode.generate();
+        } while (alreadyExistInvitationCode(invitationCode));
+        return invitationCode;
+    }
+
+    private boolean alreadyExistInvitationCode(final InvitationCode invitationCode) {
+        return missionRepository.findByInvitationCode(invitationCode).isPresent();
+    }
+
+    public MissionDetailResponse getMission(final Long missionId) {
+        Mission mission = missionRepository.getMission(missionId);
+
+        return MissionDetailResponse.from(mission);
     }
 }

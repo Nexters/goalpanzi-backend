@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.presentation.mission.dto;
 
-import com.nexters.goalpanzi.application.mission.dto.CreateMissionVerificationCommand;
+import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionVerificationCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;

@@ -1,9 +1,10 @@
 package com.nexters.goalpanzi.application.mission;
 
-import com.nexters.goalpanzi.application.mission.dto.CreateMissionVerificationCommand;
-import com.nexters.goalpanzi.application.mission.dto.MissionVerificationCommand;
-import com.nexters.goalpanzi.application.mission.dto.MissionVerificationResponse;
-import com.nexters.goalpanzi.application.mission.dto.MyMissionVerificationCommand;
+import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionVerificationCommand;
+import com.nexters.goalpanzi.application.mission.dto.request.MissionVerificationCommand;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
+import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificationCommand;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.Mission;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class MissionVerificationService {
@@ -62,7 +64,6 @@ public class MissionVerificationService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     public MissionVerificationResponse getMyVerification(final MyMissionVerificationCommand command) {
         Member member =
                 memberRepository.findById(command.memberId())

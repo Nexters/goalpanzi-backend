@@ -1,14 +1,22 @@
 spring:
   datasource:
-    url: jdbc:h2:~/test;MODE=MYSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;
+    url: jdbc:h2:mem:testdb;MODE=MySQL
     username: sa
+    password:
   jpa:
-    hibernate:
-      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        highlight_sql: true
+
   data:
     redis:
       host: localhost
       port: 6379
+  flyway:
+    enabled: false
 
 jwt:
   secret: testtest
@@ -25,9 +33,9 @@ oauth:
 cloud:
   aws:
     credentials:
-      access-key: ${OBJECT_STORAGE_ACCESS_KEY_ID}
-      secret-key: ${OBJECT_STORAGE_SECRET_KEY}
-      bucket: ${OBJECT_STORAGE_BUCKET_NAME}
+      access-key: --
+      secret-key: --
+      bucket: --
     region:
       static: ap-southeast-2
       auto: false

@@ -1,9 +1,9 @@
 package com.nexters.goalpanzi.application.auth;
 
-import com.nexters.goalpanzi.application.auth.dto.AppleLoginCommand;
-import com.nexters.goalpanzi.application.auth.dto.GoogleLoginCommand;
-import com.nexters.goalpanzi.application.auth.dto.LoginResponse;
-import com.nexters.goalpanzi.application.auth.dto.TokenResponse;
+import com.nexters.goalpanzi.application.auth.dto.request.AppleLoginCommand;
+import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
+import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
+import com.nexters.goalpanzi.application.auth.dto.response.TokenResponse;
 import com.nexters.goalpanzi.common.jwt.Jwt;
 import com.nexters.goalpanzi.common.jwt.JwtProvider;
 import com.nexters.goalpanzi.domain.auth.repository.RefreshTokenRepository;

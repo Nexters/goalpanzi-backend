@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.presentation.member.dto;
 
-import com.nexters.goalpanzi.application.member.dto.UpdateProfileCommand;
+import com.nexters.goalpanzi.application.member.dto.request.UpdateProfileCommand;
 import com.nexters.goalpanzi.domain.member.CharacterType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
