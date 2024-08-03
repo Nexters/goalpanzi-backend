@@ -4,6 +4,8 @@ import lombok.Getter;
 
 import java.util.Arrays;
 
+import static com.nexters.goalpanzi.exception.ErrorCode.INVALID_UPLOAD_TIME_OF_DAY;
+
 @Getter
 public enum TimeOfDay {
     MORNING("00:00", "12:00"),
@@ -23,6 +25,6 @@ public enum TimeOfDay {
         return Arrays.stream(TimeOfDay.values())
                 .filter(timeOfDay -> timeOfDay.startTime.equals(startTime) && timeOfDay.endTime.equals(endTime))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No enum constant for startTime: " + startTime + " and endTime: " + endTime));
+                .orElseThrow(() -> new IllegalArgumentException(INVALID_UPLOAD_TIME_OF_DAY.getMessage()));
     }
 }

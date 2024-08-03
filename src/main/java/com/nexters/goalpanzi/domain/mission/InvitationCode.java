@@ -9,6 +9,8 @@ import org.springframework.util.StringUtils;
 
 import java.util.Random;
 
+import static com.nexters.goalpanzi.exception.ErrorCode.INVALID_INVITATION_CODE;
+
 @Embeddable
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,7 +43,7 @@ public class InvitationCode {
 
     private void validate() {
         if (!StringUtils.hasText(code) || this.code.length() != CODE_LENGTH) {
-            throw new IllegalArgumentException("Invitation code is invalid");
+            throw new IllegalArgumentException(INVALID_INVITATION_CODE.getMessage());
         }
     }
 }
