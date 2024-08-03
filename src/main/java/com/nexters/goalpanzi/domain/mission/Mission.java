@@ -13,11 +13,13 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@SQLRestriction("deleted_at is NULL")
 @Table(name = "mission")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter

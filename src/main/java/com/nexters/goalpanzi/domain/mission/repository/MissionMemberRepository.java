@@ -14,4 +14,6 @@ public interface MissionMemberRepository extends JpaRepository<MissionMember, Lo
     List<MissionMember> findAllByMissionId(final Long MissionId);
 
     List<MissionMember> findAllByMemberId(final Long memberId);
+
+    void deleteAllByMemberId(final Long memberId);
 }

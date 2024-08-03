@@ -20,4 +20,8 @@ public interface MemberControllerDocs {
             @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long userId,
             @RequestBody @Valid final UpdateProfileRequest request
     );
+
+    ResponseEntity<Void> deleteMember(
+            @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long memberId
+    );
 }
