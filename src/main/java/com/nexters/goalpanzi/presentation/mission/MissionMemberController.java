@@ -3,6 +3,7 @@ package com.nexters.goalpanzi.presentation.mission;
 import com.nexters.goalpanzi.application.mission.MissionMemberService;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
+import com.nexters.goalpanzi.domain.mission.InvitationCode;
 import com.nexters.goalpanzi.presentation.mission.dto.JoinMissionRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class MissionMemberController implements MissionMemberControllerDocs {
             @LoginMemberId final Long memberId,
             @RequestBody final JoinMissionRequest request
     ) {
-        missionMemberService.joinMission(memberId, request.invitationCode());
+        missionMemberService.joinMission(memberId, new InvitationCode(request.invitationCode()));
 
         return ResponseEntity.ok().build();
     }

@@ -7,6 +7,7 @@ import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,5 +39,16 @@ public class MissionController implements MissionControllerDocs {
         MissionDetailResponse response = missionService.getMission(missionId);
 
         return ResponseEntity.ok(response);
+    }
+
+    @Override
+    @DeleteMapping("/{missionId}")
+    public ResponseEntity<MissionDetailResponse> deleteMission(
+            @PathVariable final Long missionId,
+            @LoginMemberId final Long memberId
+    ) {
+        missionService.deleteMission(memberId, missionId);
+
+        return ResponseEntity.noContent().build();
     }
 }

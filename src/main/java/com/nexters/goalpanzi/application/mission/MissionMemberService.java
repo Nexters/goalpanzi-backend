@@ -27,7 +27,7 @@ public class MissionMemberService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void joinMission(final Long memberId, final String invitationCode) {
+    public void joinMission(final Long memberId, final InvitationCode invitationCode) {
         Member member = memberRepository.getMember(memberId);
         Mission mission = getMission(invitationCode);
         validateAlreadyJoin(member, mission);
@@ -47,8 +47,8 @@ public class MissionMemberService {
         return MissionsResponse.of(member, missionMembers);
     }
 
-    private Mission getMission(final String invitationCode) {
-        return missionRepository.findByInvitationCode(new InvitationCode(invitationCode))
+    private Mission getMission(final InvitationCode invitationCode) {
+        return missionRepository.findByInvitationCode(invitationCode)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MISSION, invitationCode));
     }
 }
