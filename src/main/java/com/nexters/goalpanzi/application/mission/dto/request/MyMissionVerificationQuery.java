@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.application.mission.dto.request;
 
-public record MyMissionVerificationCommand(
+public record MyMissionVerificationQuery(
         Long memberId,
         Long missionId,
         Integer number

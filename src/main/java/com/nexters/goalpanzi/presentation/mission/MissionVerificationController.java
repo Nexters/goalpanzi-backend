@@ -1,10 +1,9 @@
 package com.nexters.goalpanzi.presentation.mission;
 
 import com.nexters.goalpanzi.application.mission.MissionVerificationService;
-import com.nexters.goalpanzi.application.mission.dto.request.MissionVerificationCommand;
+import com.nexters.goalpanzi.application.mission.dto.request.MissionVerificationQuery;
+import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
-import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
-import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificationCommand;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionVerificationRequest;
 import jakarta.validation.Valid;
@@ -29,7 +28,7 @@ public class MissionVerificationController implements MissionVerificationControl
             @PathVariable(name = "missionId") final Long missionId,
             @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate date
     ) {
-        List<MissionVerificationResponse> response = missionVerificationService.getVerifications(new MissionVerificationCommand(memberId, missionId, date));
+        List<MissionVerificationResponse> response = missionVerificationService.getVerifications(new MissionVerificationQuery(memberId, missionId, date));
 
         return ResponseEntity.ok(response);
     }
@@ -40,7 +39,7 @@ public class MissionVerificationController implements MissionVerificationControl
             @PathVariable(name = "missionId") final Long missionId,
             @PathVariable(name = "number") final Integer number) {
         MissionVerificationResponse response = missionVerificationService.getMyVerification(
-                new MyMissionVerificationCommand(memberId, missionId, number));
+                new MyMissionVerificationQuery(memberId, missionId, number));
 
         return ResponseEntity.ok(response);
     }

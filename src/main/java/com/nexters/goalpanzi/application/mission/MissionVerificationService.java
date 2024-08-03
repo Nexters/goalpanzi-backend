@@ -1,8 +1,8 @@
 package com.nexters.goalpanzi.application.mission;
 
 import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionVerificationCommand;
-import com.nexters.goalpanzi.application.mission.dto.request.MissionVerificationCommand;
-import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificationCommand;
+import com.nexters.goalpanzi.application.mission.dto.request.MissionVerificationQuery;
+import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
@@ -39,40 +39,40 @@ public class MissionVerificationService {
     private final ObjectStorageManager objectStorageManager;
 
     @Transactional(readOnly = true)
-    public List<MissionVerificationResponse> getVerifications(final MissionVerificationCommand command) {
-        LocalDate date = command.date() != null ? command.date() : LocalDate.now();
-        Member member = getMember(command.memberId());
-        List<MissionVerification> verifications = missionVerificationRepository.findAllByMissionIdAndDate(command.missionId(), date);
+    public List<MissionVerificationResponse> getVerifications(final MissionVerificationQuery query) {
+        LocalDate date = query.date() != null ? query.date() : LocalDate.now();
+        Member member = memberRepository.getMember(query.memberId());
+        List<MissionVerification> verifications = missionVerificationRepository.findAllByMissionIdAndDate(query.missionId(), date);
 
         Map<Long, MissionVerification> verificationMap = verifications.stream()
                 .collect(Collectors.toMap(v -> v.getMember().getId(), v -> v));
 
-        return getMissionMembers(command.missionId()).stream()
+        return getMissionMembers(query.missionId()).stream()
                 .map(m -> convertToVerificationResponse(m, verificationMap.get(m.getMember().getId())))
                 .sorted(Comparator.comparing((MissionVerificationResponse r) -> r.nickname().equals(member.getNickname())).reversed()
                         .thenComparing(MissionVerificationResponse::verifiedAt, Comparator.nullsLast(Comparator.reverseOrder())))
                 .collect(Collectors.toList());
     }
 
-    public MissionVerificationResponse getMyVerification(final MyMissionVerificationCommand command) {
-        MissionVerification verification =
-                missionVerificationRepository.findByMemberIdAndMissionIdAndBoardNumber(command.memberId(), command.missionId(), command.number())
-                        .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_VERIFICATION));
+    public MissionVerificationResponse getMyVerification(final MyMissionVerificationQuery query) {
+        MissionVerification verification = missionVerificationRepository
+                .findByMemberIdAndMissionIdAndBoardNumber(query.memberId(), query.missionId(), query.number())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_VERIFICATION));
 
-        return MissionVerificationResponse.verified(getMember(command.memberId()), verification);
+        return MissionVerificationResponse.verified(verification.getMember(), verification);
     }
 
     @Transactional
     public void createVerification(final CreateMissionVerificationCommand command) {
-        MissionMember missionMember =
-                missionMemberRepository.findByMemberIdAndMissionId(command.memberId(), command.missionId())
-                        .orElseThrow(() -> new NotFoundException("TODO"));
+        MissionMember missionMember = missionMemberRepository
+                .findByMemberIdAndMissionId(command.memberId(), command.missionId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_JOINED_MISSION_MEMBER));
         Mission mission = missionRepository.getMission(command.missionId());
 
         checkVerificationValidation(command.memberId(), mission, missionMember);
 
         String imageUrl = objectStorageManager.uploadFile(command.imageFile());
-        missionVerificationRepository.save(new MissionVerification(getMember(command.memberId()), mission, imageUrl));
+        missionVerificationRepository.save(new MissionVerification(missionMember.getMember(), mission, imageUrl));
         missionMember.verify();
     }
 
@@ -105,11 +105,6 @@ public class MissionVerificationService {
 
     private boolean isDuplicatedVerification(final Long memberId, final Long missionId, final LocalDate today) {
         return missionVerificationRepository.findByMemberIdAndMissionIdAndDate(memberId, missionId, today).isPresent();
-    }
-
-    private Member getMember(final Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MEMBER));
     }
 
     private List<MissionMember> getMissionMembers(final Long missionId) {
