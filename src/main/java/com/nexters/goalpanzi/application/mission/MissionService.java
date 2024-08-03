@@ -2,6 +2,7 @@ package com.nexters.goalpanzi.application.mission;
 
 import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionCommand;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
+import com.nexters.goalpanzi.application.mission.event.DeleteMissionEvent;
 import com.nexters.goalpanzi.application.mission.event.JoinMissionEvent;
 import com.nexters.goalpanzi.domain.mission.InvitationCode;
 import com.nexters.goalpanzi.domain.mission.Mission;
@@ -65,6 +66,7 @@ public class MissionService {
         Mission mission = missionRepository.getMission(missionId);
         validateAuthority(memberId, mission);
         mission.delete();
+        eventPublisher.publishEvent(new DeleteMissionEvent(mission.getId()));
     }
 
     private void validateAuthority(final Long memberId, final Mission mission) {
