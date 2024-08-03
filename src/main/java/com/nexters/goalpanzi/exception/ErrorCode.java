@@ -34,7 +34,10 @@ public enum ErrorCode {
 
     // FILE UPLOAD
     INVALID_FILE("유효하지 않은 파일입니다."),
-    FILE_UPLOAD_FAILED("파일 업로드에 실패했습니다.");
+    FILE_UPLOAD_FAILED("파일 업로드에 실패하였습니다."),
+
+    // ETC
+    FAILED_TO_GENERATE_HASH("해시값을 생성하는 데 실패하였습니다.");
 
     private String message;
 
