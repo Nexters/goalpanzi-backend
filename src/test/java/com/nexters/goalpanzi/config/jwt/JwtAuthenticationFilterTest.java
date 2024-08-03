@@ -60,6 +60,6 @@ public class JwtAuthenticationFilterTest {
     void 잘못된_JWT_토큰이_붙은_사용자_요청을_처리한다() throws Exception {
         mockMvc.perform(get("/api/protected")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + "invalidToken"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
     }
 }

@@ -49,6 +49,6 @@ public class MissionMemberService {
 
     private Mission getMission(final InvitationCode invitationCode) {
         return missionRepository.findByInvitationCode(invitationCode)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MISSION, invitationCode));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MISSION, invitationCode.getCode()));
     }
 }

@@ -21,19 +21,21 @@ public class MissionService {
 
     @Transactional
     public MissionDetailResponse createMission(final CreateMissionCommand command) {
-        Mission mission = Mission.create(
-                command.hostMemberId(),
-                command.description(),
-                command.missionStartDate(),
-                command.missionEndDate(),
-                command.timeOfDay(),
-                command.missionDays(),
-                command.boardCount(),
-                generateInvitationCode()
+        Mission mission = missionRepository.save(
+                Mission.create(
+                        command.hostMemberId(),
+                        command.description(),
+                        command.missionStartDate(),
+                        command.missionEndDate(),
+                        command.timeOfDay(),
+                        command.missionDays(),
+                        command.boardCount(),
+                        generateInvitationCode()
+                )
         );
         missionMemberService.joinMission(mission.getHostMemberId(), mission.getInvitationCode());
 
-        return MissionDetailResponse.from(missionRepository.save(mission));
+        return MissionDetailResponse.from(mission);
     }
 
     private InvitationCode generateInvitationCode() {
