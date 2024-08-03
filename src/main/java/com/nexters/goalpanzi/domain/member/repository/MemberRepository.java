@@ -4,6 +4,7 @@ import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.exception.BaseException;
 import com.nexters.goalpanzi.exception.ErrorCode;
+import com.nexters.goalpanzi.exception.NotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -15,6 +16,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     default Member getMember(Long memberId) {
         return findById(memberId)
-                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_MEMBER));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MEMBER, memberId));
     }
 }

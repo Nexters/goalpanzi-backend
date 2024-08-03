@@ -64,11 +64,6 @@ public class MissionVerificationService {
                 .collect(Collectors.toList());
     }
 
-    private Member getMember(final Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MEMBER));
-    }
-
     public MissionVerificationResponse getMyVerification(final MyMissionVerificationCommand command) {
         Member member =
                 memberRepository.findById(command.memberId())

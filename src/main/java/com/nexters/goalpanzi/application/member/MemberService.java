@@ -24,15 +24,15 @@ public class MemberService {
         member.updateProfile(request.nickname(), request.characterType());
     }
 
-    private Member getMember(final Long userId) {
-        return memberRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MEMBER));
+    private Member getMember(final Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MEMBER, memberId));
     }
 
     private void validateNickname(final String nickname) {
         memberRepository.findByNickname(nickname)
                 .ifPresent(member -> {
-                    throw new AlreadyExistsException(ErrorCode.ALREADY_EXIST_NICKNAME);
+                    throw new AlreadyExistsException(ErrorCode.ALREADY_EXIST_NICKNAME, nickname);
                 });
     }
 }

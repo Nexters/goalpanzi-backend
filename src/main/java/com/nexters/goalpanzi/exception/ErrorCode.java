@@ -17,11 +17,14 @@ public enum ErrorCode {
     EXPIRED_REFRESH_TOKEN("만료된 refresh 토큰입니다."),
 
     // MEMBER
-    NOT_FOUND_MEMBER("존재하지 않는 회원입니다."),
-    ALREADY_EXIST_NICKNAME("이미 존재하는 회원 닉네임입니다."),
+    NOT_FOUND_MEMBER("존재하지 않는 회원입니다. [%s]"),
+    ALREADY_EXIST_NICKNAME("이미 존재하는 회원 닉네임입니다. [%s]"),
 
     // MISSION
-    NOT_FOUND_MISSION("존재하지 않는 미션입니다."),
+    NOT_FOUND_MISSION("존재하지 않는 미션입니다. [%s]"),
+
+    // MISSION MEMBER
+    ALREADY_EXISTS_MISSION_MEMBER("이미 참여한 미션입니다. [%s]"),
 
     // MISSION VERIFICATION
     NOT_FOUND_VERIFICATION("존재하지 않는 미션 인증입니다."),
@@ -33,4 +36,8 @@ public enum ErrorCode {
     FILE_UPLOAD_FAILED("파일 업로드에 실패했습니다.");
 
     private String message;
+
+    public String getMessage(final Object... args) {
+        return String.format(message, args);
+    }
 }

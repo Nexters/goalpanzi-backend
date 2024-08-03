@@ -4,6 +4,7 @@ import com.nexters.goalpanzi.domain.mission.InvitationCode;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.exception.BaseException;
 import com.nexters.goalpanzi.exception.ErrorCode;
+import com.nexters.goalpanzi.exception.NotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -14,6 +15,6 @@ public interface MissionRepository extends JpaRepository<Mission, Long> {
 
     default Mission getMission(Long missionId) {
         return findById(missionId)
-                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND_MISSION));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MISSION, missionId));
     }
 }
