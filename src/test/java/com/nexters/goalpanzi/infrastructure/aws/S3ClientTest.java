@@ -1,5 +1,6 @@
 //package com.nexters.goalpanzi.infrastructure.ncp;
 //
+//import com.nexters.goalpanzi.infrastructure.aws.S3Client;
 //import org.junit.jupiter.api.AfterEach;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
@@ -16,10 +17,10 @@
 //import static org.assertj.core.api.Assertions.assertThat;
 //
 //@SpringBootTest
-//class ObjectStorageManagerTest {
+//class S3ClientTest {
 //
 //    @Autowired
-//    private ObjectStorageManager objectStorageManager;
+//    private S3Client s3Client;
 //
 //    private File tempFile;
 //    private MultipartFile imageFile;
@@ -43,7 +44,7 @@
 //
 //    @AfterEach
 //    public void 테스트_후_업로드된_이미지_파일을_삭제한다() {
-//        objectStorageManager.deleteFile(uploadedFileUrl);
+//        s3Client.deleteFile(uploadedFileUrl);
 //
 //        if (tempFile != null && tempFile.exists()) {
 //            tempFile.delete();
@@ -52,7 +53,7 @@
 //
 //    @Test
 //    public void 파일을_업로드한다() {
-//        uploadedFileUrl = objectStorageManager.uploadFile(imageFile);
+//        uploadedFileUrl = s3Client.uploadFile(imageFile);
 //
 //        assertThat(uploadedFileUrl).isNotNull();
 //

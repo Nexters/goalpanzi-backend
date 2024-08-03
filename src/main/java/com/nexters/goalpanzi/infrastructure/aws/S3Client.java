@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.infrastructure.ncp;
+package com.nexters.goalpanzi.infrastructure.aws;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
@@ -22,7 +22,7 @@ import static com.nexters.goalpanzi.exception.ErrorCode.INVALID_FILE;
 
 @RequiredArgsConstructor
 @Component
-public class ObjectStorageManager {
+public class S3Client {
 
     @Value("${cloud.aws.credentials.bucket}")
     private String bucketName;
