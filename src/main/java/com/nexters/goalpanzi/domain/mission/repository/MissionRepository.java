@@ -11,9 +11,9 @@ import java.util.Optional;
 
 public interface MissionRepository extends JpaRepository<Mission, Long> {
 
-    Optional<Mission> findByInvitationCode(InvitationCode invitationCode);
+    Optional<Mission> findByInvitationCode(final InvitationCode invitationCode);
 
-    default Mission getMission(Long missionId) {
+    default Mission getMission(final Long missionId) {
         return findById(missionId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MISSION, missionId));
     }
