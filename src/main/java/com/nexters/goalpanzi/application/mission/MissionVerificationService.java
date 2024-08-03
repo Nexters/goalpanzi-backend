@@ -4,18 +4,16 @@ import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionVerifi
 import com.nexters.goalpanzi.application.mission.dto.request.MissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
+import com.nexters.goalpanzi.application.ncp.ObjectStorageManager;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.MissionMember;
 import com.nexters.goalpanzi.domain.mission.MissionVerification;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
-import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationRepository;
 import com.nexters.goalpanzi.exception.BadRequestException;
 import com.nexters.goalpanzi.exception.ErrorCode;
-import com.nexters.goalpanzi.exception.NotFoundException;
-import com.nexters.goalpanzi.infrastructure.ncp.ObjectStorageManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +29,6 @@ import java.util.stream.Collectors;
 @Service
 public class MissionVerificationService {
 
-    private final MissionRepository missionRepository;
     private final MissionVerificationRepository missionVerificationRepository;
     private final MissionMemberRepository missionMemberRepository;
     private final MemberRepository memberRepository;
@@ -47,7 +44,7 @@ public class MissionVerificationService {
         Map<Long, MissionVerification> verificationMap = verifications.stream()
                 .collect(Collectors.toMap(v -> v.getMember().getId(), v -> v));
 
-        return getMissionMembers(query.missionId()).stream()
+        return missionMemberRepository.findAllByMissionId(query.missionId()).stream()
                 .map(m -> convertToVerificationResponse(m, verificationMap.get(m.getMember().getId())))
                 .sorted(Comparator.comparing((MissionVerificationResponse r) -> r.nickname().equals(member.getNickname())).reversed()
                         .thenComparing(MissionVerificationResponse::verifiedAt, Comparator.nullsLast(Comparator.reverseOrder())))
@@ -55,19 +52,15 @@ public class MissionVerificationService {
     }
 
     public MissionVerificationResponse getMyVerification(final MyMissionVerificationQuery query) {
-        MissionVerification verification = missionVerificationRepository
-                .findByMemberIdAndMissionIdAndBoardNumber(query.memberId(), query.missionId(), query.number())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_VERIFICATION));
+        MissionVerification verification = missionVerificationRepository.getMyVerification(query.memberId(), query.missionId(), query.number());
 
         return MissionVerificationResponse.verified(verification.getMember(), verification);
     }
 
     @Transactional
     public void createVerification(final CreateMissionVerificationCommand command) {
-        MissionMember missionMember = missionMemberRepository
-                .findByMemberIdAndMissionId(command.memberId(), command.missionId())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_JOINED_MISSION_MEMBER));
-        Mission mission = missionRepository.getMission(command.missionId());
+        MissionMember missionMember = missionMemberRepository.getMissionMember(command.memberId(), command.missionId());
+        Mission mission = missionMember.getMission();
 
         checkVerificationValidation(command.memberId(), mission, missionMember);
 
@@ -105,9 +98,5 @@ public class MissionVerificationService {
 
     private boolean isDuplicatedVerification(final Long memberId, final Long missionId, final LocalDate today) {
         return missionVerificationRepository.findByMemberIdAndMissionIdAndDate(memberId, missionId, today).isPresent();
-    }
-
-    private List<MissionMember> getMissionMembers(final Long missionId) {
-        return missionMemberRepository.findAllByMissionId(missionId);
     }
 }
