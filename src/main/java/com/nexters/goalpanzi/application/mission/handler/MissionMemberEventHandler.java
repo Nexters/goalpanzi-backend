@@ -1,5 +1,6 @@
 package com.nexters.goalpanzi.application.mission.handler;
 
+import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,8 @@ public class MissionMemberEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     void handelDeleteMemberEvent(final DeleteMemberEvent event) {
         missionMemberRepository.findAllByMemberId(event.memberId())
-                .forEach(it -> it.delete());
+                .forEach(BaseEntity::delete);
         missionVerificationRepository.findByMemberId(event.memberId())
-                .forEach(it -> it.delete());
+                .forEach(BaseEntity::delete);
     }
 }
