@@ -11,8 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.nexters.goalpanzi.acceptance.AcceptanceStep.구글_로그인;
-import static com.nexters.goalpanzi.acceptance.AcceptanceStep.미션_생성;
+import static com.nexters.goalpanzi.acceptance.AcceptanceStep.*;
 import static com.nexters.goalpanzi.fixture.MemberFixture.EMAIL;
 import static com.nexters.goalpanzi.fixture.MemberFixture.ID_TOKEN;
 import static com.nexters.goalpanzi.fixture.MissionFixture.DESCRIPTION;
@@ -32,6 +31,25 @@ public class MissionAcceptanceTest extends AcceptanceTest {
         assertAll(
                 () -> assertThat(actual.description()).isEqualTo(DESCRIPTION),
                 () -> assertThat(actual.boardCount()).isEqualTo(5),
+                () -> assertThat(actual.hostMemberId()).isEqualTo(1L));
+    }
+
+    @Test
+    void 미션을_조회한다() {
+        LoginResponse login = 구글_로그인(new GoogleLoginCommand(ID_TOKEN, EMAIL)).as(LoginResponse.class);
+
+        CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(),
+                LocalDateTime.now().plusDays(5), TimeOfDay.EVERYDAY,
+                List.of(DayOfWeek.MONDAY, DayOfWeek.FRIDAY), 20);
+
+        MissionDetailResponse mission = 미션_생성(request, login.accessToken()).as(MissionDetailResponse.class);
+
+        MissionDetailResponse actual = 미션_조회(mission.missionId(), login.accessToken()).as(MissionDetailResponse.class);
+
+        assertAll(
+                () -> assertThat(actual.description()).isEqualTo(DESCRIPTION),
+                () -> assertThat(actual.boardCount()).isEqualTo(20),
+                () -> assertThat(actual.missionDays()).containsExactly(DayOfWeek.MONDAY, DayOfWeek.FRIDAY),
                 () -> assertThat(actual.hostMemberId()).isEqualTo(1L));
     }
 }

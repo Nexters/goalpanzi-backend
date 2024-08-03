@@ -64,4 +64,14 @@ public class AcceptanceStep {
                 .statusCode(HttpStatus.OK.value())
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 미션_조회(Long missionId, String accessToken) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
+                .when().get("/api/missions/" + missionId)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+    }
 }
