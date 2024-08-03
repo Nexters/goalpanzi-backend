@@ -23,7 +23,8 @@ class MissionTest {
                 LocalDateTime.now().plusDays(7),
                 TimeOfDay.EVERYDAY,
                 List.of(DayOfWeek.FRIDAY),
-                BOARD_COUNT
+                BOARD_COUNT,
+                InvitationCode.generate()
         );
 
         assertAll(
@@ -42,7 +43,8 @@ class MissionTest {
                 LocalDateTime.now().plusDays(7),
                 TimeOfDay.EVERYDAY,
                 List.of(DayOfWeek.FRIDAY),
-                0
+                0,
+                InvitationCode.generate()
         ));
     }
 
@@ -55,7 +57,8 @@ class MissionTest {
                 LocalDateTime.now().minusDays(7),
                 TimeOfDay.EVERYDAY,
                 List.of(DayOfWeek.FRIDAY),
-                BOARD_COUNT
+                BOARD_COUNT,
+                InvitationCode.generate()
         ));
     }
 }
