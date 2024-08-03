@@ -15,7 +15,6 @@ import org.springframework.http.MediaType;
 
 import static com.nexters.goalpanzi.acceptance.AcceptanceStep.*;
 import static com.nexters.goalpanzi.fixture.MemberFixture.EMAIL;
-import static com.nexters.goalpanzi.fixture.MemberFixture.ID_TOKEN;
 import static com.nexters.goalpanzi.fixture.TokenFixture.BEARER;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,7 +25,7 @@ public class MissionMemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 초대코드로_미션에_참여한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginCommand(ID_TOKEN, EMAIL)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL)).as(LoginResponse.class);
         MissionDetailResponse mission = 미션_생성(login.accessToken()).as(MissionDetailResponse.class);
 
         JoinMissionRequest joinRequest = new JoinMissionRequest(mission.invitationCode());
@@ -41,7 +40,7 @@ public class MissionMemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 참여하고있는_미션을_조회한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginCommand(ID_TOKEN, EMAIL)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL)).as(LoginResponse.class);
         MissionDetailResponse mission = 미션_생성(login.accessToken()).as(MissionDetailResponse.class);
         미션_참여(mission.invitationCode(), login.accessToken());
 

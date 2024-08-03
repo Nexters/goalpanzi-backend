@@ -13,7 +13,6 @@ import java.util.List;
 
 import static com.nexters.goalpanzi.acceptance.AcceptanceStep.*;
 import static com.nexters.goalpanzi.fixture.MemberFixture.EMAIL;
-import static com.nexters.goalpanzi.fixture.MemberFixture.ID_TOKEN;
 import static com.nexters.goalpanzi.fixture.MissionFixture.DESCRIPTION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -22,7 +21,7 @@ public class MissionAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 미션을_생성한다() {
-        LoginResponse loginResponse = 구글_로그인(new GoogleLoginCommand(ID_TOKEN, EMAIL)).as(LoginResponse.class);
+        LoginResponse loginResponse = 구글_로그인(new GoogleLoginCommand(EMAIL)).as(LoginResponse.class);
 
         CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(), LocalDateTime.now().plusDays(5), TimeOfDay.EVERYDAY, List.of(DayOfWeek.FRIDAY), 5);
 
