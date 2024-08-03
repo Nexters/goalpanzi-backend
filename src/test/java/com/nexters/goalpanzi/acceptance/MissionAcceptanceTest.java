@@ -6,9 +6,14 @@ import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailRespo
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.TimeOfDay;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
+import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionRequest;
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,10 +22,14 @@ import static com.nexters.goalpanzi.acceptance.AcceptanceStep.*;
 import static com.nexters.goalpanzi.fixture.MemberFixture.EMAIL_HOST;
 import static com.nexters.goalpanzi.fixture.MemberFixture.ID_TOKEN_HOST;
 import static com.nexters.goalpanzi.fixture.MissionFixture.DESCRIPTION;
+import static com.nexters.goalpanzi.fixture.TokenFixture.BEARER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class MissionAcceptanceTest extends AcceptanceTest {
+
+    @Autowired
+    MissionRepository missionRepository;
 
     @Autowired
     MissionMemberRepository missionMemberRepository;
@@ -74,6 +83,17 @@ public class MissionAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 미션을_삭제한다() {
+        LoginResponse login = 구글_로그인(new GoogleLoginCommand(ID_TOKEN_HOST, EMAIL_HOST)).as(LoginResponse.class);
+        MissionDetailResponse mission = 미션_생성(login.accessToken()).as(MissionDetailResponse.class);
 
+        RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, BEARER + login.accessToken())
+                .when().delete("/api/missions/" + mission.missionId())
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .extract();
+
+        assertThat(missionRepository.findById(mission.missionId())).isNotPresent();
     }
 }
