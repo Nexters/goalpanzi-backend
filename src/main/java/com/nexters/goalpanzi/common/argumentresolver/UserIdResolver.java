@@ -1,7 +1,7 @@
 package com.nexters.goalpanzi.common.argumentresolver;
 
-import com.nexters.goalpanzi.common.jwt.JwtParser;
-import com.nexters.goalpanzi.common.jwt.JwtProvider;
+import com.nexters.goalpanzi.common.auth.jwt.JwtParser;
+import com.nexters.goalpanzi.common.auth.jwt.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;

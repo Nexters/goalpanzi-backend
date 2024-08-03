@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.domain.mission;
 
-import com.nexters.goalpanzi.common.jpa.DaysOfWeekConverter;
+import com.nexters.goalpanzi.infrastructure.jpa.DaysOfWeekConverter;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

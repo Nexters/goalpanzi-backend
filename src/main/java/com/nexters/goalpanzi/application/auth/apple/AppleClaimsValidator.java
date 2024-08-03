@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.application.auth.apple;
 
-import com.nexters.goalpanzi.common.util.Nonce;
+import com.nexters.goalpanzi.common.auth.Nonce;
 import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

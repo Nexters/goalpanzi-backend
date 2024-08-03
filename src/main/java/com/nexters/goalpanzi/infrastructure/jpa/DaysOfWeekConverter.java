@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.common.jpa;
+package com.nexters.goalpanzi.infrastructure.jpa;
 
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import jakarta.persistence.AttributeConverter;

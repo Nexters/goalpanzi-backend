@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.common.jwt;
+package com.nexters.goalpanzi.common.auth.jwt;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.common.jwt;
+package com.nexters.goalpanzi.common.auth.jwt;
 
 import com.nexters.goalpanzi.exception.BaseException;
 import com.nexters.goalpanzi.exception.ErrorCode;
@@ -31,7 +31,7 @@ public class JwtProvider {
         this.refreshExpiresIn = refreshExpiresIn;
     }
 
-    public Jwt generateTokens(String subject) {
+    public com.nexters.goalpanzi.common.auth.jwt.Jwt generateTokens(String subject) {
         return Jwt.builder()
                 .accessToken(createToken(subject, TokenType.ACCESS))
                 .refreshToken(createToken(subject, TokenType.REFRESH))

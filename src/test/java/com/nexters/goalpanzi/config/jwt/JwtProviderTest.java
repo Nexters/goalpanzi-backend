@@ -1,7 +1,7 @@
 package com.nexters.goalpanzi.config.jwt;
 
-import com.nexters.goalpanzi.common.jwt.Jwt;
-import com.nexters.goalpanzi.common.jwt.JwtProvider;
+import com.nexters.goalpanzi.common.auth.jwt.Jwt;
+import com.nexters.goalpanzi.common.auth.jwt.JwtProvider;
 import com.nexters.goalpanzi.exception.BaseException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import io.jsonwebtoken.Jwts;

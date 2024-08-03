@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.common.util;
+package com.nexters.goalpanzi.common.auth;
 
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.UnauthorizedException;

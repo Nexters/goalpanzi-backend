@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.common.jwt;
+package com.nexters.goalpanzi.common.auth.jwt;
 
 import com.sun.istack.NotNull;
 import jakarta.validation.constraints.NotEmpty;

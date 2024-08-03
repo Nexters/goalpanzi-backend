@@ -1,8 +1,8 @@
 package com.nexters.goalpanzi.config.jwt;
 
 import com.nexters.goalpanzi.common.filter.JwtAuthenticationFilter;
-import com.nexters.goalpanzi.common.jwt.JwtParser;
-import com.nexters.goalpanzi.common.jwt.JwtProvider;
+import com.nexters.goalpanzi.common.auth.jwt.JwtParser;
+import com.nexters.goalpanzi.common.auth.jwt.JwtProvider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
