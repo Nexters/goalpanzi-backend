@@ -36,7 +36,7 @@ public class Nonce {
 
     private static boolean isIssuedInThreeMinutes(long nonceTime) {
         var currentTime = new Date().getTime();
-        var threeMinutesInMillis = 30 * 60 * 1000; // 30분 = 30 * 60 * 1000 밀리초
+        var threeMinutesInMillis = 3 * 60 * 1000; // 3분 = 5 * 60 * 1000 밀리초
         return currentTime - nonceTime <= threeMinutesInMillis;
     }
 
