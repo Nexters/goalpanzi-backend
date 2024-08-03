@@ -30,7 +30,7 @@ public class MissionMemberController implements MissionMemberControllerDocs {
             @LoginMemberId final Long memberId,
             @RequestBody final JoinMissionRequest request
     ) {
-        missionMemberService.joinMission(memberId, request.missionCode());
+        missionMemberService.joinMission(memberId, request.invitationCode());
 
         return ResponseEntity.ok().build();
     }
