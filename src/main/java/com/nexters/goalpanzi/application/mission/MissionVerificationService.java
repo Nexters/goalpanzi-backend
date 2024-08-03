@@ -102,4 +102,10 @@ public class MissionVerificationService {
         missionVerificationRepository.findAllByMemberId(memberId)
                 .forEach(BaseEntity::delete);
     }
+
+    @Transactional
+    public void deleteAllByMissionId(final Long missionId) {
+        missionVerificationRepository.findAllByMissionId(missionId)
+                .forEach(BaseEntity::delete);
+    }
 }

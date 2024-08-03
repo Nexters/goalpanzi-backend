@@ -17,6 +17,8 @@ public interface MissionVerificationRepository extends JpaRepository<MissionVeri
 
     List<MissionVerification> findAllByMemberId(final Long memberId);
 
+    List<MissionVerification> findAllByMissionId(final Long missionId);
+
     Optional<MissionVerification> findByMemberIdAndMissionIdAndBoardNumber(final Long memberId, final Long missionId, final Integer boardNumber);
 
     @Query("SELECT mv FROM MissionVerification mv WHERE mv.mission.id = :missionId AND Date(mv.createdAt) = :date")

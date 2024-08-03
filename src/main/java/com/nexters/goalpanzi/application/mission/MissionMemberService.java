@@ -54,6 +54,12 @@ public class MissionMemberService {
                 .forEach(BaseEntity::delete);
     }
 
+    @Transactional
+    public void deleteAllByMissionId(final Long missionId) {
+        missionMemberRepository.findAllByMissionId(missionId)
+                .forEach(BaseEntity::delete);
+    }
+
     private Mission getMission(final InvitationCode invitationCode) {
         return missionRepository.findByInvitationCode(invitationCode)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MISSION, invitationCode.getCode()));
