@@ -35,7 +35,7 @@ public class MissionAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 미션을_조회한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginCommand(ID_TOKEN, EMAIL)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL)).as(LoginResponse.class);
 
         CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(),
                 LocalDateTime.now().plusDays(5), TimeOfDay.EVERYDAY,

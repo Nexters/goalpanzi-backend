@@ -3,7 +3,6 @@ package com.nexters.goalpanzi.application.mission.dto.response;
 import com.nexters.goalpanzi.application.member.dto.response.ProfileResponse;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.mission.MissionMember;
-import com.nexters.goalpanzi.domain.mission.MissionVerification;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
