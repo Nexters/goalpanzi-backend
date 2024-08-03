@@ -30,6 +30,7 @@ public class MemberController implements MemberControllerDocs {
         return ResponseEntity.ok().build();
     }
 
+    @Override
     @DeleteMapping
     public ResponseEntity<Void> deleteMember(
             @LoginMemberId final Long memberId
