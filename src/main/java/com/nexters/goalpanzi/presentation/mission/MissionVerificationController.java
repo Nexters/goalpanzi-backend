@@ -1,16 +1,16 @@
 package com.nexters.goalpanzi.presentation.mission;
 
 import com.nexters.goalpanzi.application.mission.MissionVerificationService;
+import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionVerificationCommand;
 import com.nexters.goalpanzi.application.mission.dto.request.MissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
-import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionVerificationRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,7 +22,7 @@ public class MissionVerificationController implements MissionVerificationControl
 
     private final MissionVerificationService missionVerificationService;
 
-    @GetMapping
+    @GetMapping("/{missionId}/verifications")
     public ResponseEntity<List<MissionVerificationResponse>> getVerifications(
             @LoginMemberId final Long memberId,
             @PathVariable(name = "missionId") final Long missionId,
@@ -44,12 +44,12 @@ public class MissionVerificationController implements MissionVerificationControl
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{missionId}/verifications/me")
+    @PostMapping(value = "/{missionId}/verifications/me")
     public ResponseEntity<Void> createVerification(
             @LoginMemberId final Long memberId,
             @PathVariable(name = "missionId") final Long missionId,
-            @RequestBody @Valid final CreateMissionVerificationRequest request) {
-        missionVerificationService.createVerification(request.toServiceDto(memberId, missionId));
+            @RequestPart(name = "imageFile") final MultipartFile imageFile) {
+        missionVerificationService.createVerification(new CreateMissionVerificationCommand(memberId, missionId, imageFile));
 
         return ResponseEntity.ok().build();
     }
