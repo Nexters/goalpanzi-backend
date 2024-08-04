@@ -84,6 +84,25 @@ public class MissionVerificationAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @Test
+    void 이미_인증한_미션이므로_인증에_실패한다() {
+        when(objectStorageClient.uploadFile(any(MultipartFile.class))).thenReturn(UPLOADED_IMAGE_URL);
+
+        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL)).as(LoginResponse.class);
+        CreateMissionRequest missionRequest = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(), LocalDateTime.now().plusDays(1), TimeOfDay.EVERYDAY, WEEK, 2);
+        MissionDetailResponse mission = 미션_생성(missionRequest, login.accessToken()).as(MissionDetailResponse.class);
+        미션_참여(mission.invitationCode(), login.accessToken());
+
+        ExtractableResponse<Response> firstResponse = 미션_인증(IMAGE_FILE, mission.missionId(), login.accessToken());
+        ExtractableResponse<Response> secondResponse = 미션_인증(IMAGE_FILE, mission.missionId(), login.accessToken());
+
+        assertAll(
+                () -> assertThat(firstResponse.statusCode()).isEqualTo(200),
+                () -> assertThat(secondResponse.statusCode()).isEqualTo(400),
+                () -> assertThat(secondResponse.jsonPath().getString("message")).isEqualTo(ErrorCode.DUPLICATE_VERIFICATION.getMessage())
+        );
+    }
+
 //    TODO 프로필 생성 후 확인 필요
 //    @Test
 //    void 특정_일자의_미션_인증_현황을_조회한다() {
