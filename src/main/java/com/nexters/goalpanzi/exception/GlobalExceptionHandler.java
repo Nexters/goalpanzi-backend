@@ -73,7 +73,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), exception.getMessage()));
     }
 
-    @ExceptionHandler({IllegalArgumentException.class})
+    @ExceptionHandler({BadRequestException.class, IllegalArgumentException.class})
     public ResponseEntity<ErrorResponse> handleBadRequestException(final RuntimeException exception) {
         logger.error("message", exception);
 
