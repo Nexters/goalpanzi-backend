@@ -24,7 +24,7 @@ public class NcpConfig {
     private String endPoint;
 
     @Bean
-    public AmazonS3 s3Client() {
+    public AmazonS3 amazonS3() {
         BasicAWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
 
         return AmazonS3ClientBuilder

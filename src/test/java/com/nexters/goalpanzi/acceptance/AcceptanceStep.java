@@ -11,7 +11,10 @@ import io.restassured.response.Response;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -70,6 +73,41 @@ public class AcceptanceStep {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
                 .when().get("/api/missions/" + missionId)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 미션_인증(MultipartFile imageFile, Long missionId, String accessToken) {
+        try {
+            return RestAssured.given().log().all()
+                    .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                    .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
+                    .multiPart("imageFile", imageFile.getOriginalFilename(), imageFile.getInputStream(), imageFile.getContentType())
+                    .when().post("/api/missions/" + missionId + "/verifications/me")
+                    .then().log().all()
+                    .extract();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static ExtractableResponse<Response> 일자별_미션_인증_조회(Long missionId, LocalDate date, String accessToken) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
+                .queryParam("date", date.toString())
+                .when().get("/api/missions/" + missionId + "/verifications")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 내_미션_인증_조회(Integer number, Long missionId, String accessToken) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
+                .when().get("/api/missions/" + missionId + "/verifications/me/" + number)
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();

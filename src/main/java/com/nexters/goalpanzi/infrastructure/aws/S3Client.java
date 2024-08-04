@@ -1,10 +1,11 @@
-package com.nexters.goalpanzi.infrastructure.ncp;
+package com.nexters.goalpanzi.infrastructure.aws;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.Upload;
+import com.nexters.goalpanzi.application.ncp.ObjectStorageClient;
 import com.nexters.goalpanzi.exception.BadRequestException;
 import com.nexters.goalpanzi.exception.BaseException;
 import jakarta.annotation.PostConstruct;
@@ -22,18 +23,18 @@ import static com.nexters.goalpanzi.exception.ErrorCode.INVALID_FILE;
 
 @RequiredArgsConstructor
 @Component
-public class ObjectStorageManager {
+public class S3Client implements ObjectStorageClient {
 
     @Value("${cloud.aws.credentials.bucket}")
     private String bucketName;
 
-    private final AmazonS3 s3Client;
+    private final AmazonS3 amazonS3;
 
     private TransferManager tm;
 
     @PostConstruct
     private void buildTransferManager() {
-        tm = TransferManagerBuilder.standard().withS3Client(s3Client).build();
+        tm = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
     }
 
     public String uploadFile(final MultipartFile file) {
@@ -42,16 +43,16 @@ public class ObjectStorageManager {
             Upload upload = tm.upload(bucketName, fileObjKeyName, convert(file));
             upload.waitForCompletion();
 
-            return s3Client.getUrl(bucketName, fileObjKeyName).toString();
+            return amazonS3.getUrl(bucketName, fileObjKeyName).toString();
         } catch (SdkClientException | InterruptedException e) {
-            throw new BaseException(FILE_UPLOAD_FAILED);
+            throw new BaseException(FILE_UPLOAD_FAILED, e);
         }
     }
 
     public void deleteFile(final String uploadedFileUrl) {
         if (uploadedFileUrl != null) {
             String fileObjKeyName = uploadedFileUrl.substring(uploadedFileUrl.lastIndexOf("/") + 1);
-            s3Client.deleteObject(bucketName, fileObjKeyName);
+            amazonS3.deleteObject(bucketName, fileObjKeyName);
         }
     }
 

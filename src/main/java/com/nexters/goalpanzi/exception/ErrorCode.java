@@ -25,15 +25,20 @@ public enum ErrorCode {
 
     // MISSION MEMBER
     ALREADY_EXISTS_MISSION_MEMBER("이미 참여한 미션입니다. [%s]"),
+    NOT_JOINED_MISSION_MEMBER("해당 미션에 참여하지 않았습니다."),
 
     // MISSION VERIFICATION
     NOT_FOUND_VERIFICATION("존재하지 않는 미션 인증입니다."),
     DUPLICATE_VERIFICATION("이미 인증한 미션이므로 더 이상 인증할 수 없습니다."),
     ALREADY_COMPLETED_MISSION("이미 완료된 미션이므로 더 이상 인증할 수 없습니다."),
+    NOT_VERIFICATION_DAY("인증 일자가 아니므로 인증할 수 없습니다."),
 
     // FILE UPLOAD
     INVALID_FILE("유효하지 않은 파일입니다."),
-    FILE_UPLOAD_FAILED("파일 업로드에 실패했습니다.");
+    FILE_UPLOAD_FAILED("파일 업로드에 실패하였습니다. [%s]"),
+
+    // ETC
+    FAILED_TO_GENERATE_HASH("해시값을 생성하는 데 실패하였습니다.");
 
     private String message;
 

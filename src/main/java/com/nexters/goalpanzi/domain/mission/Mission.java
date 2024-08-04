@@ -2,19 +2,13 @@ package com.nexters.goalpanzi.domain.mission;
 
 import com.nexters.goalpanzi.common.jpa.DaysOfWeekConverter;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -112,5 +106,9 @@ public class Mission extends BaseEntity {
         if (boardCount <= 0) {
             throw new IllegalArgumentException("보드 칸 개수는 최소 1이어야 합니다.");
         }
+    }
+
+    public boolean isMissionDay(final LocalDate date) {
+        return this.missionDays.contains(DayOfWeek.valueOf(date.getDayOfWeek().name()));
     }
 }

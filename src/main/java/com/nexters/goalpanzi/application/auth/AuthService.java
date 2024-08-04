@@ -4,6 +4,7 @@ import com.nexters.goalpanzi.application.auth.dto.request.AppleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
 import com.nexters.goalpanzi.application.auth.dto.response.TokenResponse;
+import com.nexters.goalpanzi.application.auth.google.GoogleIdentityToken;
 import com.nexters.goalpanzi.common.jwt.Jwt;
 import com.nexters.goalpanzi.common.jwt.JwtProvider;
 import com.nexters.goalpanzi.domain.auth.repository.RefreshTokenRepository;
@@ -32,7 +33,8 @@ public class AuthService {
     }
 
     public LoginResponse googleOAuthLogin(final GoogleLoginCommand command) {
-        SocialUserInfo socialUserInfo = new SocialUserInfo(command.identityToken(), command.email());
+        SocialUserInfo socialUserInfo = new SocialUserInfo(
+                GoogleIdentityToken.generate(command.email()), command.email());
 
         return socialLogin(socialUserInfo, SocialType.GOOGLE);
     }

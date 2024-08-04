@@ -1,9 +1,7 @@
 package com.nexters.goalpanzi.presentation.mission;
 
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
-import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
-import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionVerificationRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,10 +9,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,12 +32,12 @@ public interface MissionVerificationControllerDocs {
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(hidden = true))),
     })
-    @GetMapping
+    @GetMapping("/{missionId}/verifications")
     ResponseEntity<List<MissionVerificationResponse>> getVerifications(
             @Parameter(hidden = true) @LoginMemberId final Long memberId,
             @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
             @PathVariable(name = "missionId") final Long missionId,
-            @Schema(description = "미션 인증 일자", type = "string", format = "date", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+            @Schema(description = "미션 인증 일자", type = "string", format = "date", requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate date
     );
 
@@ -49,12 +47,12 @@ public interface MissionVerificationControllerDocs {
             @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(hidden = true))),
             @ApiResponse(responseCode = "404", description = "Not Found - 정보에 해당하는 이미지가 존재하지 않음", content = @Content(schema = @Schema(hidden = true))),
     })
-    @GetMapping("/me/{number}")
+    @GetMapping("/{missionId}/verifications/me/{number}")
     ResponseEntity<MissionVerificationResponse> getMyVerification(
             @Parameter(hidden = true) @LoginMemberId final Long memberId,
             @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
             @PathVariable(name = "missionId") final Long missionId,
-            @Schema(description = "보드판 번호", type = "integer", format = "int32", requiredMode = Schema.RequiredMode.REQUIRED)
+            @Schema(description = "보드칸 번호", type = "integer", format = "int32", requiredMode = Schema.RequiredMode.REQUIRED)
             @PathVariable(name = "number") final Integer number);
 
     @Operation(summary = "미션 인증", description = "미션 인증을 위해 이미지를 업로드합니다.")
@@ -64,10 +62,11 @@ public interface MissionVerificationControllerDocs {
             @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "404", description = "Not Found - 정보에 해당하는 미션이 존재하지 않음"),
     })
-    @PostMapping("/me")
+    @PostMapping(value = "/{missionId}/verifications/me")
     ResponseEntity<Void> createVerification(
             @Parameter(hidden = true) @LoginMemberId final Long memberId,
             @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
             @PathVariable(name = "missionId") final Long missionId,
-            @RequestBody @Valid final CreateMissionVerificationRequest request);
+            @Schema(description = "인증 이미지 파일", requiredMode = Schema.RequiredMode.REQUIRED)
+            @RequestPart(name = "imageFile") final MultipartFile imageFile);
 }

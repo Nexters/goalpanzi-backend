@@ -17,7 +17,6 @@ import org.springframework.http.MediaType;
 import java.security.NoSuchAlgorithmException;
 
 import static com.nexters.goalpanzi.fixture.MemberFixture.EMAIL;
-import static com.nexters.goalpanzi.fixture.MemberFixture.ID_TOKEN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.any;
@@ -58,8 +57,8 @@ public class LoginAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 사용자가_구글_로그인을_정상적으로_한다()  {
-        GoogleLoginCommand request = new GoogleLoginCommand(ID_TOKEN, EMAIL);
+    void 사용자가_구글_로그인을_정상적으로_한다() {
+        GoogleLoginCommand request = new GoogleLoginCommand(EMAIL);
 
         LoginResponse actual = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
