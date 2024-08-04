@@ -4,9 +4,10 @@ import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionVerifi
 import com.nexters.goalpanzi.application.mission.dto.request.MissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
-import com.nexters.goalpanzi.application.ncp.ObjectStorageManager;
+import com.nexters.goalpanzi.application.ncp.ObjectStorageClient;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
+import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.MissionMember;
 import com.nexters.goalpanzi.domain.mission.MissionVerification;
@@ -33,7 +34,7 @@ public class MissionVerificationService {
     private final MissionMemberRepository missionMemberRepository;
     private final MemberRepository memberRepository;
 
-    private final ObjectStorageManager objectStorageManager;
+    private final ObjectStorageClient objectStorageClient;
 
     @Transactional(readOnly = true)
     public List<MissionVerificationResponse> getVerifications(final MissionVerificationQuery query) {
@@ -64,9 +65,9 @@ public class MissionVerificationService {
 
         checkVerificationValidation(command.memberId(), mission, missionMember);
 
-        String imageUrl = objectStorageManager.uploadFile(command.imageFile());
-        missionVerificationRepository.save(new MissionVerification(missionMember.getMember(), mission, imageUrl));
+        String imageUrl = objectStorageClient.uploadFile(command.imageFile());
         missionMember.verify();
+        missionVerificationRepository.save(new MissionVerification(missionMember.getMember(), mission, imageUrl, missionMember.getVerificationCount()));
     }
 
     private MissionVerificationResponse convertToVerificationResponse(final MissionMember missionMember, final MissionVerification verification) {
@@ -93,7 +94,7 @@ public class MissionVerificationService {
     }
 
     private boolean isVerificationDay(final Mission mission, final LocalDate today) {
-        return mission.getMissionDays().contains(today.getDayOfWeek());
+        return mission.getMissionDays().contains(DayOfWeek.fromJavaDayOfWeek(today.getDayOfWeek()));
     }
 
     private boolean isDuplicatedVerification(final Long memberId, final Long missionId, final LocalDate today) {

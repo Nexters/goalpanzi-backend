@@ -32,9 +32,10 @@ public class MissionVerification extends BaseEntity {
     @Column(name = "board_number")
     private Integer boardNumber;
 
-    public MissionVerification(final Member member, final Mission mission, final String imageUrl) {
+    public MissionVerification(final Member member, final Mission mission, final String imageUrl, final Integer boardNumber) {
         this.member = member;
         this.mission = mission;
         this.imageUrl = imageUrl;
+        this.boardNumber = boardNumber;
     }
 }

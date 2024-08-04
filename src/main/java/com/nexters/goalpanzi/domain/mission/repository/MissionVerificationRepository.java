@@ -5,6 +5,7 @@ import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -18,11 +19,11 @@ public interface MissionVerificationRepository extends JpaRepository<MissionVeri
 
     Optional<MissionVerification> findByMemberIdAndMissionIdAndBoardNumber(final Long memberId, final Long missionId, final Integer boardNumber);
 
-    @Query(value = "SELECT * FROM mission_verification mv WHERE mv.mission_id = :missionId AND DATE(mv.created_at) = :date", nativeQuery = true)
-    List<MissionVerification> findAllByMissionIdAndDate(final Long missionId, final LocalDate date);
+    @Query("SELECT mv FROM MissionVerification mv WHERE mv.mission.id = :missionId AND Date(mv.createdAt) = :date")
+    List<MissionVerification> findAllByMissionIdAndDate(@Param("missionId") final Long missionId, @Param("date") final LocalDate date);
 
-    @Query(value = "SELECT * FROM mission_verification mv WHERE mv.member_id = :memberId AND mv.mission_id = :missionId AND DATE(mv.created_at) = :date", nativeQuery = true)
-    Optional<MissionVerification> findByMemberIdAndMissionIdAndDate(final Long memberId, final Long missionId, final LocalDate date);
+    @Query("SELECT mv FROM MissionVerification mv WHERE mv.member.id = :memberId AND mv.mission.id = :missionId AND Date(mv.createdAt) = :date")
+    Optional<MissionVerification> findByMemberIdAndMissionIdAndDate(@Param("memberId") Long memberId, @Param("missionId") Long missionId, @Param("date") LocalDate date);
 
     default MissionVerification getMyVerification(final Long memberId, final Long missionId, final Integer boardNumber) {
         return findByMemberIdAndMissionIdAndBoardNumber(memberId, missionId, boardNumber)
