@@ -7,7 +7,6 @@ import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificatio
 import com.nexters.goalpanzi.application.ncp.ObjectStorageClient;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
-import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.MissionMember;
 import com.nexters.goalpanzi.domain.mission.MissionVerification;
@@ -84,17 +83,13 @@ public class MissionVerificationService {
         if (isDuplicatedVerification(memberId, mission.getId(), today)) {
             throw new BadRequestException(ErrorCode.DUPLICATE_VERIFICATION);
         }
-        if (!isVerificationDay(mission, today)) {
+        if (!mission.isMissionDay(today)) {
             throw new BadRequestException(ErrorCode.NOT_VERIFICATION_DAY);
         }
     }
 
     private boolean isCompletedMission(final Mission mission, final MissionMember missionMember) {
         return missionMember.getVerificationCount() >= mission.getBoardCount();
-    }
-
-    private boolean isVerificationDay(final Mission mission, final LocalDate today) {
-        return mission.getMissionDays().contains(DayOfWeek.fromJavaDayOfWeek(today.getDayOfWeek()));
     }
 
     private boolean isDuplicatedVerification(final Long memberId, final Long missionId, final LocalDate today) {

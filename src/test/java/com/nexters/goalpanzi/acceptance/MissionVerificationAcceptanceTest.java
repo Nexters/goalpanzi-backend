@@ -52,7 +52,7 @@ public class MissionVerificationAcceptanceTest extends AcceptanceTest {
 
         LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL)).as(LoginResponse.class);
         LocalDate today = LocalDate.now();
-        List<DayOfWeek> missionDays = WEEK.stream().filter(d -> d != DayOfWeek.fromJavaDayOfWeek(today.getDayOfWeek())).toList();
+        List<DayOfWeek> missionDays = WEEK.stream().filter(d -> d != DayOfWeek.valueOf(today.getDayOfWeek().name())).toList();
         CreateMissionRequest missionRequest = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(), LocalDateTime.now().plusDays(1), TimeOfDay.EVERYDAY, missionDays, 1);
         MissionDetailResponse mission = 미션_생성(missionRequest, login.accessToken()).as(MissionDetailResponse.class);
         미션_참여(mission.invitationCode(), login.accessToken());
