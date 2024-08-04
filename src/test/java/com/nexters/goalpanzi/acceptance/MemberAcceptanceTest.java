@@ -24,7 +24,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 회원이_탈퇴한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginCommand(ID_TOKEN_HOST, EMAIL_HOST)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
         MissionDetailResponse mission = 미션_생성(login.accessToken()).as(MissionDetailResponse.class);
 
         RestAssured.given().log().all()
