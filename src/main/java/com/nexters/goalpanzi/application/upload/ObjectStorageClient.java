@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.application.ncp;
+package com.nexters.goalpanzi.application.upload;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
