@@ -10,7 +10,7 @@ class MemberTest {
 
     @Test
     void 프로필_생성이_가능하다() {
-        Member member = Member.socialLogin(SOCIAL_ID, EMAIL, SocialType.APPLE);
+        Member member = Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.APPLE);
         member.updateProfile(NICKNAME, CharacterType.CAT);
 
         assertAll(
@@ -22,7 +22,7 @@ class MemberTest {
 
     @Test
     void 프로필_생성후_변경이_가능하다() {
-        Member member = Member.socialLogin(SOCIAL_ID, EMAIL, SocialType.APPLE);
+        Member member = Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.APPLE);
         member.updateProfile(NICKNAME, CharacterType.CAT);
         member.updateProfile(NICKNAME,null);
 
@@ -35,7 +35,7 @@ class MemberTest {
 
     @Test
     void 닉네임만_설정이_가능하다() {
-        Member member = Member.socialLogin(SOCIAL_ID, EMAIL, SocialType.APPLE);
+        Member member = Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.APPLE);
         member.updateProfile(NICKNAME, null);
 
         assertAll(
@@ -46,7 +46,7 @@ class MemberTest {
 
     @Test
     void 캐릭터만_설정이_가능하다() {
-        Member member = Member.socialLogin(SOCIAL_ID, EMAIL, SocialType.APPLE);
+        Member member = Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.APPLE);
         member.updateProfile(null, CharacterType.CAT);
 
         assertAll(

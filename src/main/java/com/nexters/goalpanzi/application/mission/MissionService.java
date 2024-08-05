@@ -2,31 +2,44 @@ package com.nexters.goalpanzi.application.mission;
 
 import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionCommand;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
+import com.nexters.goalpanzi.application.mission.event.DeleteMissionEvent;
+import com.nexters.goalpanzi.application.mission.event.JoinMissionEvent;
 import com.nexters.goalpanzi.domain.mission.InvitationCode;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
+import com.nexters.goalpanzi.exception.ErrorCode;
+import com.nexters.goalpanzi.exception.ForbiddenException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class MissionService {
 
     private final MissionRepository missionRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
+    @Transactional
     public MissionDetailResponse createMission(final CreateMissionCommand command) {
-        Mission mission = Mission.create(
-                command.hostMemberId(),
-                command.description(),
-                command.missionStartDate(),
-                command.missionEndDate(),
-                command.timeOfDay(),
-                command.missionDays(),
-                command.boardCount(),
-                generateInvitationCode()
+        Mission mission = missionRepository.save(
+                Mission.create(
+                        command.hostMemberId(),
+                        command.description(),
+                        command.missionStartDate(),
+                        command.missionEndDate(),
+                        command.timeOfDay(),
+                        command.missionDays(),
+                        command.boardCount(),
+                        generateInvitationCode()
+                )
         );
+        eventPublisher.publishEvent(
+                new JoinMissionEvent(mission.getHostMemberId(), mission.getInvitationCode().getCode()));
 
-        return MissionDetailResponse.from(missionRepository.save(mission));
+        return MissionDetailResponse.from(mission);
     }
 
     private InvitationCode generateInvitationCode() {
@@ -34,6 +47,7 @@ public class MissionService {
         do {
             invitationCode = InvitationCode.generate();
         } while (alreadyExistInvitationCode(invitationCode));
+
         return invitationCode;
     }
 
@@ -45,5 +59,19 @@ public class MissionService {
         Mission mission = missionRepository.getMission(missionId);
 
         return MissionDetailResponse.from(mission);
+    }
+
+    @Transactional
+    public void deleteMission(final Long memberId, final Long missionId) {
+        Mission mission = missionRepository.getMission(missionId);
+        validateAuthority(memberId, mission);
+        mission.delete();
+        eventPublisher.publishEvent(new DeleteMissionEvent(mission.getId()));
+    }
+
+    private void validateAuthority(final Long memberId, final Mission mission) {
+        if (!mission.getHostMemberId().equals(memberId)) {
+            throw new ForbiddenException(ErrorCode.CANNOT_DELETE_MISSION);
+        }
     }
 }

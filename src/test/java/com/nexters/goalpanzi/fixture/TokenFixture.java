@@ -1,7 +1,7 @@
 package com.nexters.goalpanzi.fixture;
 
-import com.nexters.goalpanzi.common.jwt.JwtProvider;
-import com.nexters.goalpanzi.common.util.Nonce;
+import com.nexters.goalpanzi.common.auth.jwt.JwtProvider;
+import com.nexters.goalpanzi.common.auth.Nonce;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 

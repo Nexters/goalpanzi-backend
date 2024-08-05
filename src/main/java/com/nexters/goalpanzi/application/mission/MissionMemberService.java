@@ -1,6 +1,7 @@
 package com.nexters.goalpanzi.application.mission;
 
 import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
+import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.InvitationCode;
@@ -27,7 +28,7 @@ public class MissionMemberService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void joinMission(final Long memberId, final String invitationCode) {
+    public void joinMission(final Long memberId, final InvitationCode invitationCode) {
         Member member = memberRepository.getMember(memberId);
         Mission mission = getMission(invitationCode);
         validateAlreadyJoin(member, mission);
@@ -47,8 +48,20 @@ public class MissionMemberService {
         return MissionsResponse.of(member, missionMembers);
     }
 
-    private Mission getMission(final String invitationCode) {
-        return missionRepository.findByInvitationCode(new InvitationCode(invitationCode))
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MISSION, invitationCode));
+    @Transactional
+    public void deleteAllByMemberId(final Long memberId) {
+        missionMemberRepository.findAllByMemberId(memberId)
+                .forEach(BaseEntity::delete);
+    }
+
+    @Transactional
+    public void deleteAllByMissionId(final Long missionId) {
+        missionMemberRepository.findAllByMissionId(missionId)
+                .forEach(BaseEntity::delete);
+    }
+
+    private Mission getMission(final InvitationCode invitationCode) {
+        return missionRepository.findByInvitationCode(invitationCode)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MISSION, invitationCode.getCode()));
     }
 }

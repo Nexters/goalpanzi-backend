@@ -1,8 +1,9 @@
 package com.nexters.goalpanzi.config.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nexters.goalpanzi.common.filter.JwtAuthenticationFilter;
-import com.nexters.goalpanzi.common.jwt.JwtParser;
-import com.nexters.goalpanzi.common.jwt.JwtProvider;
+import com.nexters.goalpanzi.common.auth.jwt.JwtParser;
+import com.nexters.goalpanzi.common.auth.jwt.JwtProvider;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -43,7 +44,7 @@ public class JwtAuthenticationFilterTest {
         @Bean
         public FilterRegistrationBean<JwtAuthenticationFilter> jwtFilter() {
             FilterRegistrationBean<JwtAuthenticationFilter> filterRegistrationBean = new FilterRegistrationBean<>();
-            filterRegistrationBean.setFilter(new JwtAuthenticationFilter(jwtProvider(), jwtParser()));
+            filterRegistrationBean.setFilter(new JwtAuthenticationFilter(jwtProvider(), jwtParser(), new ObjectMapper()));
             filterRegistrationBean.addUrlPatterns("/api/*");
             return filterRegistrationBean;
         }
@@ -59,6 +60,6 @@ public class JwtAuthenticationFilterTest {
     void 잘못된_JWT_토큰이_붙은_사용자_요청을_처리한다() throws Exception {
         mockMvc.perform(get("/api/protected")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + "invalidToken"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
     }
 }

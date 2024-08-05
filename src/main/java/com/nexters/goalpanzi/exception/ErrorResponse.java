@@ -1,7 +1,7 @@
 package com.nexters.goalpanzi.exception;
 
 public record ErrorResponse(
-        int code,
+        Integer code,
         String message
 ) {
 }

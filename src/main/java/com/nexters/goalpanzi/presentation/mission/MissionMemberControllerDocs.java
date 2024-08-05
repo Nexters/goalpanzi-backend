@@ -15,7 +15,7 @@ public interface MissionMemberControllerDocs {
     @Operation(summary = "내가 참여한 미션 조회")
     ResponseEntity<MissionsResponse> getMissions(@Parameter(hidden = true) @LoginMemberId final Long memberId);
 
-    @Operation(summary = "미션 참여")
+    @Operation(summary = "미션 참여", description = "초대코드로 미션에 참여합니다.")
     ResponseEntity<Void> joinMission(
             @Parameter(hidden = true) @LoginMemberId final Long memberId,
             @RequestBody JoinMissionRequest request

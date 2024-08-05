@@ -22,6 +22,9 @@ public enum ErrorCode {
 
     // MISSION
     NOT_FOUND_MISSION("존재하지 않는 미션입니다. [%s]"),
+    INVALID_INVITATION_CODE("초대코드가 올바르지 않습니다."),
+    INVALID_UPLOAD_TIME_OF_DAY("올바르지 않은 미션 인증 업로드 시간대입니다."),
+    CANNOT_DELETE_MISSION("미션 삭제 권한이 없습니다."),
 
     // MISSION MEMBER
     ALREADY_EXISTS_MISSION_MEMBER("이미 참여한 미션입니다. [%s]"),

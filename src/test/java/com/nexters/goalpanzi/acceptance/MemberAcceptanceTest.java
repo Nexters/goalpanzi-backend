@@ -3,9 +3,7 @@ package com.nexters.goalpanzi.acceptance;
 import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
-import com.nexters.goalpanzi.common.jwt.JwtProvider;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
-import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import static com.nexters.goalpanzi.acceptance.AcceptanceStep.*;
-import static com.nexters.goalpanzi.fixture.MemberFixture.EMAIL;
-import static com.nexters.goalpanzi.fixture.MemberFixture.ID_TOKEN;
+import static com.nexters.goalpanzi.fixture.MemberFixture.EMAIL_HOST;
+import static com.nexters.goalpanzi.fixture.MemberFixture.ID_TOKEN_HOST;
 import static com.nexters.goalpanzi.fixture.TokenFixture.BEARER;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,9 +24,8 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 회원이_탈퇴한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginCommand(ID_TOKEN, EMAIL)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
         MissionDetailResponse mission = 미션_생성(login.accessToken()).as(MissionDetailResponse.class);
-        미션_참여(mission.invitationCode(), login.accessToken());
 
         RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

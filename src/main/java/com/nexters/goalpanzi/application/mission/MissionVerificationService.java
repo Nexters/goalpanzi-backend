@@ -5,6 +5,7 @@ import com.nexters.goalpanzi.application.mission.dto.request.MissionVerification
 import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
 import com.nexters.goalpanzi.application.ncp.ObjectStorageClient;
+import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.Mission;
@@ -94,5 +95,17 @@ public class MissionVerificationService {
 
     private boolean isDuplicatedVerification(final Long memberId, final Long missionId, final LocalDate today) {
         return missionVerificationRepository.findByMemberIdAndMissionIdAndDate(memberId, missionId, today).isPresent();
+    }
+
+    @Transactional
+    public void deleteAllByMemberId(final Long memberId) {
+        missionVerificationRepository.findAllByMemberId(memberId)
+                .forEach(BaseEntity::delete);
+    }
+
+    @Transactional
+    public void deleteAllByMissionId(final Long missionId) {
+        missionVerificationRepository.findAllByMissionId(missionId)
+                .forEach(BaseEntity::delete);
     }
 }

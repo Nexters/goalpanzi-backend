@@ -15,7 +15,9 @@ import java.util.Optional;
 @Repository
 public interface MissionVerificationRepository extends JpaRepository<MissionVerification, Long> {
 
-    List<MissionVerification> findByMemberId(final Long memberId);
+    List<MissionVerification> findAllByMemberId(final Long memberId);
+
+    List<MissionVerification> findAllByMissionId(final Long missionId);
 
     Optional<MissionVerification> findByMemberIdAndMissionIdAndBoardNumber(final Long memberId, final Long missionId, final Integer boardNumber);
 
