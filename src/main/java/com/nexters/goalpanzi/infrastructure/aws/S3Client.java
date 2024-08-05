@@ -5,7 +5,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.Upload;
-import com.nexters.goalpanzi.application.ncp.ObjectStorageClient;
+import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
 import com.nexters.goalpanzi.exception.BadRequestException;
 import com.nexters.goalpanzi.exception.BaseException;
 import jakarta.annotation.PostConstruct;

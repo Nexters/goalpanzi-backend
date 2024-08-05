@@ -3,7 +3,7 @@ package com.nexters.goalpanzi.application.mission;
 import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionCommand;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.application.mission.event.DeleteMissionEvent;
-import com.nexters.goalpanzi.application.mission.event.JoinMissionEvent;
+import com.nexters.goalpanzi.application.mission.event.CreateMissionEvent;
 import com.nexters.goalpanzi.domain.mission.InvitationCode;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
@@ -36,8 +36,10 @@ public class MissionService {
                         generateInvitationCode()
                 )
         );
-        eventPublisher.publishEvent(
-                new JoinMissionEvent(mission.getHostMemberId(), mission.getInvitationCode().getCode()));
+        eventPublisher.publishEvent(new CreateMissionEvent(
+                mission.getHostMemberId(),
+                mission.getInvitationCode().getCode())
+        );
 
         return MissionDetailResponse.from(mission);
     }

@@ -4,7 +4,7 @@ import com.nexters.goalpanzi.application.member.event.DeleteMemberEvent;
 import com.nexters.goalpanzi.application.mission.MissionMemberService;
 import com.nexters.goalpanzi.application.mission.MissionVerificationService;
 import com.nexters.goalpanzi.application.mission.event.DeleteMissionEvent;
-import com.nexters.goalpanzi.application.mission.event.JoinMissionEvent;
+import com.nexters.goalpanzi.application.mission.event.CreateMissionEvent;
 import com.nexters.goalpanzi.domain.mission.InvitationCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class MissionMemberEventHandler {
     private final MissionVerificationService missionVerificationService;
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
-    void handleJoinMissionEvent(final JoinMissionEvent event) {
+    void handleCreateMissionEvent(final CreateMissionEvent event) {
         missionMemberService.joinMission(event.memberId(), new InvitationCode(event.invitationCode()));
         log.info("Handled JoinMissionEvent for memberId: {}", event.memberId());
     }

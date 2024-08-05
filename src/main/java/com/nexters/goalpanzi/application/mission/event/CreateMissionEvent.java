@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.application.mission.event;
 
-public record JoinMissionEvent(
+public record CreateMissionEvent(
         Long memberId,
         String invitationCode
 ) {
