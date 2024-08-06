@@ -11,11 +11,11 @@ class MemberTest {
     @Test
     void 프로필_생성이_가능하다() {
         Member member = Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.APPLE);
-        member.updateProfile(NICKNAME, CharacterType.CAT);
+        member.updateProfile(NICKNAME_HOST, CharacterType.CAT);
 
         assertAll(
                 () -> assertThat(member.isProfileSet()).isTrue(),
-                () -> assertThat(member.getNickname()).isEqualTo(NICKNAME),
+                () -> assertThat(member.getNickname()).isEqualTo(NICKNAME_HOST),
                 () -> assertThat(member.getCharacterType()).isEqualTo(CharacterType.CAT)
         );
     }
@@ -23,12 +23,12 @@ class MemberTest {
     @Test
     void 프로필_생성후_변경이_가능하다() {
         Member member = Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.APPLE);
-        member.updateProfile(NICKNAME, CharacterType.CAT);
-        member.updateProfile(NICKNAME,null);
+        member.updateProfile(NICKNAME_HOST, CharacterType.CAT);
+        member.updateProfile(NICKNAME_HOST, null);
 
         assertAll(
                 () -> assertThat(member.isProfileSet()).isTrue(),
-                () -> assertThat(member.getNickname()).isEqualTo(NICKNAME),
+                () -> assertThat(member.getNickname()).isEqualTo(NICKNAME_HOST),
                 () -> assertThat(member.getCharacterType()).isEqualTo(CharacterType.CAT)
         );
     }
@@ -36,11 +36,11 @@ class MemberTest {
     @Test
     void 닉네임만_설정이_가능하다() {
         Member member = Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.APPLE);
-        member.updateProfile(NICKNAME, null);
+        member.updateProfile(NICKNAME_HOST, null);
 
         assertAll(
                 () -> assertThat(member.isProfileSet()).isFalse(),
-                () -> assertThat(member.getNickname()).isEqualTo(NICKNAME)
+                () -> assertThat(member.getNickname()).isEqualTo(NICKNAME_HOST)
         );
     }
 
