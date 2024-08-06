@@ -16,7 +16,7 @@ public enum EventItem {
     BLACK_PIG(21),
     SUNRISE(25),
     GREEN_TEA_FIELD(29),
-    SEA(31);
+    BEACH(31);
 
     private final int number;
 
