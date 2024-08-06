@@ -1,12 +1,13 @@
 package com.nexters.goalpanzi.domain.mission;
 
-import com.nexters.goalpanzi.infrastructure.jpa.DaysOfWeekConverter;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
+import com.nexters.goalpanzi.infrastructure.jpa.DaysOfWeekConverter;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
+import org.joda.time.LocalTime;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -108,7 +109,17 @@ public class Mission extends BaseEntity {
         }
     }
 
-    public boolean isMissionDay(final LocalDate date) {
-        return this.missionDays.contains(DayOfWeek.valueOf(date.getDayOfWeek().name()));
+    public boolean isMissionPeriod() {
+        LocalDate today = LocalDate.now();
+        return !today.isBefore(this.missionStartDate.toLocalDate()) && !today.isAfter(missionEndDate.toLocalDate());
+    }
+
+    public boolean isMissionDay() {
+        return this.missionDays.contains(DayOfWeek.valueOf(LocalDate.now().getDayOfWeek().name()));
+    }
+
+    public boolean isMissionTime() {
+        String now = LocalTime.now().toString().substring(0, 5);
+        return now.compareTo(uploadStartTime) >= 0 && now.compareTo(uploadEndTime) <= 0;
     }
 }

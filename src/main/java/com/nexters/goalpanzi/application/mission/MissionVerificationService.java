@@ -80,12 +80,17 @@ public class MissionVerificationService {
         if (isCompletedMission(mission, missionMember)) {
             throw new BadRequestException(ErrorCode.ALREADY_COMPLETED_MISSION);
         }
-        LocalDate today = LocalDate.now();
-        if (isDuplicatedVerification(memberId, mission.getId(), today)) {
+        if (isDuplicatedVerification(memberId, mission.getId())) {
             throw new BadRequestException(ErrorCode.DUPLICATE_VERIFICATION);
         }
-        if (!mission.isMissionDay(today)) {
+        if (!mission.isMissionPeriod()) {
+            throw new BadRequestException(ErrorCode.NOT_VERIFICATION_PERIOD);
+        }
+        if (!mission.isMissionDay()) {
             throw new BadRequestException(ErrorCode.NOT_VERIFICATION_DAY);
+        }
+        if (!mission.isMissionTime()) {
+            throw new BadRequestException(ErrorCode.NOT_VERIFICATION_TIME);
         }
     }
 
@@ -93,8 +98,8 @@ public class MissionVerificationService {
         return missionMember.getVerificationCount() >= mission.getBoardCount();
     }
 
-    private boolean isDuplicatedVerification(final Long memberId, final Long missionId, final LocalDate today) {
-        return missionVerificationRepository.findByMemberIdAndMissionIdAndDate(memberId, missionId, today).isPresent();
+    private boolean isDuplicatedVerification(final Long memberId, final Long missionId) {
+        return missionVerificationRepository.findByMemberIdAndMissionIdAndDate(memberId, missionId, LocalDate.now()).isPresent();
     }
 
     @Transactional

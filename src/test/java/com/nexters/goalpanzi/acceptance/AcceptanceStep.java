@@ -1,8 +1,15 @@
 package com.nexters.goalpanzi.acceptance;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionBoardResponse;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.TimeOfDay;
+import com.nexters.goalpanzi.presentation.member.dto.UpdateProfileRequest;
 import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionRequest;
 import com.nexters.goalpanzi.presentation.mission.dto.JoinMissionRequest;
 import io.restassured.RestAssured;
@@ -28,6 +35,17 @@ public class AcceptanceStep {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
                 .when().post("/api/auth/login/google")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 프로필_설정(UpdateProfileRequest request, String accessToken) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
+                .body(request)
+                .when().patch("/api/member/profile")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
@@ -92,8 +110,8 @@ public class AcceptanceStep {
         }
     }
 
-    public static ExtractableResponse<Response> 일자별_미션_인증_조회(Long missionId, LocalDate date, String accessToken) {
-        return RestAssured.given().log().all()
+    public static List<MissionVerificationResponse> 일자별_미션_인증_조회(Long missionId, LocalDate date, String accessToken) throws JsonProcessingException {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
                 .queryParam("date", date.toString())
@@ -101,6 +119,10 @@ public class AcceptanceStep {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        return objectMapper.readValue(response.asString(), new TypeReference<List<MissionVerificationResponse>>() {
+        });
     }
 
     public static ExtractableResponse<Response> 내_미션_인증_조회(Integer number, Long missionId, String accessToken) {
@@ -111,5 +133,19 @@ public class AcceptanceStep {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
+    }
+
+    public static List<MissionBoardResponse> 보드판_조회(Long missionId, String accessToken) throws JsonProcessingException {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
+                .when().get("/api/missions/" + missionId + "/board")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        return objectMapper.readValue(response.asString(), new TypeReference<List<MissionBoardResponse>>() {
+        });
     }
 }
