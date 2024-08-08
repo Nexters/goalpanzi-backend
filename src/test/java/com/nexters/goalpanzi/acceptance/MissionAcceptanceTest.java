@@ -68,6 +68,31 @@ public class MissionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
+    void 초대코드로_미션을_조회한다() {
+        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+
+        CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(),
+                LocalDateTime.now().plusDays(5), TimeOfDay.EVERYDAY,
+                List.of(DayOfWeek.MONDAY, DayOfWeek.FRIDAY), 20);
+
+        MissionDetailResponse mission = 미션_생성(request, login.accessToken()).as(MissionDetailResponse.class);
+
+        MissionDetailResponse actual = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, BEARER + login.accessToken())
+                .when().get("/api/missions?invitationCode=" + mission.invitationCode())
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract().as(MissionDetailResponse.class);
+
+        assertAll(
+                () -> assertThat(actual.description()).isEqualTo(DESCRIPTION),
+                () -> assertThat(actual.boardCount()).isEqualTo(20),
+                () -> assertThat(actual.missionDays()).containsExactly(DayOfWeek.MONDAY, DayOfWeek.FRIDAY),
+                () -> assertThat(actual.hostMemberId()).isEqualTo(1L));
+    }
+
+    @Test
     void 미션을_생성한_사용자는_자동으로_경쟁에_참가된다() {
         LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
 
