@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Getter
-public enum EventItem {
+public enum Reward {
     ORANGE(1),
     CANOLA_FLOWER(3),
     DOLHARUBANG(6),
@@ -20,20 +20,19 @@ public enum EventItem {
 
     private final int number;
 
-    private static final Map<Integer, EventItem> EVENT_ITEM_MAP = new HashMap<>();
+    private static final Map<Integer, Reward> REWARD_MAP = new HashMap<>();
 
     static {
-        for (EventItem item : values()) {
-            EVENT_ITEM_MAP.put(item.getNumber(), item);
+        for (Reward item : values()) {
+            REWARD_MAP.put(item.getNumber(), item);
         }
     }
 
-    EventItem(int number) {
+    Reward(int number) {
         this.number = number;
     }
 
-    public static String of(final int number) {
-        EventItem item = EVENT_ITEM_MAP.get(number);
-        return (item != null) ? item.toString() : null;
+    public static Reward of(final int number) {
+        return REWARD_MAP.get(number);
     }
 }
