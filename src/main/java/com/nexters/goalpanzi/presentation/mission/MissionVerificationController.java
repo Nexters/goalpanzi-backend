@@ -5,6 +5,7 @@ import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionVerifi
 import com.nexters.goalpanzi.application.mission.dto.request.MissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationsResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/missions")
@@ -23,12 +23,12 @@ public class MissionVerificationController implements MissionVerificationControl
     private final MissionVerificationService missionVerificationService;
 
     @GetMapping("/{missionId}/verifications")
-    public ResponseEntity<List<MissionVerificationResponse>> getVerifications(
+    public ResponseEntity<MissionVerificationsResponse> getVerifications(
             @LoginMemberId final Long memberId,
             @PathVariable(name = "missionId") final Long missionId,
             @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate date
     ) {
-        List<MissionVerificationResponse> response = missionVerificationService.getVerifications(new MissionVerificationQuery(memberId, missionId, date));
+        MissionVerificationsResponse response = missionVerificationService.getVerifications(new MissionVerificationQuery(memberId, missionId, date));
 
         return ResponseEntity.ok(response);
     }

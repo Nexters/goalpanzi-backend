@@ -3,6 +3,7 @@ package com.nexters.goalpanzi.acceptance;
 import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.TimeOfDay;
+import com.nexters.goalpanzi.presentation.member.dto.UpdateProfileRequest;
 import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionRequest;
 import com.nexters.goalpanzi.presentation.mission.dto.JoinMissionRequest;
 import io.restassured.RestAssured;
@@ -28,6 +29,17 @@ public class AcceptanceStep {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(request)
                 .when().post("/api/auth/login/google")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 프로필_설정(UpdateProfileRequest request, String accessToken) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
+                .body(request)
+                .when().patch("/api/member/profile")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();
@@ -108,6 +120,16 @@ public class AcceptanceStep {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
                 .when().get("/api/missions/" + missionId + "/verifications/me/" + number)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 보드판_조회(Long missionId, String accessToken) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
+                .when().get("/api/missions/" + missionId + "/board")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();

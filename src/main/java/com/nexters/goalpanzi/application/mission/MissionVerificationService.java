@@ -4,6 +4,7 @@ import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionVerifi
 import com.nexters.goalpanzi.application.mission.dto.request.MissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationsResponse;
 import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.member.Member;
@@ -37,7 +38,7 @@ public class MissionVerificationService {
     private final ObjectStorageClient objectStorageClient;
 
     @Transactional(readOnly = true)
-    public List<MissionVerificationResponse> getVerifications(final MissionVerificationQuery query) {
+    public MissionVerificationsResponse getVerifications(final MissionVerificationQuery query) {
         LocalDate date = query.date() != null ? query.date() : LocalDate.now();
         Member member = memberRepository.getMember(query.memberId());
         List<MissionVerification> verifications = missionVerificationRepository.findAllByMissionIdAndDate(query.missionId(), date);
@@ -45,11 +46,12 @@ public class MissionVerificationService {
         Map<Long, MissionVerification> verificationMap = verifications.stream()
                 .collect(Collectors.toMap(v -> v.getMember().getId(), v -> v));
 
-        return missionMemberRepository.findAllByMissionId(query.missionId()).stream()
-                .map(m -> convertToVerificationResponse(m, verificationMap.get(m.getMember().getId())))
-                .sorted(Comparator.comparing((MissionVerificationResponse r) -> r.nickname().equals(member.getNickname())).reversed()
-                        .thenComparing(MissionVerificationResponse::verifiedAt, Comparator.nullsLast(Comparator.reverseOrder())))
-                .collect(Collectors.toList());
+        return new MissionVerificationsResponse(
+                missionMemberRepository.findAllByMissionId(query.missionId()).stream()
+                        .map(m -> convertToVerificationResponse(m, verificationMap.get(m.getMember().getId())))
+                        .sorted(Comparator.comparing((MissionVerificationResponse r) -> r.nickname().equals(member.getNickname())).reversed()
+                                .thenComparing(MissionVerificationResponse::verifiedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+                        .collect(Collectors.toList()));
     }
 
     public MissionVerificationResponse getMyVerification(final MyMissionVerificationQuery query) {
@@ -80,12 +82,17 @@ public class MissionVerificationService {
         if (isCompletedMission(mission, missionMember)) {
             throw new BadRequestException(ErrorCode.ALREADY_COMPLETED_MISSION);
         }
-        LocalDate today = LocalDate.now();
-        if (isDuplicatedVerification(memberId, mission.getId(), today)) {
+        if (isDuplicatedVerification(memberId, mission.getId())) {
             throw new BadRequestException(ErrorCode.DUPLICATE_VERIFICATION);
         }
-        if (!mission.isMissionDay(today)) {
+        if (!mission.isMissionPeriod()) {
+            throw new BadRequestException(ErrorCode.NOT_VERIFICATION_PERIOD);
+        }
+        if (!mission.isMissionDay()) {
             throw new BadRequestException(ErrorCode.NOT_VERIFICATION_DAY);
+        }
+        if (!mission.isMissionTime()) {
+            throw new BadRequestException(ErrorCode.NOT_VERIFICATION_TIME);
         }
     }
 
@@ -93,8 +100,8 @@ public class MissionVerificationService {
         return missionMember.getVerificationCount() >= mission.getBoardCount();
     }
 
-    private boolean isDuplicatedVerification(final Long memberId, final Long missionId, final LocalDate today) {
-        return missionVerificationRepository.findByMemberIdAndMissionIdAndDate(memberId, missionId, today).isPresent();
+    private boolean isDuplicatedVerification(final Long memberId, final Long missionId) {
+        return missionVerificationRepository.findByMemberIdAndMissionIdAndDate(memberId, missionId, LocalDate.now()).isPresent();
     }
 
     @Transactional

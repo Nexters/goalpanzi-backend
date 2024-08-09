@@ -34,7 +34,9 @@ public enum ErrorCode {
     NOT_FOUND_VERIFICATION("존재하지 않는 미션 인증입니다."),
     DUPLICATE_VERIFICATION("이미 인증한 미션이므로 더 이상 인증할 수 없습니다."),
     ALREADY_COMPLETED_MISSION("이미 완료된 미션이므로 더 이상 인증할 수 없습니다."),
+    NOT_VERIFICATION_PERIOD("인증 기간이 아니므로 인증할 수 없습니다."),
     NOT_VERIFICATION_DAY("인증 일자가 아니므로 인증할 수 없습니다."),
+    NOT_VERIFICATION_TIME("인증 시간대가 아니므로 인증할 수 없습니다."),
 
     // FILE UPLOAD
     INVALID_FILE("유효하지 않은 파일입니다."),
