@@ -1,9 +1,8 @@
 package com.nexters.goalpanzi.acceptance;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
-import com.nexters.goalpanzi.application.mission.dto.response.MissionBoardResponse;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionBoardsResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
 import com.nexters.goalpanzi.domain.mission.TimeOfDay;
@@ -14,7 +13,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static com.nexters.goalpanzi.acceptance.AcceptanceStep.*;
 import static com.nexters.goalpanzi.fixture.MemberFixture.*;
@@ -30,7 +28,7 @@ public class MissionBoardAcceptanceTest extends AcceptanceTest {
     private ObjectStorageClient objectStorageClient;
 
     @Test
-    void 보드판_정보를_조회한다() throws JsonProcessingException {
+    void 보드판_정보를_조회한다() {
         when(objectStorageClient.uploadFile(any(MultipartFile.class))).thenReturn(UPLOADED_IMAGE_URL);
 
         LoginResponse hostLogin = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
@@ -48,18 +46,18 @@ public class MissionBoardAcceptanceTest extends AcceptanceTest {
         프로필_설정(new UpdateProfileRequest(NICKNAME_MEMBER_B, CHARACTER_MEMBER_B), memberBLogin.accessToken());
         미션_참여(mission.invitationCode(), memberBLogin.accessToken());
 
-        List<MissionBoardResponse> board = 보드판_조회(mission.missionId(), hostLogin.accessToken());
+        MissionBoardsResponse boards = 보드판_조회(mission.missionId(), hostLogin.accessToken()).as(MissionBoardsResponse.class);
 
         assertAll(
-                () -> assertThat(board.size()).isEqualTo(mission.boardCount() + 1),
-                () -> assertThat(board.get(0).eventItem()).isNull(),
-                () -> assertThat(board.get(0).number()).isEqualTo(0),
-                () -> assertThat(board.get(0).missionMembers().size()).isEqualTo(1),
-                () -> assertThat(board.get(1).eventItem()).isNotNull(),
-                () -> assertThat(board.get(1).number()).isEqualTo(1),
-                () -> assertThat(board.get(1).missionMembers().size()).isEqualTo(2),
-                () -> assertThat(board.get(1).missionMembers().get(0).nickname()).isEqualTo(NICKNAME_HOST),
-                () -> assertThat(board.get(1).missionMembers().get(1).nickname()).isEqualTo(NICKNAME_MEMBER_A)
+                () -> assertThat(boards.missionBoards().size()).isEqualTo(mission.boardCount() + 1),
+                () -> assertThat(boards.missionBoards().get(0).reward()).isNull(),
+                () -> assertThat(boards.missionBoards().get(0).number()).isEqualTo(0),
+                () -> assertThat(boards.missionBoards().get(0).missionBoardMembers().size()).isEqualTo(1),
+                () -> assertThat(boards.missionBoards().get(1).reward()).isNotNull(),
+                () -> assertThat(boards.missionBoards().get(1).number()).isEqualTo(1),
+                () -> assertThat(boards.missionBoards().get(1).missionBoardMembers().size()).isEqualTo(2),
+                () -> assertThat(boards.missionBoards().get(1).missionBoardMembers().get(0).nickname()).isEqualTo(NICKNAME_HOST),
+                () -> assertThat(boards.missionBoards().get(1).missionBoardMembers().get(1).nickname()).isEqualTo(NICKNAME_MEMBER_A)
         );
     }
 }

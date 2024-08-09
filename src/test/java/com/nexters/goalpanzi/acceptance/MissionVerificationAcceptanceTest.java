@@ -1,10 +1,10 @@
 package com.nexters.goalpanzi.acceptance;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationsResponse;
 import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.TimeOfDay;
@@ -119,7 +119,7 @@ public class MissionVerificationAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    void 특정_일자의_미션_인증_현황을_조회한다() throws JsonProcessingException {
+    void 특정_일자의_미션_인증_현황을_조회한다() {
         when(objectStorageClient.uploadFile(any(MultipartFile.class))).thenReturn(UPLOADED_IMAGE_URL);
 
         LoginResponse hostLogin = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
@@ -138,16 +138,16 @@ public class MissionVerificationAcceptanceTest extends AcceptanceTest {
         미션_참여(mission.invitationCode(), memberBLogin.accessToken());
         미션_인증(IMAGE_FILE, mission.missionId(), memberBLogin.accessToken());
 
-        List<MissionVerificationResponse> verifications = 일자별_미션_인증_조회(mission.missionId(), LocalDate.now(), hostLogin.accessToken());
+        MissionVerificationsResponse verifications = 일자별_미션_인증_조회(mission.missionId(), LocalDate.now(), hostLogin.accessToken()).as(MissionVerificationsResponse.class);
 
         assertAll(
-                () -> assertThat(verifications.size()).isEqualTo(3),
-                () -> assertThat(verifications.get(0).nickname()).isEqualTo(NICKNAME_HOST),
-                () -> assertThat(verifications.get(0).characterType()).isEqualTo(CHARACTER_HOST),
-                () -> assertThat(verifications.get(1).nickname()).isEqualTo(NICKNAME_MEMBER_B),
-                () -> assertThat(verifications.get(1).characterType()).isEqualTo(CHARACTER_MEMBER_B),
-                () -> assertThat(verifications.get(2).nickname()).isEqualTo(NICKNAME_MEMBER_A),
-                () -> assertThat(verifications.get(2).characterType()).isEqualTo(CHARACTER_MEMBER_A)
+                () -> assertThat(verifications.missionVerifications().size()).isEqualTo(3),
+                () -> assertThat(verifications.missionVerifications().get(0).nickname()).isEqualTo(NICKNAME_HOST),
+                () -> assertThat(verifications.missionVerifications().get(0).characterType()).isEqualTo(CHARACTER_HOST),
+                () -> assertThat(verifications.missionVerifications().get(1).nickname()).isEqualTo(NICKNAME_MEMBER_B),
+                () -> assertThat(verifications.missionVerifications().get(1).characterType()).isEqualTo(CHARACTER_MEMBER_B),
+                () -> assertThat(verifications.missionVerifications().get(2).nickname()).isEqualTo(NICKNAME_MEMBER_A),
+                () -> assertThat(verifications.missionVerifications().get(2).characterType()).isEqualTo(CHARACTER_MEMBER_A)
         );
     }
 
