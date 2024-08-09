@@ -3,6 +3,7 @@ package com.nexters.goalpanzi.presentation.mission;
 import com.nexters.goalpanzi.application.mission.MissionService;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
+import com.nexters.goalpanzi.domain.mission.InvitationCode;
 import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -50,5 +52,14 @@ public class MissionController implements MissionControllerDocs {
         missionService.deleteMission(memberId, missionId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    @GetMapping
+    public ResponseEntity<MissionDetailResponse> getMissionByInvitationCode(
+            @RequestParam final String invitationCode) {
+        MissionDetailResponse response = missionService.getMissionByInvitationCode(new InvitationCode(invitationCode));
+
+        return ResponseEntity.ok(response);
     }
 }

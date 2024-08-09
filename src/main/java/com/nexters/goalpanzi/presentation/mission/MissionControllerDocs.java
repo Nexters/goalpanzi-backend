@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "미션")
 public interface MissionControllerDocs {
@@ -31,4 +32,10 @@ public interface MissionControllerDocs {
             @PathVariable("/{missionId}") Long missionId,
             @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long memberId
     );
+
+    @Operation(summary = "초대코드로 미션 조회", description = "초대코드로 미션정보를 조회합니다.")
+    ResponseEntity<MissionDetailResponse> getMissionByInvitationCode(
+            @RequestParam String invitationCode
+    );
+
 }

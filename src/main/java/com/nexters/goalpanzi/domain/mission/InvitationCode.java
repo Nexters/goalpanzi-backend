@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 
+import java.util.Objects;
 import java.util.Random;
 
 import static com.nexters.goalpanzi.exception.ErrorCode.INVALID_INVITATION_CODE;
@@ -45,5 +46,25 @@ public class InvitationCode {
         if (!StringUtils.hasText(code) || this.code.length() != CODE_LENGTH) {
             throw new IllegalArgumentException(INVALID_INVITATION_CODE.getMessage());
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        InvitationCode code1 = (InvitationCode) o;
+        return Objects.equals(code, code1.code);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(code);
+    }
+
+    @Override
+    public String toString() {
+        return "InvitationCode{" +
+                "code='" + code + '\'' +
+                '}';
     }
 }

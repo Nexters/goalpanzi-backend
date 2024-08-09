@@ -9,6 +9,7 @@ import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.ForbiddenException;
+import com.nexters.goalpanzi.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -59,6 +60,13 @@ public class MissionService {
 
     public MissionDetailResponse getMission(final Long missionId) {
         Mission mission = missionRepository.getMission(missionId);
+
+        return MissionDetailResponse.from(mission);
+    }
+
+    public MissionDetailResponse getMissionByInvitationCode(final InvitationCode invitationCode) {
+        Mission mission = missionRepository.findByInvitationCode(invitationCode)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MISSION, invitationCode));
 
         return MissionDetailResponse.from(mission);
     }
