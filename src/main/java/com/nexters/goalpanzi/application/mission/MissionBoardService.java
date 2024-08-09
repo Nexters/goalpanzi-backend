@@ -2,6 +2,7 @@ package com.nexters.goalpanzi.application.mission;
 
 import com.nexters.goalpanzi.application.mission.dto.request.MissionBoardQuery;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionBoardResponse;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionBoardsResponse;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.mission.Mission;
@@ -27,13 +28,14 @@ public class MissionBoardService {
     private final MissionRepository missionRepository;
     private final MissionMemberRepository missionMemberRepository;
 
-    @Transactional
-    public List<MissionBoardResponse> getBoard(final MissionBoardQuery query) {
-        return missionRepository.findById(query.missionId())
-                .map(this::groupByVerificationCount)
-                .map(this::sortByVerifiedAt)
-                .map(this::convertToBoardResponse)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MISSION, query.missionId()));
+    @Transactional(readOnly = true)
+    public MissionBoardsResponse getBoard(final MissionBoardQuery query) {
+        return new MissionBoardsResponse(
+                missionRepository.findById(query.missionId())
+                        .map(this::groupByVerificationCount)
+                        .map(this::sortByVerifiedAt)
+                        .map(this::convertToBoardResponse)
+                        .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MISSION, query.missionId())));
     }
 
     private Map<Integer, List<Member>> groupByVerificationCount(final Mission mission) {
@@ -52,7 +54,7 @@ public class MissionBoardService {
 
     private List<MissionBoardResponse> convertToBoardResponse(final Map<Integer, List<Member>> groupedAndSortedMembers) {
         return groupedAndSortedMembers.entrySet().stream()
-                .map(entry -> MissionBoardResponse.from(entry.getKey(), entry.getValue()))
+                .map(entry -> MissionBoardResponse.of(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
     }
 

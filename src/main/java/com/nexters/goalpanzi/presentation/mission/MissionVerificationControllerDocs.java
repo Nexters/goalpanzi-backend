@@ -1,6 +1,7 @@
 package com.nexters.goalpanzi.presentation.mission;
 
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationsResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Tag(
         name = "미션 인증",
@@ -33,7 +33,7 @@ public interface MissionVerificationControllerDocs {
             @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(hidden = true))),
     })
     @GetMapping("/{missionId}/verifications")
-    ResponseEntity<List<MissionVerificationResponse>> getVerifications(
+    ResponseEntity<MissionVerificationsResponse> getVerifications(
             @Parameter(hidden = true) @LoginMemberId final Long memberId,
             @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
             @PathVariable(name = "missionId") final Long missionId,
