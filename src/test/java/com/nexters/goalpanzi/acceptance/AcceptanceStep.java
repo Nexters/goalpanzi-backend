@@ -1,8 +1,10 @@
 package com.nexters.goalpanzi.acceptance;
 
 import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
+import com.nexters.goalpanzi.domain.mission.BoardOrderBy;
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.TimeOfDay;
+import com.nexters.goalpanzi.domain.mission.VerificationOrderBy;
 import com.nexters.goalpanzi.presentation.member.dto.UpdateProfileRequest;
 import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionRequest;
 import com.nexters.goalpanzi.presentation.mission.dto.JoinMissionRequest;
@@ -109,6 +111,7 @@ public class AcceptanceStep {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
                 .queryParam("date", date.toString())
+                .queryParam("orderBy", VerificationOrderBy.CREATED_AT_DESC)
                 .when().get("/api/missions/" + missionId + "/verifications")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
@@ -129,6 +132,7 @@ public class AcceptanceStep {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
+                .queryParam("orderBy", BoardOrderBy.CREATED_AT)
                 .when().get("/api/missions/" + missionId + "/board")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())

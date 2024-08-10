@@ -7,6 +7,7 @@ import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificati
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationsResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
+import com.nexters.goalpanzi.domain.mission.VerificationOrderBy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +27,10 @@ public class MissionVerificationController implements MissionVerificationControl
     public ResponseEntity<MissionVerificationsResponse> getVerifications(
             @LoginMemberId final Long memberId,
             @PathVariable(name = "missionId") final Long missionId,
-            @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate date
+            @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate date,
+            @RequestParam(name = "orderBy", required = false) final VerificationOrderBy orderBy
     ) {
-        MissionVerificationsResponse response = missionVerificationService.getVerifications(new MissionVerificationQuery(memberId, missionId, date));
+        MissionVerificationsResponse response = missionVerificationService.getVerifications(new MissionVerificationQuery(memberId, missionId, date, orderBy));
 
         return ResponseEntity.ok(response);
     }
