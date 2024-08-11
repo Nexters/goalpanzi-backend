@@ -5,6 +5,7 @@ import com.nexters.goalpanzi.domain.mission.BoardOrderBy;
 import com.nexters.goalpanzi.domain.mission.Reward;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -22,12 +23,17 @@ public record MissionBoardResponse(
 ) {
 
     public static MissionBoardResponse of(final Long memberId, final BoardOrderBy orderBy, final Integer number, final List<Member> members) {
+        if (orderBy == BoardOrderBy.RANDOM) {
+            Collections.shuffle(members);
+        } else {
+            members.sort(compareMembers(orderBy));
+        }
+        
         return new MissionBoardResponse(
                 number,
                 Reward.of(number),
                 isMyPosition(memberId, members),
                 members.stream()
-                        .sorted(compareMembers(orderBy))
                         .map(MissionBoardMemberResponse::from)
                         .collect(Collectors.toList())
         );
