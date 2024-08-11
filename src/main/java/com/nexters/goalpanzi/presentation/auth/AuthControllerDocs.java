@@ -47,7 +47,7 @@ public interface AuthControllerDocs {
             @ApiResponse(responseCode = "401"),
     })
     @PostMapping("/logout")
-    ResponseEntity<Void> logout(@Parameter(hidden = true) @LoginMemberId final String userKey);
+    ResponseEntity<Void> logout(@Parameter(hidden = true) @LoginMemberId final Long memberId);
 
     @Operation(summary = "토큰 재발급", description = "access 토큰과 refresh 토큰을 재발급합니다.")
     @ApiResponses({
@@ -57,6 +57,6 @@ public interface AuthControllerDocs {
     @PostMapping("/token:reissue")
     ResponseEntity<TokenResponse> reissueToken(
             @RequestBody @Valid final RefreshTokenCommand refreshTokenCommand,
-            @Parameter(hidden = true) @LoginMemberId final String userId
+            @Parameter(hidden = true) @LoginMemberId final Long memberId
     );
 }

@@ -34,6 +34,16 @@ public class AcceptanceStep {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 회원_탈퇴(Long memberId, String accessToken) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
+                .when().delete("/api/member")
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .extract();
+    }
+
     public static ExtractableResponse<Response> 프로필_설정(UpdateProfileRequest request, String accessToken) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

@@ -16,6 +16,8 @@ import org.springframework.http.MediaType;
 
 import java.security.NoSuchAlgorithmException;
 
+import static com.nexters.goalpanzi.acceptance.AcceptanceStep.구글_로그인;
+import static com.nexters.goalpanzi.acceptance.AcceptanceStep.회원_탈퇴;
 import static com.nexters.goalpanzi.fixture.MemberFixture.EMAIL_HOST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -74,5 +76,15 @@ public class LoginAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(actual.refreshToken()).isNotEmpty(),
                 () -> assertThat(actual.isProfileSet()).isFalse()
         );
+    }
+
+    @Test
+    void 사용자가_탈퇴후_재가입한다() {
+        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+        회원_탈퇴(login.memberId(), login.accessToken());
+
+        LoginResponse actual = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+
+        assertThat(actual.memberId()).isNotNull();
     }
 }
