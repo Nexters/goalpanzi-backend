@@ -46,9 +46,9 @@ public class AuthController implements AuthControllerDocs {
     @Override
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
-            @LoginMemberId final String userKey
+            @LoginMemberId final Long memberId
     ) {
-        authService.logout(userKey);
+        authService.logout(memberId);
 
         return ResponseEntity.ok().build();
     }
@@ -57,9 +57,9 @@ public class AuthController implements AuthControllerDocs {
     @PostMapping("/token:reissue")
     public ResponseEntity<TokenResponse> reissueToken(
             @RequestBody @Valid final RefreshTokenCommand refreshTokenCommand,
-            @LoginMemberId final String userId
+            @LoginMemberId final Long memberId
     ) {
-        TokenResponse tokenResponse = authService.reissueToken(userId, refreshTokenCommand.refreshToken());
+        TokenResponse tokenResponse = authService.reissueToken(memberId, refreshTokenCommand.refreshToken());
 
         return ResponseEntity.ok(tokenResponse);
     }

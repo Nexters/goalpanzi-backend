@@ -57,21 +57,21 @@ public class AuthService {
                 .ifPresent(memberRepository::delete);
     }
 
-    public void logout(final String altKey) {
-        refreshTokenRepository.delete(altKey);
+    public void logout(final Long memberId) {
+        refreshTokenRepository.delete(memberId.toString());
     }
 
-    public TokenResponse reissueToken(final String altKey, final String refreshToken) {
-        validateRefreshToken(altKey, refreshToken);
+    public TokenResponse reissueToken(final Long memberId, final String refreshToken) {
+        validateRefreshToken(memberId, refreshToken);
 
-        Jwt jwt = jwtProvider.generateTokens(altKey);
-        refreshTokenRepository.save(altKey, jwt.refreshToken(), jwt.refreshExpiresIn());
+        Jwt jwt = jwtProvider.generateTokens(memberId.toString());
+        refreshTokenRepository.save(memberId.toString(), jwt.refreshToken(), jwt.refreshExpiresIn());
 
         return new TokenResponse(jwt.accessToken(), jwt.refreshToken());
     }
 
-    private void validateRefreshToken(final String altKey, final String refreshToken) {
-        String storedRefreshToken = refreshTokenRepository.find(altKey);
+    private void validateRefreshToken(final Long memberId, final String refreshToken) {
+        String storedRefreshToken = refreshTokenRepository.find(memberId.toString());
 
         if (!refreshToken.equals(storedRefreshToken)) {
             throw new UnauthorizedException(ErrorCode.INVALID_REFRESH_TOKEN);
