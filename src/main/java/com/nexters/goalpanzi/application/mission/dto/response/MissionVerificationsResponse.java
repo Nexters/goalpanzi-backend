@@ -20,16 +20,16 @@ public record MissionVerificationsResponse(
         return new MissionVerificationsResponse(
                 missionMembers.stream()
                         .sorted(compareMissionMembers(memberId, orderBy))
-                        .map(m -> MissionVerificationResponse.of(
-                                m.getMember(),
-                                findVerification(m.getMember(), verifications)
+                        .map(missionMember -> MissionVerificationResponse.of(
+                                missionMember.getMember(),
+                                findVerification(missionMember.getMember(), verifications)
                         ))
                         .toList()
         );
     }
 
     private static Comparator<MissionMember> compareMissionMembers(final Long memberId, final VerificationOrderBy orderBy) {
-        return Comparator.comparing((MissionMember m) -> m.getId().equals(memberId)).reversed()
+        return Comparator.comparing((MissionMember missionMember) -> missionMember.getId().equals(memberId)).reversed()
                 .thenComparing(compareMissionMembersByOrder(orderBy));
     }
 
@@ -44,6 +44,6 @@ public record MissionVerificationsResponse(
     }
 
     private static Optional<MissionVerification> findVerification(final Member member, final List<MissionVerification> verifications) {
-        return verifications.stream().filter(v -> v.getMember().equals(member)).findFirst();
+        return verifications.stream().filter(verification -> verification.getMember().equals(member)).findFirst();
     }
 }

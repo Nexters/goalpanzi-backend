@@ -13,7 +13,7 @@ public record MissionVerificationResponse(
         @Schema(description = "닉네임", requiredMode = Schema.RequiredMode.REQUIRED)
         @NotEmpty String nickname,
         @Schema(description = "장기말 타입", requiredMode = Schema.RequiredMode.REQUIRED)
-        CharacterType characterType,
+        @NotEmpty CharacterType characterType,
         @Schema(description = "인증 이미지 URL", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
         String imageUrl,
         @Schema(description = "인증 시간", requiredMode = Schema.RequiredMode.NOT_REQUIRED)

@@ -28,7 +28,7 @@ public record MissionBoardResponse(
         } else {
             members.sort(compareMembers(orderBy));
         }
-        
+
         return new MissionBoardResponse(
                 number,
                 Reward.of(number),
@@ -48,6 +48,6 @@ public record MissionBoardResponse(
     }
 
     private static boolean isMyPosition(final Long memberId, final List<Member> members) {
-        return !members.stream().filter(m -> Objects.equals(m.getId(), memberId)).toList().isEmpty();
+        return !members.stream().filter(member -> Objects.equals(member.getId(), memberId)).toList().isEmpty();
     }
 }
