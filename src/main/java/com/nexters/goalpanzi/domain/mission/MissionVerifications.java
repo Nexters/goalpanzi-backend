@@ -34,7 +34,7 @@ public class MissionVerifications {
 
     private static Comparator<MissionVerification> compareMissionVerificationsByOrder(final MissionVerificationQuery.SortType sortType, final Sort.Direction direction) {
         switch (sortType) {
-            case MissionVerificationQuery.SortType.CREATED_AT:
+            case MissionVerificationQuery.SortType.VERIFIED_AT:
             default:
                 if (direction.isAscending()) {
                     return Comparator.comparing(MissionVerification::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder()));

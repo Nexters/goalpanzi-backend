@@ -13,7 +13,7 @@ public record MissionBoardQuery(
 
     @Getter
     public enum SortType {
-        CREATED_AT("createdAt"),
+        RANK("updatedAt"),
         RANDOM("random");
 
         private final String property;

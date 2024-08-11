@@ -50,7 +50,7 @@ public interface MissionVerificationControllerDocs {
             @PathVariable(name = "missionId") final Long missionId,
             @Schema(description = "미션 인증 일자", type = "string", format = "date", requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate date,
-            @Schema(description = "미션 인증 현황 정렬 기준", allowableValues = {"CREATED_AT_DESC", "CREATED_AT"}, requiredMode = Schema.RequiredMode.REQUIRED)
+            @Schema(description = "미션 인증 현황 정렬 기준", allowableValues = {"VERIFIED_AT"}, requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam(name = "sortType", required = false) final MissionVerificationQuery.SortType sortType,
             @Schema(description = "미션 인증 현황 정렬 방향", allowableValues = {"ASC", "DESC"}, requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam(name = "sortDirection", required = false) final Sort.Direction direction

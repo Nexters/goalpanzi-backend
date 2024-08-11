@@ -20,7 +20,7 @@ public class MissionMembers {
 
     public List<MissionMember> getMissionMembersByBoardNumber(final Integer boardNumber) {
         return missionMembers.stream()
-                .filter(it -> it.getVerificationCount().equals(boardNumber))
+                .filter(missionMember -> missionMember.getVerificationCount().equals(boardNumber))
                 .toList();
     }
 }

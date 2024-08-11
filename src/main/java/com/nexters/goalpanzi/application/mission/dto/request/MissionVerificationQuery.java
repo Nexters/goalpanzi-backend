@@ -16,7 +16,7 @@ public record MissionVerificationQuery(
 
     @Getter
     public enum SortType {
-        CREATED_AT("createdAt");
+        VERIFIED_AT("createdAt");
 
         private final String property;
 

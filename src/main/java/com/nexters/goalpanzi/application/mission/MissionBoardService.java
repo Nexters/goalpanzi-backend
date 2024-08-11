@@ -33,8 +33,8 @@ public class MissionBoardService {
 
     @Transactional(readOnly = true)
     public MissionBoardsResponse getBoard(final MissionBoardQuery query) {
-        MissionBoardQuery.SortType sortType = query.sortType() == null ? MissionBoardQuery.SortType.CREATED_AT : query.sortType();
-        Sort.Direction direction = query.direction() == null ? Sort.Direction.ASC : Sort.Direction.DESC;
+        MissionBoardQuery.SortType sortType = query.sortType() == null ? MissionBoardQuery.SortType.RANK : query.sortType();
+        Sort.Direction direction = query.direction() == null ? Sort.Direction.ASC : query.direction();
 
         Member member = memberRepository.getMember(query.memberId());
         Mission mission = missionRepository.getMission(query.missionId());

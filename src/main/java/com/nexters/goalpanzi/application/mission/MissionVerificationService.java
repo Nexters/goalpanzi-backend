@@ -36,8 +36,8 @@ public class MissionVerificationService {
     @Transactional(readOnly = true)
     public MissionVerificationsResponse getVerifications(final MissionVerificationQuery query) {
         LocalDate date = query.date() == null ? LocalDate.now() : query.date();
-        MissionVerificationQuery.SortType sortType = query.sortType() == null ? MissionVerificationQuery.SortType.CREATED_AT : query.sortType();
-        Sort.Direction direction = query.direction() == null ? Sort.Direction.DESC : Sort.Direction.ASC;
+        MissionVerificationQuery.SortType sortType = query.sortType() == null ? MissionVerificationQuery.SortType.VERIFIED_AT : query.sortType();
+        Sort.Direction direction = query.direction() == null ? Sort.Direction.DESC : query.direction();
 
         List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(query.missionId());
         MissionVerifications missionVerifications = new MissionVerifications(missionVerificationRepository.findAllByMissionIdAndDate(query.missionId(), date));

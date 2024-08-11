@@ -43,7 +43,7 @@ public interface MissionBoardControllerDocs {
             @Parameter(hidden = true) @LoginMemberId final Long memberId,
             @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
             @PathVariable(name = "missionId") final Long missionId,
-            @Schema(description = "미션 보드칸 장기말 정렬 기준", allowableValues = {"CREATED_AT", "RANDOM"}, requiredMode = Schema.RequiredMode.REQUIRED)
+            @Schema(description = "미션 보드칸 장기말 정렬 기준", allowableValues = {"RANK", "RANDOM"}, requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam(name = "sortType", required = false) final MissionBoardQuery.SortType sortType,
             @Schema(description = "미션 보드칸 장기말 정렬 방향", allowableValues = {"ASC", "DESC"}, requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam(name = "sortDirection", required = false) final Sort.Direction direction
