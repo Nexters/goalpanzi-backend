@@ -30,9 +30,13 @@ public interface MissionBoardControllerDocs {
             description = """
                     해당 미션의 보드판 현황을 조회합니다.
                                         
-                    보드칸에 대한 정보를 포함하며, missionBoards 배열의 크기는 보드칸의 개수만큼 입니다.
+                    보드칸에 대한 정보를 포함하며, missionBoards 배열의 크기는 **[보드칸의 개수 + 1]**만큼 입니다.
                                         
-                    0번째 보드칸은 시작점으로, 아직 미션을 시작하지 않은 상태를 나타냅니다.                    
+                    0번째 보드칸은 시작점으로, 아직 미션을 시작하지 않은 상태를 나타냅니다.
+                                        
+                    sortType 과 sortDirection 에 따라 보드칸의 장기말을 정렬합니다.
+                                        
+                    sortType, sortDirection 생략 시, **[순위순]**으로 조회합니다.
                     """)
     @ApiResponses({
             @ApiResponse(responseCode = "200"),

@@ -36,7 +36,11 @@ public interface MissionVerificationControllerDocs {
                                         
                     0번째 항목은 나의 미션 인증 현황을 의미합니다.
                                         
-                    orderBy 에 따라 인증 현황을 정렬하며, 미션을 인증하지 않은 멤버는 프로필 정보만 포함하여 마지막에 배치됩니다.
+                    sortType 과 sortDirection 에 따라 인증 현황을 정렬합니다.
+                                        
+                    date, sortType, sortDirection 생략 시, **[오늘 기준, 인증 최신순]**으로 조회합니다.
+                                        
+                    미션을 인증하지 않은 멤버는 프로필 정보만 포함하여 마지막에 배치됩니다.
                     """
     )
     @ApiResponses({
