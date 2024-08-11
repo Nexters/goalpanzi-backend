@@ -37,9 +37,9 @@ public class MissionBoardService {
         Mission mission = missionRepository.getMission(query.missionId());
         MissionMembers missionMembers = getMissionMembers(query.missionId(), query.sortType(), query.direction());
 
-        Map<Integer, List<Member>> memberGroups = groupByVerificationCount(mission, missionMembers);
+        Map<Integer, List<Member>> boardMap = groupByVerificationCount(mission, missionMembers);
         List<MissionBoardResponse> boards = new ArrayList<>();
-        for (Map.Entry<Integer, List<Member>> entry : memberGroups.entrySet()) {
+        for (Map.Entry<Integer, List<Member>> entry : boardMap.entrySet()) {
             boards.add(MissionBoardResponse.of(query.memberId(), entry.getKey(), entry.getValue()));
         }
 
