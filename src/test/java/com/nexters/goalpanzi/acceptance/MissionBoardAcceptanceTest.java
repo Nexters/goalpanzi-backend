@@ -50,11 +50,15 @@ public class MissionBoardAcceptanceTest extends AcceptanceTest {
 
         assertAll(
                 () -> assertThat(boards.missionBoards().size()).isEqualTo(mission.boardCount() + 1),
+
                 () -> assertThat(boards.missionBoards().get(0).reward()).isNull(),
                 () -> assertThat(boards.missionBoards().get(0).number()).isEqualTo(0),
+                () -> assertThat(boards.missionBoards().get(0).isMyPosition()).isFalse(),
                 () -> assertThat(boards.missionBoards().get(0).missionBoardMembers().size()).isEqualTo(1),
+                
                 () -> assertThat(boards.missionBoards().get(1).reward()).isNotNull(),
                 () -> assertThat(boards.missionBoards().get(1).number()).isEqualTo(1),
+                () -> assertThat(boards.missionBoards().get(1).isMyPosition()).isTrue(),
                 () -> assertThat(boards.missionBoards().get(1).missionBoardMembers().size()).isEqualTo(2),
                 () -> assertThat(boards.missionBoards().get(1).missionBoardMembers().get(0).nickname()).isEqualTo(NICKNAME_HOST),
                 () -> assertThat(boards.missionBoards().get(1).missionBoardMembers().get(1).nickname()).isEqualTo(NICKNAME_MEMBER_A)
