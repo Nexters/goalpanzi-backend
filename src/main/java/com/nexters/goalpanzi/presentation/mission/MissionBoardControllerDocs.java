@@ -1,8 +1,8 @@
 package com.nexters.goalpanzi.presentation.mission;
 
+import com.nexters.goalpanzi.application.mission.dto.request.MissionBoardQuery;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionBoardsResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
-import com.nexters.goalpanzi.domain.mission.BoardOrderBy;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,6 +44,8 @@ public interface MissionBoardControllerDocs {
             @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
             @PathVariable(name = "missionId") final Long missionId,
             @Schema(description = "미션 보드칸 장기말 정렬 기준", allowableValues = {"CREATED_AT", "RANDOM"}, requiredMode = Schema.RequiredMode.REQUIRED)
-            @RequestParam(name = "orderBy", required = false) final BoardOrderBy orderBy
+            @RequestParam(name = "sortType", required = false) final MissionBoardQuery.SortType sortType,
+            @Schema(description = "미션 보드칸 장기말 정렬 방향", allowableValues = {"ASC", "DESC"}, requiredMode = Schema.RequiredMode.REQUIRED)
+            @RequestParam(name = "sortDirection", required = false) final Sort.Direction direction
     );
 }

@@ -1,9 +1,9 @@
 package com.nexters.goalpanzi.presentation.mission;
 
+import com.nexters.goalpanzi.application.mission.dto.request.MissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationsResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
-import com.nexters.goalpanzi.domain.mission.VerificationOrderBy;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +51,9 @@ public interface MissionVerificationControllerDocs {
             @Schema(description = "미션 인증 일자", type = "string", format = "date", requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate date,
             @Schema(description = "미션 인증 현황 정렬 기준", allowableValues = {"CREATED_AT_DESC", "CREATED_AT"}, requiredMode = Schema.RequiredMode.REQUIRED)
-            @RequestParam(name = "orderBy", required = false) final VerificationOrderBy orderBy
+            @RequestParam(name = "sortType", required = false) final MissionVerificationQuery.SortType sortType,
+            @Schema(description = "미션 인증 현황 정렬 방향", allowableValues = {"ASC", "DESC"}, requiredMode = Schema.RequiredMode.REQUIRED)
+            @RequestParam(name = "sortDirection", required = false) final Sort.Direction direction
     );
 
     @Operation(summary = "나의 미션 인증 현황 조회", description = "보드칸에 해당하는 나의 미션 인증 현황을 조회합니다.")
