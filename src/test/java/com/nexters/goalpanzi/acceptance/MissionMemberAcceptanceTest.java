@@ -4,9 +4,11 @@ import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
+import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.presentation.mission.dto.JoinMissionRequest;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,11 +22,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class MissionMemberAcceptanceTest extends AcceptanceTest {
 
+    @Autowired
+    private MissionMemberRepository missionMemberRepository;
+
     @Test
     void 초대코드로_미션에_참여한다() {
-        LoginResponse loginHost = 구글_로그인(new GoogleLoginCommand( EMAIL_HOST)).as(LoginResponse.class);
+        LoginResponse loginHost = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
         MissionDetailResponse mission = 미션_생성(loginHost.accessToken()).as(MissionDetailResponse.class);
-        LoginResponse loginMember = 구글_로그인(new GoogleLoginCommand( EMAIL_MEMBER_A)).as(LoginResponse.class);
+        LoginResponse loginMember = 구글_로그인(new GoogleLoginCommand(EMAIL_MEMBER_A)).as(LoginResponse.class);
 
         JoinMissionRequest joinRequest = new JoinMissionRequest(mission.invitationCode());
         RestAssured.given().log().all()
@@ -34,6 +39,10 @@ public class MissionMemberAcceptanceTest extends AcceptanceTest {
                 .when().post("/api/mission-members")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value());
+
+        assertThat(
+                missionMemberRepository.findByMemberIdAndMissionId(loginMember.memberId(), mission.missionId())
+        ).isPresent();
     }
 
     @Test
