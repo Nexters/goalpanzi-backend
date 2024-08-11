@@ -28,7 +28,16 @@ import java.time.LocalDate;
 )
 public interface MissionVerificationControllerDocs {
 
-    @Operation(summary = "미션 인증 현황 조회", description = "해당 일자의 미션 인증 현황을 조회합니다.")
+    @Operation(
+            summary = "미션 인증 현황 조회",
+            description = """
+                    해당 일자의 미션 인증 현황을 조회합니다.
+                                        
+                    0번째 항목은 나의 미션 인증 현황을 의미합니다.
+                                        
+                    orderBy 에 따라 인증 현황을 정렬하며, 미션을 인증하지 않은 멤버는 프로필 정보만 포함하여 마지막에 배치됩니다.
+                    """
+    )
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(hidden = true))),
@@ -40,7 +49,7 @@ public interface MissionVerificationControllerDocs {
             @PathVariable(name = "missionId") final Long missionId,
             @Schema(description = "미션 인증 일자", type = "string", format = "date", requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate date,
-            @Schema(description = "미션 인증 현황 정렬 기준", allowableValues = {"CREATED_AT_DESC"}, requiredMode = Schema.RequiredMode.REQUIRED)
+            @Schema(description = "미션 인증 현황 정렬 기준", allowableValues = {"CREATED_AT_DESC", "CREATED_AT"}, requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam(name = "orderBy", required = false) final VerificationOrderBy orderBy
     );
 

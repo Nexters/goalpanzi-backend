@@ -24,7 +24,15 @@ import org.springframework.web.bind.annotation.RequestParam;
                 """
 )
 public interface MissionBoardControllerDocs {
-    @Operation(summary = "미션 보드판 조회", description = "해당 미션의 보드판 현황을 조회합니다.")
+    @Operation(
+            summary = "미션 보드판 조회",
+            description = """
+                    해당 미션의 보드판 현황을 조회합니다.
+                                        
+                    보드칸에 대한 정보를 포함하며, missionBoards 배열의 크기는 보드칸의 개수만큼 입니다.
+                                        
+                    0번째 보드칸은 시작점으로, 아직 미션을 시작하지 않은 상태를 나타냅니다.                    
+                    """)
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(hidden = true))),
@@ -34,7 +42,7 @@ public interface MissionBoardControllerDocs {
             @Parameter(hidden = true) @LoginMemberId final Long memberId,
             @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
             @PathVariable(name = "missionId") final Long missionId,
-            @Schema(description = "미션 보드칸 장기말 정렬 기준", allowableValues = {"CREATED_AT"}, requiredMode = Schema.RequiredMode.REQUIRED)
+            @Schema(description = "미션 보드칸 장기말 정렬 기준", allowableValues = {"CREATED_AT", "RANDOM"}, requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam(name = "orderBy", required = false) final BoardOrderBy orderBy
     );
 }
