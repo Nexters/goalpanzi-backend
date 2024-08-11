@@ -1,11 +1,12 @@
 package com.nexters.goalpanzi.application.mission.dto.request;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import org.springframework.data.domain.Sort;
 
 public record MissionBoardQuery(
-        Long memberId,
-        Long missionId,
+        @NotNull Long memberId,
+        @NotNull Long missionId,
         SortType sortType,
         Sort.Direction direction
 ) {
