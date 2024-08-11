@@ -1,12 +1,9 @@
 package com.nexters.goalpanzi.application.mission.dto.response;
 
 import com.nexters.goalpanzi.domain.member.Member;
-import com.nexters.goalpanzi.domain.mission.BoardOrderBy;
 import com.nexters.goalpanzi.domain.mission.Reward;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -22,13 +19,7 @@ public record MissionBoardResponse(
         List<MissionBoardMemberResponse> missionBoardMembers
 ) {
 
-    public static MissionBoardResponse of(final Long memberId, final BoardOrderBy orderBy, final Integer number, final List<Member> members) {
-        if (orderBy == BoardOrderBy.RANDOM) {
-            Collections.shuffle(members);
-        } else {
-            members.sort(compareMembers(orderBy));
-        }
-
+    public static MissionBoardResponse of(final Long memberId, final Integer number, final List<Member> members) {
         return new MissionBoardResponse(
                 number,
                 Reward.of(number),
@@ -37,14 +28,6 @@ public record MissionBoardResponse(
                         .map(MissionBoardMemberResponse::from)
                         .collect(Collectors.toList())
         );
-    }
-
-    private static Comparator<Member> compareMembers(final BoardOrderBy orderBy) {
-        switch (orderBy) {
-            case BoardOrderBy.CREATED_AT:
-            default:
-                return Comparator.comparing(Member::getCreatedAt);
-        }
     }
 
     private static boolean isMyPosition(final Long memberId, final List<Member> members) {
