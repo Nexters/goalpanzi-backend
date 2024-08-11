@@ -49,13 +49,14 @@ public class MissionBoardAcceptanceTest extends AcceptanceTest {
         MissionBoardsResponse boards = 보드판_조회(mission.missionId(), hostLogin.accessToken()).as(MissionBoardsResponse.class);
 
         assertAll(
+                () -> assertThat(boards.progressCount()).isEqualTo(2),
                 () -> assertThat(boards.missionBoards().size()).isEqualTo(mission.boardCount() + 1),
 
                 () -> assertThat(boards.missionBoards().get(0).reward()).isNull(),
                 () -> assertThat(boards.missionBoards().get(0).number()).isEqualTo(0),
                 () -> assertThat(boards.missionBoards().get(0).isMyPosition()).isFalse(),
                 () -> assertThat(boards.missionBoards().get(0).missionBoardMembers().size()).isEqualTo(1),
-                
+
                 () -> assertThat(boards.missionBoards().get(1).reward()).isNotNull(),
                 () -> assertThat(boards.missionBoards().get(1).number()).isEqualTo(1),
                 () -> assertThat(boards.missionBoards().get(1).isMyPosition()).isTrue(),
