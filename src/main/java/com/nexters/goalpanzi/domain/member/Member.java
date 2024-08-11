@@ -14,6 +14,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.util.Objects;
+
 @Entity
 @SQLRestriction("deleted_at is NULL")
 @Table(name = "member")
@@ -68,5 +70,30 @@ public class Member extends BaseEntity {
         if (characterType != null) {
             this.characterType = characterType;
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Member that = (Member) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, email, socialId, socialType, nickname, characterType);
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", socialId='" + socialId + '\'' +
+                ", socialType=" + socialType +
+                ", nickname='" + nickname + '\'' +
+                ", characterType=" + characterType +
+                '}';
     }
 }

@@ -48,7 +48,7 @@ public class AuthService {
         Jwt jwt = jwtProvider.generateTokens(member.getId().toString());
         refreshTokenRepository.save(member.getId().toString(), jwt.refreshToken(), jwt.refreshExpiresIn());
 
-        return new LoginResponse(jwt.accessToken(), jwt.refreshToken(), member.isProfileSet());
+        return LoginResponse.of(member, jwt);
     }
 
     public void logout(final String altKey) {
