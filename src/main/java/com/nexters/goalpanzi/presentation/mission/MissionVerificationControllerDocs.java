@@ -53,7 +53,7 @@ public interface MissionVerificationControllerDocs {
             @RequestParam(name = "orderBy", required = false) final VerificationOrderBy orderBy
     );
 
-    @Operation(summary = "나의 미션 인증 현황 조회", description = "보드판에 해당하는 미션 인증 현황을 조회합니다.")
+    @Operation(summary = "나의 미션 인증 현황 조회", description = "보드칸에 해당하는 나의 미션 인증 현황을 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(hidden = true))),
@@ -70,7 +70,18 @@ public interface MissionVerificationControllerDocs {
     @Operation(summary = "미션 인증", description = "미션 인증을 위해 이미지를 업로드합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "400", description = "Bad Request - 이미 완료한 미션이거나 오늘 인증을 마쳤음"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = """
+                            Bad Request
+                                                        
+                            - 이미 완료한 미션인 경우 (= 보드 완주 성공)
+                            - 오늘 인증을 마친 경우 (= 중복 인증)
+                            - 인증 기간이 아닌 경우 (= 아직 미션이 시작되지 않았거나 끝난 경우)
+                            - 인증 요일이 아닌 경우
+                            - 인증 시간대가 아닌 경우
+                            """
+            ),
             @ApiResponse(responseCode = "401"),
             @ApiResponse(responseCode = "404", description = "Not Found - 정보에 해당하는 미션이 존재하지 않음"),
     })

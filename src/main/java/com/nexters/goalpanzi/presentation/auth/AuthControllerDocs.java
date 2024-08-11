@@ -52,7 +52,15 @@ public interface AuthControllerDocs {
     @Operation(summary = "토큰 재발급", description = "access 토큰과 refresh 토큰을 재발급합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized - 만료된 refresh 토큰이거나 갱신되어 더 이상 유효하지 않은 refresh 토큰", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = """
+                            Unauthorized
+                                                        
+                            - 만료된 refresh 토큰인 경우
+                            - 갱신되어 더 이상 유효하지 않은 refresh 토큰인 경우
+                            """,
+                    content = @Content(schema = @Schema(hidden = true))),
     })
     @PostMapping("/token:reissue")
     ResponseEntity<TokenResponse> reissueToken(
