@@ -33,9 +33,12 @@ public class MissionBoardService {
 
     @Transactional(readOnly = true)
     public MissionBoardsResponse getBoard(final MissionBoardQuery query) {
+        MissionBoardQuery.SortType sortType = query.sortType() == null ? MissionBoardQuery.SortType.CREATED_AT : query.sortType();
+        Sort.Direction direction = query.direction() == null ? Sort.Direction.ASC : Sort.Direction.DESC;
+
         Member member = memberRepository.getMember(query.memberId());
         Mission mission = missionRepository.getMission(query.missionId());
-        MissionMembers missionMembers = getMissionMembers(query.missionId(), query.sortType(), query.direction());
+        MissionMembers missionMembers = getMissionMembers(query.missionId(), sortType, direction);
 
         Map<Integer, List<Member>> boardMap = groupByVerificationCount(mission, missionMembers);
         List<MissionBoardResponse> boards = new ArrayList<>();

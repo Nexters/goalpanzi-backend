@@ -16,6 +16,7 @@ import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationReposi
 import com.nexters.goalpanzi.exception.BadRequestException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,13 +35,15 @@ public class MissionVerificationService {
 
     @Transactional(readOnly = true)
     public MissionVerificationsResponse getVerifications(final MissionVerificationQuery query) {
-        LocalDate date = query.date() != null ? query.date() : LocalDate.now();
+        LocalDate date = query.date() == null ? LocalDate.now() : query.date();
+        MissionVerificationQuery.SortType sortType = query.sortType() == null ? MissionVerificationQuery.SortType.CREATED_AT : query.sortType();
+        Sort.Direction direction = query.direction() == null ? Sort.Direction.DESC : Sort.Direction.ASC;
 
         List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(query.missionId());
         MissionVerifications missionVerifications = new MissionVerifications(missionVerificationRepository.findAllByMissionIdAndDate(query.missionId(), date));
 
         return MissionVerificationsResponse.from(
-                missionVerifications.sortMissionVerifications(query.memberId(), query.sortType(), query.direction(), missionMembers)
+                missionVerifications.sortMissionVerifications(query.memberId(), sortType, direction, missionMembers)
         );
     }
 
