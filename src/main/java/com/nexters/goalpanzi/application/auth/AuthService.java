@@ -40,6 +40,7 @@ public class AuthService {
     }
 
     private LoginResponse socialLogin(final SocialUserInfo socialUserInfo, final SocialType socialType) {
+        checkDeletedMember(socialUserInfo.socialId());
         Member member = memberRepository.findBySocialId(socialUserInfo.socialId())
                 .orElseGet(() ->
                         memberRepository.save(Member.socialLogin(socialUserInfo.socialId(), socialUserInfo.email(), socialType))
@@ -49,6 +50,11 @@ public class AuthService {
         refreshTokenRepository.save(member.getId().toString(), jwt.refreshToken(), jwt.refreshExpiresIn());
 
         return LoginResponse.of(member, jwt);
+    }
+
+    private void checkDeletedMember(final String socialId) {
+        memberRepository.findBySocialIdAndDeletedAtIsNotNull(socialId)
+                .ifPresent(memberRepository::delete);
     }
 
     public void logout(final String altKey) {
