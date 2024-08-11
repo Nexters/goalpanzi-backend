@@ -14,7 +14,10 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.SQLRestriction;
+
+import java.util.Objects;
 
 @Entity
 @SQLRestriction("deleted_at is NULL")
@@ -51,5 +54,28 @@ public class MissionMember extends BaseEntity {
 
     public void verify() {
         this.verificationCount++;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MissionMember that = (MissionMember) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, member.getId(), mission.getId());
+    }
+
+    @Override
+    public String toString() {
+        return "MissionMember{" +
+                "id=" + id +
+                ", member=" + member.getId() +
+                ", mission=" + mission.getId() +
+                ", verificationCount=" + verificationCount +
+                '}';
     }
 }

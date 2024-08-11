@@ -12,6 +12,7 @@ import org.joda.time.LocalTime;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @SQLRestriction("deleted_at is NULL")
@@ -121,5 +122,34 @@ public class Mission extends BaseEntity {
     public boolean isMissionTime() {
         String now = LocalTime.now().toString().substring(0, 5);
         return now.compareTo(uploadStartTime) >= 0 && now.compareTo(uploadEndTime) <= 0;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Mission that = (Mission) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, invitationCode);
+    }
+
+    @Override
+    public String toString() {
+        return "Mission{" +
+                "id=" + id +
+                ", hostMemberId=" + hostMemberId +
+                ", description='" + description + '\'' +
+                ", invitationCode=" + invitationCode +
+                ", missionStartDate=" + missionStartDate +
+                ", missionEndDate=" + missionEndDate +
+                ", uploadStartTime='" + uploadStartTime + '\'' +
+                ", uploadEndTime='" + uploadEndTime + '\'' +
+                ", boardCount=" + boardCount +
+                ", missionDays=" + missionDays +
+                '}';
     }
 }
