@@ -4,7 +4,7 @@ import com.nexters.goalpanzi.domain.member.CharacterType;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.mission.MissionVerification;
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.hibernate.validator.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

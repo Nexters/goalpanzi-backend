@@ -10,6 +10,7 @@ import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.MissionMember;
 import com.nexters.goalpanzi.domain.mission.MissionVerification;
+import com.nexters.goalpanzi.domain.mission.MissionVerifications;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationRepository;
 import com.nexters.goalpanzi.exception.BadRequestException;
@@ -28,17 +29,19 @@ public class MissionVerificationService {
 
     private final MissionVerificationRepository missionVerificationRepository;
     private final MissionMemberRepository missionMemberRepository;
-    
+
     private final ObjectStorageClient objectStorageClient;
 
     @Transactional(readOnly = true)
     public MissionVerificationsResponse getVerifications(final MissionVerificationQuery query) {
         LocalDate date = query.date() != null ? query.date() : LocalDate.now();
 
-        List<MissionVerification> verifications = missionVerificationRepository.findAllByMissionIdAndDate(query.missionId(), date);
         List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(query.missionId());
+        MissionVerifications missionVerifications = new MissionVerifications(missionVerificationRepository.findAllByMissionIdAndDate(query.missionId(), date));
 
-        return MissionVerificationsResponse.of(query.memberId(), query.orderBy(), missionMembers, verifications);
+        return MissionVerificationsResponse.from(
+                missionVerifications.sortMissionVerifications(query.memberId(), query.sortType(), query.direction(), missionMembers)
+        );
     }
 
     public MissionVerificationResponse getMyVerification(final MyMissionVerificationQuery query) {
