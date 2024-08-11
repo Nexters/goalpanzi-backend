@@ -7,7 +7,6 @@ import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificatio
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationsResponse;
 import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
-import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.MissionMember;
 import com.nexters.goalpanzi.domain.mission.MissionVerification;
@@ -29,8 +28,7 @@ public class MissionVerificationService {
 
     private final MissionVerificationRepository missionVerificationRepository;
     private final MissionMemberRepository missionMemberRepository;
-    private final MemberRepository memberRepository;
-
+    
     private final ObjectStorageClient objectStorageClient;
 
     @Transactional(readOnly = true)
