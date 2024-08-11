@@ -1,10 +1,24 @@
 package com.nexters.goalpanzi.application.mission.dto.request;
 
-import com.nexters.goalpanzi.domain.mission.BoardOrderBy;
+import lombok.Getter;
+import org.springframework.data.domain.Sort;
 
 public record MissionBoardQuery(
         Long memberId,
         Long missionId,
-        BoardOrderBy orderBy
+        SortType sortType,
+        Sort.Direction direction
 ) {
+
+    @Getter
+    public enum SortType {
+        CREATED_AT("createdAt"),
+        RANDOM("random");
+
+        private final String property;
+
+        SortType(String property) {
+            this.property = property;
+        }
+    }
 }
