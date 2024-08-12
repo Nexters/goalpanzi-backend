@@ -22,9 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
@@ -45,24 +43,25 @@ public class MissionVerificationService {
         Sort.Direction direction = query.direction() == null ? Sort.Direction.DESC : query.direction();
 
         Member member = memberRepository.getMember(query.memberId());
-
         List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(query.missionId());
-        List<MissionVerification> verifications = missionVerificationRepository.findAllByMissionIdAndDate(query.missionId(), date);
+        List<MissionVerification> missionVerifications = missionVerificationRepository.findAllByMissionIdAndDate(query.missionId(), date);
 
-        Map<Long, MissionVerification> verificationMap = verifications.stream()
-                .collect(Collectors.toMap(v -> v.getMember().getId(), v -> v));
-
-        return new MissionVerificationsResponse(
-                missionMembers.stream()
-                        .map(m -> convertToVerificationResponse(m, verificationMap.get(m.getMember().getId())))
-                        .sorted(compareMissionVerificationResponses(member.getNickname(), sortType, direction))
-                        .collect(Collectors.toList()));
+        return new MissionVerificationsResponse(sortMissionVerifications(member, sortType, direction, missionVerifications, missionMembers));
     }
 
-    private MissionVerificationResponse convertToVerificationResponse(final MissionMember missionMember, final MissionVerification verification) {
-        return verification != null
-                ? MissionVerificationResponse.verified(missionMember.getMember(), verification)
-                : MissionVerificationResponse.notVerified(missionMember.getMember());
+    private List<MissionVerificationResponse> sortMissionVerifications(final Member member, final MissionVerificationQuery.SortType sortType, final Sort.Direction direction, final List<MissionVerification> missionVerifications, final List<MissionMember> missionMembers) {
+        List<MissionVerificationResponse> response = new ArrayList<>();
+        Map<Long, MissionVerification> map = missionVerifications.stream()
+                .collect(Collectors.toMap(missionVerification -> missionVerification.getMember().getId(), missionVerification -> missionVerification));
+
+        missionMembers.forEach(missionMember -> {
+            Member member1 = missionMember.getMember();
+            MissionVerificationResponse missionVerificationResponse = MissionVerificationResponse.of(member1, Optional.ofNullable(map.get(member1.getId())));
+            response.add(missionVerificationResponse);
+        });
+
+        response.sort(compareMissionVerificationResponses(member.getNickname(), sortType, direction));
+        return response;
     }
 
     private static Comparator<MissionVerificationResponse> compareMissionVerificationResponses(final String nickname, final MissionVerificationQuery.SortType sortType, final Sort.Direction direction) {
