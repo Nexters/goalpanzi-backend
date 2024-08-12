@@ -28,7 +28,7 @@ public class MissionVerifications {
     }
 
     private static Comparator<MissionVerification> compareMissionVerifications(final Long memberId, final MissionVerificationQuery.SortType sortType, final Sort.Direction direction) {
-        return Comparator.comparing((MissionVerification missionVerification) -> missionVerification.getId().equals(memberId)).reversed()
+        return Comparator.comparing((MissionVerification missionVerification) -> missionVerification.getMember().getId().equals(memberId)).reversed()
                 .thenComparing(compareMissionVerificationsByOrder(sortType, direction));
     }
 
