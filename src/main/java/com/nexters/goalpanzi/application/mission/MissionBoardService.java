@@ -3,19 +3,21 @@ package com.nexters.goalpanzi.application.mission;
 import com.nexters.goalpanzi.application.mission.dto.request.MissionBoardQuery;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionBoardResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionBoardsResponse;
-import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.member.Member;
+import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
+import com.nexters.goalpanzi.domain.mission.MemberRanks;
 import com.nexters.goalpanzi.domain.mission.Mission;
+import com.nexters.goalpanzi.domain.mission.MissionMember;
+import com.nexters.goalpanzi.domain.mission.MissionMembers;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
-import com.nexters.goalpanzi.exception.ErrorCode;
-import com.nexters.goalpanzi.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,35 +29,60 @@ public class MissionBoardService {
 
     private final MissionRepository missionRepository;
     private final MissionMemberRepository missionMemberRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
     public MissionBoardsResponse getBoard(final MissionBoardQuery query) {
+        MissionBoardQuery.SortType sortType = query.sortType() == null ? MissionBoardQuery.SortType.RANK : query.sortType();
+        Sort.Direction direction = query.direction() == null ? Sort.Direction.ASC : query.direction();
+
+        Member member = memberRepository.getMember(query.memberId());
+        Mission mission = missionRepository.getMission(query.missionId());
+        MissionMembers missionMembers = getMissionMembers(query.missionId(), sortType, direction);
+
+        Map<Integer, List<Member>> boardMap = groupByVerificationCount(mission, missionMembers);
+        List<MissionBoardResponse> boards = new ArrayList<>();
+        for (Map.Entry<Integer, List<Member>> entry : boardMap.entrySet()) {
+            boards.add(MissionBoardResponse.of(query.memberId(), entry.getKey(), entry.getValue()));
+        }
+
         return new MissionBoardsResponse(
-                missionRepository.findById(query.missionId())
-                        .map(this::groupByVerificationCount)
-                        .map(this::sortByVerifiedAt)
-                        .map(this::convertToBoardResponse)
-                        .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MISSION, query.missionId())));
+                missionMembers.getProgressCount(),
+                MemberRanks.from(missionMembers.getMissionMembers()).getRankByMember(member).rank(),
+                boards);
     }
 
-    private Map<Integer, List<Member>> groupByVerificationCount(final Mission mission) {
+    private MissionMembers getMissionMembers(final Long missionId, final MissionBoardQuery.SortType sortType, final Sort.Direction direction) {
+        if (sortType.equals(MissionBoardQuery.SortType.RANDOM)) {
+            return shuffleMissionMembers(missionId);
+        }
+        return sortMissionMembers(missionId, sortType, direction);
+    }
+
+    private MissionMembers shuffleMissionMembers(final Long missionId) {
+        List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(missionId);
+        Collections.shuffle(missionMembers);
+        return new MissionMembers(missionMembers);
+    }
+
+    private MissionMembers sortMissionMembers(final Long missionId, final MissionBoardQuery.SortType sortType, final Sort.Direction direction) {
+        Sort sort = Sort.by(direction, sortType.getProperty());
+        return new MissionMembers(
+                missionMemberRepository.findAllByMissionId(missionId, sort)
+        );
+    }
+
+    private Map<Integer, List<Member>> groupByVerificationCount(final Mission mission, final MissionMembers missionMembers) {
         Map<Integer, List<Member>> board = initializeBoard(mission.getBoardCount());
 
-        missionMemberRepository.findAllByMissionId(mission.getId())
-                .forEach(m -> board.get(m.getVerificationCount()).add(m.getMember()));
+        for (Map.Entry<Integer, List<Member>> entry : board.entrySet()) {
+            Integer verificationCount = entry.getKey();
+            List<Member> members = missionMembers.getMissionMembersByBoardNumber(verificationCount).stream()
+                    .map(MissionMember::getMember)
+                    .toList();
+            entry.setValue(members);
+        }
         return board;
-    }
-
-    private Map<Integer, List<Member>> sortByVerifiedAt(final Map<Integer, List<Member>> groupedMembers) {
-        return groupedMembers.entrySet().stream()
-                .peek(entry -> entry.getValue().sort(Comparator.comparing(BaseEntity::getCreatedAt)))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    private List<MissionBoardResponse> convertToBoardResponse(final Map<Integer, List<Member>> groupedAndSortedMembers) {
-        return groupedAndSortedMembers.entrySet().stream()
-                .map(entry -> MissionBoardResponse.of(entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
     }
 
     private Map<Integer, List<Member>> initializeBoard(final Integer boardCount) {

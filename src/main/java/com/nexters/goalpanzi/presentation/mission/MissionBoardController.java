@@ -3,12 +3,11 @@ package com.nexters.goalpanzi.presentation.mission;
 import com.nexters.goalpanzi.application.mission.MissionBoardService;
 import com.nexters.goalpanzi.application.mission.dto.request.MissionBoardQuery;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionBoardsResponse;
+import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/missions")
@@ -19,9 +18,12 @@ public class MissionBoardController implements MissionBoardControllerDocs {
 
     @GetMapping("/{missionId}/board")
     public ResponseEntity<MissionBoardsResponse> getBoard(
-            @PathVariable(name = "missionId") final Long missionId
+            @LoginMemberId final Long memberId,
+            @PathVariable(name = "missionId") final Long missionId,
+            @RequestParam(name = "sortType", required = false) final MissionBoardQuery.SortType sortType,
+            @RequestParam(name = "sortDirection", required = false) final Sort.Direction direction
     ) {
-        MissionBoardsResponse response = missionBoardService.getBoard(new MissionBoardQuery(missionId));
+        MissionBoardsResponse response = missionBoardService.getBoard(new MissionBoardQuery(memberId, missionId, sortType, direction));
 
         return ResponseEntity.ok(response);
     }

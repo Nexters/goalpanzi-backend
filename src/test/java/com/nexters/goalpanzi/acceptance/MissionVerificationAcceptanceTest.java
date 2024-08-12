@@ -46,8 +46,7 @@ public class MissionVerificationAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(200);
     }
-
-
+    
     @Test
     void 미션_기간이_아니므로_인증에_실패한다() {
         when(objectStorageClient.uploadFile(any(MultipartFile.class))).thenReturn(UPLOADED_IMAGE_URL);

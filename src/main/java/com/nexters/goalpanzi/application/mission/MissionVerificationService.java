@@ -7,24 +7,21 @@ import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificatio
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationsResponse;
 import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
-import com.nexters.goalpanzi.domain.member.Member;
-import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.MissionMember;
 import com.nexters.goalpanzi.domain.mission.MissionVerification;
+import com.nexters.goalpanzi.domain.mission.MissionVerifications;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationRepository;
 import com.nexters.goalpanzi.exception.BadRequestException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -33,25 +30,21 @@ public class MissionVerificationService {
 
     private final MissionVerificationRepository missionVerificationRepository;
     private final MissionMemberRepository missionMemberRepository;
-    private final MemberRepository memberRepository;
 
     private final ObjectStorageClient objectStorageClient;
 
     @Transactional(readOnly = true)
     public MissionVerificationsResponse getVerifications(final MissionVerificationQuery query) {
-        LocalDate date = query.date() != null ? query.date() : LocalDate.now();
-        Member member = memberRepository.getMember(query.memberId());
-        List<MissionVerification> verifications = missionVerificationRepository.findAllByMissionIdAndDate(query.missionId(), date);
+        LocalDate date = query.date() == null ? LocalDate.now() : query.date();
+        MissionVerificationQuery.SortType sortType = query.sortType() == null ? MissionVerificationQuery.SortType.VERIFIED_AT : query.sortType();
+        Sort.Direction direction = query.direction() == null ? Sort.Direction.DESC : query.direction();
 
-        Map<Long, MissionVerification> verificationMap = verifications.stream()
-                .collect(Collectors.toMap(v -> v.getMember().getId(), v -> v));
+        List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(query.missionId());
+        MissionVerifications missionVerifications = new MissionVerifications(missionVerificationRepository.findAllByMissionIdAndDate(query.missionId(), date));
 
-        return new MissionVerificationsResponse(
-                missionMemberRepository.findAllByMissionId(query.missionId()).stream()
-                        .map(m -> convertToVerificationResponse(m, verificationMap.get(m.getMember().getId())))
-                        .sorted(Comparator.comparing((MissionVerificationResponse r) -> r.nickname().equals(member.getNickname())).reversed()
-                                .thenComparing(MissionVerificationResponse::verifiedAt, Comparator.nullsLast(Comparator.reverseOrder())))
-                        .collect(Collectors.toList()));
+        return MissionVerificationsResponse.from(
+                missionVerifications.sortMissionVerifications(query.memberId(), sortType, direction, missionMembers)
+        );
     }
 
     public MissionVerificationResponse getMyVerification(final MyMissionVerificationQuery query) {
@@ -70,12 +63,6 @@ public class MissionVerificationService {
         String imageUrl = objectStorageClient.uploadFile(command.imageFile());
         missionMember.verify();
         missionVerificationRepository.save(new MissionVerification(missionMember.getMember(), mission, imageUrl, missionMember.getVerificationCount()));
-    }
-
-    private MissionVerificationResponse convertToVerificationResponse(final MissionMember missionMember, final MissionVerification verification) {
-        return verification != null
-                ? MissionVerificationResponse.verified(missionMember.getMember(), verification)
-                : MissionVerificationResponse.notVerified(missionMember.getMember());
     }
 
     private void checkVerificationValidation(final Long memberId, final Mission mission, final MissionMember missionMember) {
