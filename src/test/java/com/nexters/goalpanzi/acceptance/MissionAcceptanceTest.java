@@ -20,7 +20,6 @@ import java.util.List;
 
 import static com.nexters.goalpanzi.acceptance.AcceptanceStep.*;
 import static com.nexters.goalpanzi.fixture.MemberFixture.EMAIL_HOST;
-import static com.nexters.goalpanzi.fixture.MemberFixture.ID_TOKEN_HOST;
 import static com.nexters.goalpanzi.fixture.MissionFixture.DESCRIPTION;
 import static com.nexters.goalpanzi.fixture.TokenFixture.BEARER;
 import static org.assertj.core.api.Assertions.assertThat;
