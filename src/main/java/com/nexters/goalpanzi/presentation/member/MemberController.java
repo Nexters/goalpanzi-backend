@@ -21,6 +21,7 @@ public class MemberController implements MemberControllerDocs {
 
     private final MemberService memberService;
 
+    @Override
     @GetMapping("/profile")
     public ResponseEntity<ProfileResponse> getProfile(
             @LoginMemberId final Long memberId
