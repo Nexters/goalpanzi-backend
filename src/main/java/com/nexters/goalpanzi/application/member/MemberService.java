@@ -1,6 +1,7 @@
 package com.nexters.goalpanzi.application.member;
 
 import com.nexters.goalpanzi.application.member.dto.request.UpdateProfileCommand;
+import com.nexters.goalpanzi.application.member.dto.response.ProfileResponse;
 import com.nexters.goalpanzi.application.member.event.DeleteMemberEvent;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
@@ -17,6 +18,13 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final ApplicationEventPublisher eventPublisher;
+
+    @Transactional(readOnly = true)
+    public ProfileResponse getMember(final Long memberId) {
+        Member member = memberRepository.getMember(memberId);
+
+        return new ProfileResponse(member.getNickname(), member.getCharacterType());
+    }
 
     @Transactional
     public void updateProfile(final UpdateProfileCommand request) {
