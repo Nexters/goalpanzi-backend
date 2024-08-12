@@ -63,13 +63,12 @@ public class Member extends BaseEntity {
         return (characterType != null) && (nickname != null);
     }
 
-    public void updateProfile(final String nickname, final CharacterType characterType) {
-        if (nickname != null) {
-            this.nickname = nickname;
-        }
-        if (characterType != null) {
-            this.characterType = characterType;
-        }
+    public void updateNickname(final String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updateCharacterType(final CharacterType characterType) {
+        this.characterType = characterType;
     }
 
     @Override

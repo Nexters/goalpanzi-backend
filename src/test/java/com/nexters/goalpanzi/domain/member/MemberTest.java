@@ -4,54 +4,39 @@ import org.junit.jupiter.api.Test;
 
 import static com.nexters.goalpanzi.fixture.MemberFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 class MemberTest {
 
     @Test
-    void 프로필_생성이_가능하다() {
+    void 닉네임_설정이_가능하다() {
         Member member = Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.APPLE);
-        member.updateProfile(NICKNAME_HOST, CharacterType.CAT);
+        member.updateNickname(NICKNAME_HOST);
 
-        assertAll(
-                () -> assertThat(member.isProfileSet()).isTrue(),
-                () -> assertThat(member.getNickname()).isEqualTo(NICKNAME_HOST),
-                () -> assertThat(member.getCharacterType()).isEqualTo(CharacterType.CAT)
-        );
+        assertThat(member.getNickname()).isEqualTo(NICKNAME_HOST);
     }
 
     @Test
-    void 프로필_생성후_변경이_가능하다() {
+    void 장기말타입_설정이_가능하다() {
         Member member = Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.APPLE);
-        member.updateProfile(NICKNAME_HOST, CharacterType.CAT);
-        member.updateProfile(NICKNAME_HOST, null);
+        member.updateCharacterType(CHARACTER_HOST);
 
-        assertAll(
-                () -> assertThat(member.isProfileSet()).isTrue(),
-                () -> assertThat(member.getNickname()).isEqualTo(NICKNAME_HOST),
-                () -> assertThat(member.getCharacterType()).isEqualTo(CharacterType.CAT)
-        );
+        assertThat(member.getCharacterType()).isEqualTo(CHARACTER_HOST);
     }
 
     @Test
-    void 닉네임만_설정이_가능하다() {
+    void 닉네임과_장기말타입_전부_설정시_프로필_설정여부를_true로_반환한다(){
         Member member = Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.APPLE);
-        member.updateProfile(NICKNAME_HOST, null);
+        member.updateNickname(NICKNAME_HOST);
+        member.updateCharacterType(CHARACTER_HOST);
 
-        assertAll(
-                () -> assertThat(member.isProfileSet()).isFalse(),
-                () -> assertThat(member.getNickname()).isEqualTo(NICKNAME_HOST)
-        );
+        assertThat(member.isProfileSet()).isTrue();
     }
 
     @Test
-    void 캐릭터만_설정이_가능하다() {
+    void 닉네임과_장기말타입_중_하나라도_설정되지_않은경우_프로필_설정여부를_false로_반환한다(){
         Member member = Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.APPLE);
-        member.updateProfile(null, CharacterType.CAT);
+        member.updateNickname(NICKNAME_HOST);
 
-        assertAll(
-                () -> assertThat(member.isProfileSet()).isFalse(),
-                () -> assertThat(member.getCharacterType()).isEqualTo(CharacterType.CAT)
-        );
+        assertThat(member.isProfileSet()).isFalse();
     }
 }
