@@ -1,8 +1,9 @@
 package com.nexters.goalpanzi.config;
 
-import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,9 +13,19 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI openAPI() {
+        String AUTHORIZATION = "Authorization";
+
+        Components components = new Components().addSecuritySchemes(
+                AUTHORIZATION,
+                new SecurityScheme()
+                        .name(AUTHORIZATION)
+                        .in(SecurityScheme.In.HEADER)
+                        .type(SecurityScheme.Type.APIKEY)
+                        .description("Bearer ${ACCESS_TOKEN}")
+        );
         return new OpenAPI()
-                .components(new Components())
-                .addServersItem(new Server().url("/"))
+                .components(components)
+                .addServersItem(new Server().url("https://mission-mate.kro.kr"))
                 .info(getMissionMateServerInfo());
     }
 
