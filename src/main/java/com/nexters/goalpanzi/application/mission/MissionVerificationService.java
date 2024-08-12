@@ -91,15 +91,15 @@ public class MissionVerificationService {
         MissionMember missionMember = missionMemberRepository.getMissionMember(command.memberId(), command.missionId());
         Mission mission = missionMember.getMission();
 
-        checkVerificationValidation(command.memberId(), mission, missionMember);
+        checkVerificationValidation(command.memberId(), mission, missionMember.getVerificationCount());
 
         String imageUrl = objectStorageClient.uploadFile(command.imageFile());
         missionMember.verify();
         missionVerificationRepository.save(new MissionVerification(missionMember.getMember(), mission, imageUrl, missionMember.getVerificationCount()));
     }
 
-    private void checkVerificationValidation(final Long memberId, final Mission mission, final MissionMember missionMember) {
-        if (isCompletedMission(mission, missionMember)) {
+    private void checkVerificationValidation(final Long memberId, final Mission mission, final Integer verificationCount) {
+        if (isCompletedMission(mission, verificationCount)) {
             throw new BadRequestException(ErrorCode.ALREADY_COMPLETED_MISSION);
         }
         if (isDuplicatedVerification(memberId, mission.getId())) {
@@ -116,8 +116,8 @@ public class MissionVerificationService {
         }
     }
 
-    private boolean isCompletedMission(final Mission mission, final MissionMember missionMember) {
-        return missionMember.getVerificationCount() >= mission.getBoardCount();
+    private boolean isCompletedMission(final Mission mission, final Integer verificationCount) {
+        return verificationCount >= mission.getBoardCount();
     }
 
     private boolean isDuplicatedVerification(final Long memberId, final Long missionId) {

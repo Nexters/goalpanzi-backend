@@ -46,7 +46,7 @@ public class MissionVerificationAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(200);
     }
-    
+
     @Test
     void 미션_기간이_아니므로_인증에_실패한다() {
         when(objectStorageClient.uploadFile(any(MultipartFile.class))).thenReturn(UPLOADED_IMAGE_URL);
@@ -141,10 +141,13 @@ public class MissionVerificationAcceptanceTest extends AcceptanceTest {
 
         assertAll(
                 () -> assertThat(verifications.missionVerifications().size()).isEqualTo(3),
+                
                 () -> assertThat(verifications.missionVerifications().get(0).nickname()).isEqualTo(NICKNAME_HOST),
                 () -> assertThat(verifications.missionVerifications().get(0).characterType()).isEqualTo(CHARACTER_HOST),
+
                 () -> assertThat(verifications.missionVerifications().get(1).nickname()).isEqualTo(NICKNAME_MEMBER_B),
                 () -> assertThat(verifications.missionVerifications().get(1).characterType()).isEqualTo(CHARACTER_MEMBER_B),
+
                 () -> assertThat(verifications.missionVerifications().get(2).nickname()).isEqualTo(NICKNAME_MEMBER_A),
                 () -> assertThat(verifications.missionVerifications().get(2).characterType()).isEqualTo(CHARACTER_MEMBER_A)
         );
