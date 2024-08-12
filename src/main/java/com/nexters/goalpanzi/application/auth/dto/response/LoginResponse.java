@@ -12,9 +12,9 @@ public record LoginResponse(
         String accessToken,
         @Schema(description = "refresh token", requiredMode = Schema.RequiredMode.REQUIRED)
         String refreshToken,
-        @Schema(description = "닉네임", requiredMode = Schema.RequiredMode.REQUIRED)
+        @Schema(description = "닉네임", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
         String nickname,
-        @Schema(description = "장기말 타입", requiredMode = Schema.RequiredMode.REQUIRED)
+        @Schema(description = "장기말 타입", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
         CharacterType characterType,
         @Schema(description = "프로필 설정 여부", requiredMode = Schema.RequiredMode.REQUIRED)
         Boolean isProfileSet,
