@@ -65,4 +65,23 @@ public class MissionBoardAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(boards.missionBoards().get(1).missionBoardMembers().get(1).nickname()).isEqualTo(NICKNAME_MEMBER_A)
         );
     }
+
+//    @Test
+//    void 내가_참여하지_않은_미션의_보드판을_조회할_수_없다() {
+//        when(objectStorageClient.uploadFile(any(MultipartFile.class))).thenReturn(UPLOADED_IMAGE_URL);
+//
+//        LoginResponse memberALogin = 구글_로그인(new GoogleLoginCommand(EMAIL_MEMBER_A)).as(LoginResponse.class);
+//        CreateMissionRequest missionRequest = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(), LocalDateTime.now().plusDays(1), TimeOfDay.EVERYDAY, WEEK, 1);
+//        프로필_설정(new UpdateProfileRequest(NICKNAME_MEMBER_A, CHARACTER_MEMBER_A), memberALogin.accessToken());
+//        MissionDetailResponse mission = 미션_생성(missionRequest, memberALogin.accessToken()).as(MissionDetailResponse.class);
+//
+//        LoginResponse memberBLogin = 구글_로그인(new GoogleLoginCommand(EMAIL_MEMBER_B)).as(LoginResponse.class);
+//
+//        ExtractableResponse<Response> response = 보드판_조회(mission.missionId(), memberBLogin.accessToken());
+//
+//        assertAll(
+//                () -> assertThat(response.statusCode()).isEqualTo(403),
+//                () -> assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.NOT_JOINED_MISSION_MEMBER.getMessage())
+//        );
+//    }
 }

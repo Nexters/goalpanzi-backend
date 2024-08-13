@@ -1,5 +1,8 @@
 package com.nexters.goalpanzi.domain.mission;
 
+import com.nexters.goalpanzi.domain.member.Member;
+import com.nexters.goalpanzi.exception.ErrorCode;
+import com.nexters.goalpanzi.exception.ForbiddenException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -22,5 +25,12 @@ public class MissionMembers {
         return missionMembers.stream()
                 .filter(missionMember -> missionMember.getVerificationCount().equals(boardNumber))
                 .toList();
+    }
+
+    public void verifyMissionMember(final Member member) {
+        missionMembers.stream()
+                .filter(missionMember -> missionMember.getMember().equals(member))
+                .findAny()
+                .orElseThrow(() -> new ForbiddenException(ErrorCode.NOT_JOINED_MISSION_MEMBER));
     }
 }
