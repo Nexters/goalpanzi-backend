@@ -56,9 +56,9 @@ public interface MissionVerificationControllerDocs {
             @Schema(description = "미션 인증 일자 (생략 시 오늘로 간주)", type = "string", format = "date", pattern = "^\\d{4}-\\d{2}-\\d{2}$", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
             @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate date,
             @Schema(description = "미션 인증 현황 정렬 기준 (생략 시, 인증 시간으로 간주)", allowableValues = {"VERIFIED_AT"}, requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-            @RequestParam(name = "sortType", required = false) final MissionVerificationQuery.SortType sortType,
+            @RequestParam(name = "sortType", required = false, defaultValue = "VERIFIED_AT") final MissionVerificationQuery.SortType sortType,
             @Schema(description = "미션 인증 현황 정렬 방향 (생략 시, 최신순으로 간주)", allowableValues = {"ASC", "DESC"}, requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-            @RequestParam(name = "sortDirection", required = false) final Sort.Direction direction
+            @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") final Sort.Direction direction
     );
 
     @Operation(summary = "나의 미션 인증 현황 조회", description = "보드칸에 해당하는 나의 미션 인증 현황을 조회합니다.")

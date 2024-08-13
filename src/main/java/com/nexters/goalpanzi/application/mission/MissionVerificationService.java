@@ -11,6 +11,7 @@ import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.MissionMember;
+import com.nexters.goalpanzi.domain.mission.MissionMembers;
 import com.nexters.goalpanzi.domain.mission.MissionVerification;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationRepository;
@@ -39,14 +40,14 @@ public class MissionVerificationService {
     @Transactional(readOnly = true)
     public MissionVerificationsResponse getVerifications(final MissionVerificationQuery query) {
         LocalDate date = query.date() == null ? LocalDate.now() : query.date();
-        MissionVerificationQuery.SortType sortType = query.sortType() == null ? MissionVerificationQuery.SortType.VERIFIED_AT : query.sortType();
-        Sort.Direction direction = query.direction() == null ? Sort.Direction.DESC : query.direction();
 
         Member member = memberRepository.getMember(query.memberId());
-        List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(query.missionId());
+        MissionMembers missionMembers = new MissionMembers(missionMemberRepository.findAllByMissionId(query.missionId()));
+//        TODO 추후 활성화
+//        missionMembers.verifyMissionMember(member);
         List<MissionVerification> missionVerifications = missionVerificationRepository.findAllByMissionIdAndDate(query.missionId(), date);
 
-        return new MissionVerificationsResponse(sortMissionVerifications(member, sortType, direction, missionVerifications, missionMembers));
+        return new MissionVerificationsResponse(sortMissionVerifications(member, query.sortType(), query.direction(), missionVerifications, missionMembers.getMissionMembers()));
     }
 
     private List<MissionVerificationResponse> sortMissionVerifications(final Member member, final MissionVerificationQuery.SortType sortType, final Sort.Direction direction, final List<MissionVerification> missionVerifications, final List<MissionMember> missionMembers) {

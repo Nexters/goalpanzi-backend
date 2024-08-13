@@ -20,8 +20,8 @@ public class MissionBoardController implements MissionBoardControllerDocs {
     public ResponseEntity<MissionBoardsResponse> getBoard(
             @LoginMemberId final Long memberId,
             @PathVariable(name = "missionId") final Long missionId,
-            @RequestParam(name = "sortType", required = false) final MissionBoardQuery.SortType sortType,
-            @RequestParam(name = "sortDirection", required = false) final Sort.Direction direction
+            @RequestParam(name = "sortType", required = false, defaultValue = "RANK") final MissionBoardQuery.SortType sortType,
+            @RequestParam(name = "sortDirection", required = false, defaultValue = "ASC") final Sort.Direction direction
     ) {
         MissionBoardsResponse response = missionBoardService.getBoard(new MissionBoardQuery(memberId, missionId, sortType, direction));
 
