@@ -46,17 +46,18 @@ public interface MissionVerificationControllerDocs {
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(hidden = true))),
     })
     @GetMapping("/{missionId}/verifications")
     ResponseEntity<MissionVerificationsResponse> getVerifications(
             @Parameter(hidden = true) @LoginMemberId final Long memberId,
             @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
             @PathVariable(name = "missionId") final Long missionId,
-            @Schema(description = "미션 인증 일자", type = "string", format = "date", requiredMode = Schema.RequiredMode.REQUIRED)
+            @Schema(description = "미션 인증 일자 (생략 시 오늘로 간주)", type = "string", format = "date", pattern = "^\\d{4}-\\d{2}-\\d{2}$", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
             @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate date,
-            @Schema(description = "미션 인증 현황 정렬 기준", allowableValues = {"VERIFIED_AT"}, requiredMode = Schema.RequiredMode.REQUIRED)
+            @Schema(description = "미션 인증 현황 정렬 기준 (생략 시, 인증 시간으로 간주)", allowableValues = {"VERIFIED_AT"}, requiredMode = Schema.RequiredMode.NOT_REQUIRED)
             @RequestParam(name = "sortType", required = false) final MissionVerificationQuery.SortType sortType,
-            @Schema(description = "미션 인증 현황 정렬 방향", allowableValues = {"ASC", "DESC"}, requiredMode = Schema.RequiredMode.REQUIRED)
+            @Schema(description = "미션 인증 현황 정렬 방향 (생략 시, 최신순으로 간주)", allowableValues = {"ASC", "DESC"}, requiredMode = Schema.RequiredMode.NOT_REQUIRED)
             @RequestParam(name = "sortDirection", required = false) final Sort.Direction direction
     );
 
