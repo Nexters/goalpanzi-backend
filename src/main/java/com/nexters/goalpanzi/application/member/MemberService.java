@@ -28,10 +28,12 @@ public class MemberService {
 
     @Transactional
     public void updateProfile(final UpdateProfileCommand request) {
-        validateNickname(request.nickname());
+        request.nickname().ifPresent(this::validateNickname);
+
         Member member = memberRepository.getMember(request.memberId());
 
-        member.updateProfile(request.nickname(), request.characterType());
+        request.nickname().ifPresent(member::updateNickname);
+        request.characterType().ifPresent(member::updateCharacterType);
     }
 
     private void validateNickname(final String nickname) {

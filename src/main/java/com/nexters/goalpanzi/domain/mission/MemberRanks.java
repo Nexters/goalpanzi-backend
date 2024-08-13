@@ -1,17 +1,20 @@
 package com.nexters.goalpanzi.domain.mission;
 
 import com.nexters.goalpanzi.domain.member.Member;
-import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-@RequiredArgsConstructor
 public class MemberRanks {
 
     private final List<MemberRank> memberRanks;
+
+    private MemberRanks(final List<MemberRank> memberRanks) {
+        this.memberRanks = memberRanks;
+    }
 
     public static MemberRanks from(final List<MissionMember> missionMembers) {
         List<MissionMember> sortedMissionMembers = sortedMembersByVerificationCountDesc(missionMembers);
@@ -29,7 +32,7 @@ public class MemberRanks {
             previousVerificationCount = missionMember.getVerificationCount();
         }
 
-        return new MemberRanks(memberRanks);
+        return new MemberRanks(Collections.unmodifiableList(memberRanks));
     }
 
     private static List<MissionMember> sortedMembersByVerificationCountDesc(final List<MissionMember> missionMembers) {
