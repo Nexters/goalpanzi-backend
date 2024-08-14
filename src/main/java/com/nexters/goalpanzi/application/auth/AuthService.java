@@ -16,6 +16,7 @@ import com.nexters.goalpanzi.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -27,6 +28,7 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProvider jwtProvider;
 
+    @Transactional
     public LoginResponse appleOAuthLogin(final AppleLoginCommand command) {
         SocialUserProvider appleUserProvider = socialUserProviderFactory.getProvider(SocialType.APPLE);
         SocialUserInfo socialUserInfo = appleUserProvider.getSocialUserInfo(command.identityToken());
@@ -34,6 +36,7 @@ public class AuthService {
         return socialLogin(socialUserInfo, SocialType.APPLE);
     }
 
+    @Transactional
     public LoginResponse googleOAuthLogin(final GoogleLoginCommand command) {
         SocialUserInfo socialUserInfo = new SocialUserInfo(
                 GoogleIdentityToken.generate(command.email()), command.email());
@@ -56,8 +59,8 @@ public class AuthService {
 
     private void checkDeletedMember(final String socialId) {
         memberRepository.findBySocialIdAndDeletedAtIsNotNull(socialId)
-                .ifPresent( member -> {
-                    memberRepository.deleteById(member.getId());
+                .ifPresent(member -> {
+                    memberRepository.delete(member);
                     log.info("Deleting member with id {}", member.getId());
                 });
     }
