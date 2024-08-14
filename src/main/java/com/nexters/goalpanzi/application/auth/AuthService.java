@@ -14,8 +14,11 @@ import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -25,6 +28,7 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProvider jwtProvider;
 
+    @Transactional
     public LoginResponse appleOAuthLogin(final AppleLoginCommand command) {
         SocialUserProvider appleUserProvider = socialUserProviderFactory.getProvider(SocialType.APPLE);
         SocialUserInfo socialUserInfo = appleUserProvider.getSocialUserInfo(command.identityToken());
@@ -32,6 +36,7 @@ public class AuthService {
         return socialLogin(socialUserInfo, SocialType.APPLE);
     }
 
+    @Transactional
     public LoginResponse googleOAuthLogin(final GoogleLoginCommand command) {
         SocialUserInfo socialUserInfo = new SocialUserInfo(
                 GoogleIdentityToken.generate(command.email()), command.email());
@@ -41,7 +46,7 @@ public class AuthService {
 
     private LoginResponse socialLogin(final SocialUserInfo socialUserInfo, final SocialType socialType) {
         checkDeletedMember(socialUserInfo.socialId());
-        Member member = memberRepository.findBySocialId(socialUserInfo.socialId())
+        Member member = memberRepository.findBySocialIdAndDeletedAtIsNull(socialUserInfo.socialId())
                 .orElseGet(() ->
                         memberRepository.save(Member.socialLogin(socialUserInfo.socialId(), socialUserInfo.email(), socialType))
                 );
