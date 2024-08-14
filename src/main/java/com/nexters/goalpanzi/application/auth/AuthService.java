@@ -14,8 +14,10 @@ import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -54,7 +56,10 @@ public class AuthService {
 
     private void checkDeletedMember(final String socialId) {
         memberRepository.findBySocialIdAndDeletedAtIsNotNull(socialId)
-                .ifPresent(memberRepository::delete);
+                .ifPresent( member -> {
+                    log.info("Deleting member with id {}", member.getId());
+                    memberRepository.delete(member);
+                });
     }
 
     public void logout(final Long memberId) {
