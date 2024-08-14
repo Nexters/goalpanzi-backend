@@ -15,6 +15,7 @@ import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProvider jwtProvider;
 
+    @Transactional
     public LoginResponse appleOAuthLogin(final AppleLoginCommand command) {
         SocialUserProvider appleUserProvider = socialUserProviderFactory.getProvider(SocialType.APPLE);
         SocialUserInfo socialUserInfo = appleUserProvider.getSocialUserInfo(command.identityToken());
@@ -32,6 +34,7 @@ public class AuthService {
         return socialLogin(socialUserInfo, SocialType.APPLE);
     }
 
+    @Transactional
     public LoginResponse googleOAuthLogin(final GoogleLoginCommand command) {
         SocialUserInfo socialUserInfo = new SocialUserInfo(
                 GoogleIdentityToken.generate(command.email()), command.email());
