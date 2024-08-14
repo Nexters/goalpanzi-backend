@@ -59,10 +59,7 @@ public class AuthService {
 
     private void checkDeletedMember(final String socialId) {
         memberRepository.findBySocialIdAndDeletedAtIsNotNull(socialId)
-                .ifPresent(member -> {
-                    memberRepository.delete(member);
-                    log.info("Deleting member with id {}", member.getId());
-                });
+                .ifPresent(memberRepository::delete);
     }
 
     public void logout(final Long memberId) {

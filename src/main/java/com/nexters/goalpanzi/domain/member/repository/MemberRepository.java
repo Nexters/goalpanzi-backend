@@ -14,8 +14,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findBySocialIdAndDeletedAtIsNotNull(final String socialId);
 
+    Optional<Member> findByIdAndDeletedAtIsNull(Long memberId);
+
     default Member getMember(final Long memberId) {
-        return findById(memberId)
+        return findByIdAndDeletedAtIsNull(memberId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MEMBER, memberId));
     }
 }
