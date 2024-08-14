@@ -11,6 +11,7 @@ import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.MissionMember;
+import com.nexters.goalpanzi.domain.mission.MissionMembers;
 import com.nexters.goalpanzi.domain.mission.MissionVerification;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationRepository;
@@ -22,9 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
@@ -41,28 +40,29 @@ public class MissionVerificationService {
     @Transactional(readOnly = true)
     public MissionVerificationsResponse getVerifications(final MissionVerificationQuery query) {
         LocalDate date = query.date() == null ? LocalDate.now() : query.date();
-        MissionVerificationQuery.SortType sortType = query.sortType() == null ? MissionVerificationQuery.SortType.VERIFIED_AT : query.sortType();
-        Sort.Direction direction = query.direction() == null ? Sort.Direction.DESC : query.direction();
 
         Member member = memberRepository.getMember(query.memberId());
+        MissionMembers missionMembers = new MissionMembers(missionMemberRepository.findAllByMissionId(query.missionId()));
+//        TODO 추후 활성화
+//        missionMembers.verifyMissionMember(member);
+        List<MissionVerification> missionVerifications = missionVerificationRepository.findAllByMissionIdAndDate(query.missionId(), date);
 
-        List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(query.missionId());
-        List<MissionVerification> verifications = missionVerificationRepository.findAllByMissionIdAndDate(query.missionId(), date);
-
-        Map<Long, MissionVerification> verificationMap = verifications.stream()
-                .collect(Collectors.toMap(v -> v.getMember().getId(), v -> v));
-
-        return new MissionVerificationsResponse(
-                missionMembers.stream()
-                        .map(m -> convertToVerificationResponse(m, verificationMap.get(m.getMember().getId())))
-                        .sorted(compareMissionVerificationResponses(member.getNickname(), sortType, direction))
-                        .collect(Collectors.toList()));
+        return new MissionVerificationsResponse(sortMissionVerifications(member, query.sortType(), query.direction(), missionVerifications, missionMembers.getMissionMembers()));
     }
 
-    private MissionVerificationResponse convertToVerificationResponse(final MissionMember missionMember, final MissionVerification verification) {
-        return verification != null
-                ? MissionVerificationResponse.verified(missionMember.getMember(), verification)
-                : MissionVerificationResponse.notVerified(missionMember.getMember());
+    private List<MissionVerificationResponse> sortMissionVerifications(final Member member, final MissionVerificationQuery.SortType sortType, final Sort.Direction direction, final List<MissionVerification> missionVerifications, final List<MissionMember> missionMembers) {
+        List<MissionVerificationResponse> response = new ArrayList<>();
+        Map<Long, MissionVerification> map = missionVerifications.stream()
+                .collect(Collectors.toMap(missionVerification -> missionVerification.getMember().getId(), missionVerification -> missionVerification));
+
+        missionMembers.forEach(missionMember -> {
+            Member member1 = missionMember.getMember();
+            MissionVerificationResponse missionVerificationResponse = MissionVerificationResponse.of(member1, Optional.ofNullable(map.get(member1.getId())));
+            response.add(missionVerificationResponse);
+        });
+
+        response.sort(compareMissionVerificationResponses(member.getNickname(), sortType, direction));
+        return response;
     }
 
     private static Comparator<MissionVerificationResponse> compareMissionVerificationResponses(final String nickname, final MissionVerificationQuery.SortType sortType, final Sort.Direction direction) {
@@ -92,15 +92,15 @@ public class MissionVerificationService {
         MissionMember missionMember = missionMemberRepository.getMissionMember(command.memberId(), command.missionId());
         Mission mission = missionMember.getMission();
 
-        checkVerificationValidation(command.memberId(), mission, missionMember);
+        checkVerificationValidation(command.memberId(), mission, missionMember.getVerificationCount());
 
         String imageUrl = objectStorageClient.uploadFile(command.imageFile());
         missionMember.verify();
         missionVerificationRepository.save(new MissionVerification(missionMember.getMember(), mission, imageUrl, missionMember.getVerificationCount()));
     }
 
-    private void checkVerificationValidation(final Long memberId, final Mission mission, final MissionMember missionMember) {
-        if (isCompletedMission(mission, missionMember)) {
+    private void checkVerificationValidation(final Long memberId, final Mission mission, final Integer verificationCount) {
+        if (isCompletedMission(mission, verificationCount)) {
             throw new BadRequestException(ErrorCode.ALREADY_COMPLETED_MISSION);
         }
         if (isDuplicatedVerification(memberId, mission.getId())) {
@@ -117,8 +117,8 @@ public class MissionVerificationService {
         }
     }
 
-    private boolean isCompletedMission(final Mission mission, final MissionMember missionMember) {
-        return missionMember.getVerificationCount() >= mission.getBoardCount();
+    private boolean isCompletedMission(final Mission mission, final Integer verificationCount) {
+        return verificationCount >= mission.getBoardCount();
     }
 
     private boolean isDuplicatedVerification(final Long memberId, final Long missionId) {

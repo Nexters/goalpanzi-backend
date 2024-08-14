@@ -28,8 +28,8 @@ public class MissionVerificationController implements MissionVerificationControl
             @LoginMemberId final Long memberId,
             @PathVariable(name = "missionId") final Long missionId,
             @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final LocalDate date,
-            @RequestParam(name = "sortType", required = false) final MissionVerificationQuery.SortType sortType,
-            @RequestParam(name = "sortDirection", required = false) final Sort.Direction direction
+            @RequestParam(name = "sortType", required = false, defaultValue = "VERIFIED_AT") final MissionVerificationQuery.SortType sortType,
+            @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") final Sort.Direction direction
     ) {
         MissionVerificationsResponse response = missionVerificationService.getVerifications(new MissionVerificationQuery(memberId, missionId, date, sortType, direction));
 

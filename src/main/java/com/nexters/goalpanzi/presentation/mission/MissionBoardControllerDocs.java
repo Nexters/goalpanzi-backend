@@ -41,15 +41,16 @@ public interface MissionBoardControllerDocs {
     @ApiResponses({
             @ApiResponse(responseCode = "200"),
             @ApiResponse(responseCode = "401", content = @Content(schema = @Schema(hidden = true))),
+            @ApiResponse(responseCode = "403", content = @Content(schema = @Schema(hidden = true))),
     })
     @GetMapping("/{missionId}/board")
     ResponseEntity<MissionBoardsResponse> getBoard(
             @Parameter(hidden = true) @LoginMemberId final Long memberId,
             @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
             @PathVariable(name = "missionId") final Long missionId,
-            @Schema(description = "미션 보드칸 장기말 정렬 기준", allowableValues = {"RANK", "RANDOM"}, requiredMode = Schema.RequiredMode.REQUIRED)
-            @RequestParam(name = "sortType", required = false) final MissionBoardQuery.SortType sortType,
-            @Schema(description = "미션 보드칸 장기말 정렬 방향", allowableValues = {"ASC", "DESC"}, requiredMode = Schema.RequiredMode.REQUIRED)
-            @RequestParam(name = "sortDirection", required = false) final Sort.Direction direction
+            @Schema(description = "미션 보드칸 장기말 정렬 기준 (생략 시, 보드칸 도착 순서로 간주)", allowableValues = {"RANK", "RANDOM"}, requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+            @RequestParam(name = "sortType", required = false, defaultValue = "RANK") final MissionBoardQuery.SortType sortType,
+            @Schema(description = "미션 보드칸 장기말 정렬 방향 (생략 시, 오름차순으로 간주)", allowableValues = {"ASC", "DESC"}, requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+            @RequestParam(name = "sortDirection", required = false, defaultValue = "ASC") final Sort.Direction direction
     );
 }
