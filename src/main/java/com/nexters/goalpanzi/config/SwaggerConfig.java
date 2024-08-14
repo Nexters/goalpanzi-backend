@@ -26,6 +26,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .components(components)
                 .addServersItem(new Server().url("https://mission-mate.kro.kr"))
+                .addServersItem(new Server().url("http://localhost:8080"))
                 .info(getMissionMateServerInfo());
     }
 
