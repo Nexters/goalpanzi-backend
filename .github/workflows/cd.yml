@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - fix/#55-member-login
 
 jobs:
   build-and-push:
