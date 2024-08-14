@@ -46,7 +46,7 @@ public class AuthService {
 
     private LoginResponse socialLogin(final SocialUserInfo socialUserInfo, final SocialType socialType) {
         checkDeletedMember(socialUserInfo.socialId());
-        Member member = memberRepository.findBySocialId(socialUserInfo.socialId())
+        Member member = memberRepository.findBySocialIdAndDeletedAtIsNull(socialUserInfo.socialId())
                 .orElseGet(() ->
                         memberRepository.save(Member.socialLogin(socialUserInfo.socialId(), socialUserInfo.email(), socialType))
                 );

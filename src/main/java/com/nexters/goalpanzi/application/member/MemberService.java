@@ -37,7 +37,7 @@ public class MemberService {
     }
 
     private void validateNickname(final String nickname) {
-        memberRepository.findByNickname(nickname)
+        memberRepository.findByNicknameAndDeletedAtIsNull(nickname)
                 .ifPresent(member -> {
                     throw new AlreadyExistsException(ErrorCode.ALREADY_EXIST_NICKNAME, nickname);
                 });
