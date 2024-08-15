@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - feat/#57-dateformat
 
 jobs:
   build-and-push:
