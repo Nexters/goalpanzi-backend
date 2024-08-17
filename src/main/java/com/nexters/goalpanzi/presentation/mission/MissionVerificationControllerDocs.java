@@ -4,6 +4,7 @@ import com.nexters.goalpanzi.application.mission.dto.request.MissionVerification
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationsResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
+import com.nexters.goalpanzi.presentation.mission.dto.ViewMissionVerificationRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -100,4 +101,11 @@ public interface MissionVerificationControllerDocs {
             @PathVariable(name = "missionId") final Long missionId,
             @Schema(description = "인증 이미지 파일", requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestPart(name = "imageFile") final MultipartFile imageFile);
+
+    @Operation(summary = "미션 인증 피드 확인", description = "사용자의 인증 피드를 확인합니다.")
+    @PostMapping(value = "/verifications/view")
+    ResponseEntity<MissionVerificationResponse> viewVerification(
+            @RequestBody final ViewMissionVerificationRequest request,
+            @LoginMemberId final Long memberId
+    );
 }

@@ -4,14 +4,23 @@ import com.nexters.goalpanzi.application.mission.MissionVerificationService;
 import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionVerificationCommand;
 import com.nexters.goalpanzi.application.mission.dto.request.MissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificationQuery;
+import com.nexters.goalpanzi.application.mission.dto.request.ViewMissionVerificationCommand;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationsResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
+import com.nexters.goalpanzi.presentation.mission.dto.ViewMissionVerificationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -53,6 +62,17 @@ public class MissionVerificationController implements MissionVerificationControl
             @PathVariable(name = "missionId") final Long missionId,
             @RequestPart(name = "imageFile") final MultipartFile imageFile) {
         missionVerificationService.createVerification(new CreateMissionVerificationCommand(memberId, missionId, imageFile));
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/verifications/view")
+    public ResponseEntity<MissionVerificationResponse> viewMissionVerification(
+            @RequestBody final ViewMissionVerificationRequest request,
+            @LoginMemberId final Long memberId
+    ) {
+        missionVerificationService.viewMissionVerification(
+                new ViewMissionVerificationCommand(request.missionVerificationId(), memberId));
 
         return ResponseEntity.ok().build();
     }

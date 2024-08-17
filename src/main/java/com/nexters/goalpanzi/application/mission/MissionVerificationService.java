@@ -3,6 +3,7 @@ package com.nexters.goalpanzi.application.mission;
 import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionVerificationCommand;
 import com.nexters.goalpanzi.application.mission.dto.request.MissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificationQuery;
+import com.nexters.goalpanzi.application.mission.dto.request.ViewMissionVerificationCommand;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationsResponse;
 import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
@@ -135,5 +136,9 @@ public class MissionVerificationService {
     public void deleteAllByMissionId(final Long missionId) {
         missionVerificationRepository.findAllByMissionId(missionId)
                 .forEach(BaseEntity::delete);
+    }
+
+    public void viewMissionVerification(final ViewMissionVerificationCommand command) {
+//        TODO : missionVerificationViewRepository.save(new MissionVerificationView());
     }
 }
