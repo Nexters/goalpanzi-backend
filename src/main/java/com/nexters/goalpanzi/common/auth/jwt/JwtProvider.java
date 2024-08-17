@@ -2,7 +2,13 @@ package com.nexters.goalpanzi.common.auth.jwt;
 
 import com.nexters.goalpanzi.exception.BaseException;
 import com.nexters.goalpanzi.exception.ErrorCode;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +38,7 @@ public class JwtProvider {
         this.refreshExpiresInDays = refreshExpiresInDays;
     }
 
-    public com.nexters.goalpanzi.common.auth.jwt.Jwt generateTokens(final String subject) {
+    public Jwt generateTokens(final String subject) {
         return Jwt.builder()
                 .accessToken(createToken(subject, TokenType.ACCESS))
                 .refreshToken(createToken(subject, TokenType.REFRESH))

@@ -17,9 +17,9 @@ spring:
 jwt:
   secret: testtest
   access-token:
-    expires-in: 86400000
+    expires-in-days: 14
   refresh-token:
-    expires-in: 1209600000
+    expires-in-days: 14
 
 oauth:
   apple:
