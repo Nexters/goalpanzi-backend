@@ -19,6 +19,8 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.util.Objects;
 
+import static com.nexters.goalpanzi.exception.ErrorCode.CAN_NOT_JOIN_MISSION;
+
 @Entity
 @SQLRestriction("deleted_at is NULL")
 @Table(name = "mission_member")
@@ -49,6 +51,9 @@ public class MissionMember extends BaseEntity {
     }
 
     public static MissionMember join(final Member member, final Mission mission) {
+        if (mission.isMissionPeriod()) {
+            throw new IllegalArgumentException(CAN_NOT_JOIN_MISSION.getMessage());
+        }
         return new MissionMember(member, mission, 0);
     }
 
