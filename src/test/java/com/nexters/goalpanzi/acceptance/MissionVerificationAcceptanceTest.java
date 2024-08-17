@@ -168,4 +168,23 @@ public class MissionVerificationAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(verification.imageUrl()).isEqualTo(UPLOADED_IMAGE_URL)
         );
     }
+
+    //    void 내가_참여하지_않은_미션의_인증_현황을_조회할_수_없다() {
+//        when(objectStorageClient.uploadFile(any(MultipartFile.class))).thenReturn(UPLOADED_IMAGE_URL);
+//
+//        LoginResponse memberALogin = 구글_로그인(new GoogleLoginCommand(EMAIL_MEMBER_A)).as(LoginResponse.class);
+//        CreateMissionRequest missionRequest = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(), LocalDateTime.now().plusDays(1), TimeOfDay.EVERYDAY, WEEK, 1);
+//        프로필_설정(new UpdateProfileRequest(NICKNAME_MEMBER_A, CHARACTER_MEMBER_A), memberALogin.accessToken());
+//        MissionDetailResponse mission = 미션_생성(missionRequest, memberALogin.accessToken()).as(MissionDetailResponse.class);
+//        미션_인증(IMAGE_FILE, mission.missionId(), memberALogin.accessToken());
+//
+//        LoginResponse memberBLogin = 구글_로그인(new GoogleLoginCommand(EMAIL_MEMBER_B)).as(LoginResponse.class);
+//
+//        ExtractableResponse<Response> response = 일자별_미션_인증_조회(mission.missionId(), LocalDate.now(), memberBLogin.accessToken());
+//
+//        assertAll(
+//                () -> assertThat(response.statusCode()).isEqualTo(403),
+//                () -> assertThat(response.jsonPath().getString("message")).isEqualTo(ErrorCode.NOT_JOINED_MISSION_MEMBER.getMessage())
+//        );
+//    }
 }
