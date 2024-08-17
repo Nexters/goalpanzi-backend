@@ -14,7 +14,6 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.util.Objects;
@@ -52,7 +51,7 @@ public class MissionMember extends BaseEntity {
 
     public static MissionMember join(final Member member, final Mission mission) {
         if (mission.isMissionPeriod()) {
-            throw new IllegalArgumentException(CAN_NOT_JOIN_MISSION.getMessage());
+            throw new IllegalArgumentException(CAN_NOT_JOIN_MISSION.toString());
         }
         return new MissionMember(member, mission, 0);
     }

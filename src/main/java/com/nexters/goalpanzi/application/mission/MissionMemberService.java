@@ -49,14 +49,14 @@ public class MissionMemberService {
     private void validateAlreadyJoin(final Member member, final Mission mission) {
         missionMemberRepository.findByMemberIdAndMissionId(member.getId(), mission.getId())
                 .ifPresent(missionMember -> {
-                    throw new AlreadyExistsException(ErrorCode.ALREADY_EXISTS_MISSION_MEMBER, missionMember.getId());
+                    throw new AlreadyExistsException(ErrorCode.ALREADY_EXISTS_MISSION_MEMBER.toString());
                 });
     }
 
     private void validateMaxPersonnel(final Mission mission) {
         List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(mission.getId());
         if (missionMembers.size() >= MAX_PERSONNEL) {
-            throw new BadRequestException(ErrorCode.EXCEED_MAX_PERSONNEL, mission.getId());
+            throw new BadRequestException(ErrorCode.EXCEED_MAX_PERSONNEL.toString());
         }
     }
 
