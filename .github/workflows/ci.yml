@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - fix/ci-cd
 
     types: [opened, synchronize]
 
