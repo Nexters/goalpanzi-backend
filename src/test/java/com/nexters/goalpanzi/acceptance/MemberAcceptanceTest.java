@@ -69,6 +69,6 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
 
-        assertThat(memberRepository.findAll()).isEmpty();
+        assertThat(memberRepository.findByIdAndDeletedAtIsNull(login.memberId())).isEmpty();
     }
 }
