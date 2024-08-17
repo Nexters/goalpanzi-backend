@@ -21,6 +21,8 @@ import java.util.Objects;
 @Getter
 public class Mission extends BaseEntity {
 
+    public static final Integer MAX_MISSION_MEMBER = 10;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mission_id")
