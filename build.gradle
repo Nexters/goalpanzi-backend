@@ -61,7 +61,8 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     testImplementation 'io.rest-assured:rest-assured'
-
+    testImplementation "org.testcontainers:testcontainers:1.19.0"
+    testImplementation "org.testcontainers:junit-jupiter:1.19.0"
 }
 
 tasks.named('test') {
