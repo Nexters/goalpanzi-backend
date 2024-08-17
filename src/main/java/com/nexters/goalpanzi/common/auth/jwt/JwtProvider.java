@@ -18,30 +18,31 @@ public class JwtProvider {
     private enum TokenType {ACCESS, REFRESH}
 
     private final String secret;
-    private final long accessExpiresIn;
-    private final long refreshExpiresIn;
+
+    private final long accessExpiresInDays;
+    private final long refreshExpiresInDays;
 
     public JwtProvider(
             @Value("${jwt.secret}") String secret,
-            @Value("${jwt.access-token.expires-in}") long accessExpiresIn,
-            @Value("${jwt.refresh-token.expires-in}") long refreshExpiresIn
+            @Value("${jwt.access-token.expires-in-days}") long accessExpiresInDays,
+            @Value("${jwt.refresh-token.expires-in-days}") long refreshExpiresInDays
     ) {
         this.secret = secret;
-        this.accessExpiresIn = accessExpiresIn;
-        this.refreshExpiresIn = refreshExpiresIn;
+        this.accessExpiresInDays = accessExpiresInDays;
+        this.refreshExpiresInDays = refreshExpiresInDays;
     }
 
-    public com.nexters.goalpanzi.common.auth.jwt.Jwt generateTokens(String subject) {
+    public com.nexters.goalpanzi.common.auth.jwt.Jwt generateTokens(final String subject) {
         return Jwt.builder()
                 .accessToken(createToken(subject, TokenType.ACCESS))
                 .refreshToken(createToken(subject, TokenType.REFRESH))
-                .refreshExpiresIn(refreshExpiresIn)
+                .refreshExpiresIn(computeExpiresIn(TokenType.REFRESH))
                 .build();
     }
 
-    private String createToken(String subject, TokenType tokenType) {
+    private String createToken(final String subject, final TokenType tokenType) {
         long currMillis = System.currentTimeMillis();
-        long expiresIn = tokenType == TokenType.ACCESS ? accessExpiresIn : refreshExpiresIn;
+        long expiresIn = computeExpiresIn(tokenType);
 
         Date iat = new Date(currMillis);
         Date exp = new Date(currMillis + expiresIn);
@@ -54,23 +55,28 @@ public class JwtProvider {
                 .compact();
     }
 
-    public Boolean validateToken(String token) {
+    private long computeExpiresIn(final TokenType tokenType) {
+        long expiresInDays = tokenType == TokenType.ACCESS ? accessExpiresInDays : refreshExpiresInDays;
+        return expiresInDays * 1000 * 60 * 60 * 24;
+    }
+
+    public Boolean validateToken(final String token) {
         return !isExpired(token);
     }
 
-    public String getSubject(String token) {
+    public String getSubject(final String token) {
         return getClaims(token)
                 .getSubject();
     }
 
-    public Boolean isExpired(String token) {
+    public Boolean isExpired(final String token) {
         Date now = new Date();
         return getClaims(token)
                 .getExpiration()
                 .before(now);
     }
 
-    private Claims getClaims(String token) {
+    private Claims getClaims(final String token) {
         try {
             return Jwts.parser()
                     .setSigningKey(secret)

@@ -1,9 +1,9 @@
 package com.nexters.goalpanzi.config.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nexters.goalpanzi.common.filter.JwtAuthenticationFilter;
 import com.nexters.goalpanzi.common.auth.jwt.JwtParser;
 import com.nexters.goalpanzi.common.auth.jwt.JwtProvider;
+import com.nexters.goalpanzi.common.filter.JwtAuthenticationFilter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -30,8 +30,8 @@ public class JwtAuthenticationFilterTest {
         public JwtProvider jwtProvider() {
             return JwtProvider.builder()
                     .secret("secret")
-                    .accessExpiresIn(60000)
-                    .refreshExpiresIn(60000)
+                    .accessExpiresInDays(1)
+                    .refreshExpiresInDays(1)
                     .build();
         }
 
