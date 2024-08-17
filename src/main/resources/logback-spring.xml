@@ -4,8 +4,9 @@
     <property name="COLORED_LOG_PATTERN"
               value="%d{yyyy-MM-dd HH:mm:ss} %green([%thread]) %highlight(%5level) %yellow(%logger{36}) - %msg%n"/>
     <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %5level %logger{36} - %msg%n"/>
-    <property name="FILE_NAME" value="/logs/api-server.log"/>
-    <property name="FILE_NAME_PATTERN" value="/logs/api-server.{yyyy-MM-dd}.%d.log"/>
+    <property name="LOG_PATH" value="./logs"/>
+    <property name="FILE_NAME" value="api-server.log"/>
+    <property name="FILE_NAME_PATTERN" value="api-server.{yyyy-MM-dd}.%d.log"/>
     <property name="MAX_HISTORY" value="3"/>
     <property name="MAX_SIZE" value="5KB"/>
     <property name="TOTAL_SIZE_CAP" value="10MB"/>
