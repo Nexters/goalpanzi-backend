@@ -37,7 +37,7 @@ public class MissionAcceptanceTest extends AcceptanceTest {
     void 미션을_생성한다() {
         LoginResponse loginResponse = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
 
-        CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(), LocalDateTime.now().plusDays(5), TimeOfDay.EVERYDAY, List.of(DayOfWeek.FRIDAY), 5);
+        CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(5), TimeOfDay.EVERYDAY, List.of(DayOfWeek.FRIDAY), 5);
 
         MissionDetailResponse actual = 미션_생성(request, loginResponse.accessToken()).as(MissionDetailResponse.class);
 
@@ -51,7 +51,7 @@ public class MissionAcceptanceTest extends AcceptanceTest {
     void 미션을_조회한다() {
         LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
 
-        CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(),
+        CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(5), TimeOfDay.EVERYDAY,
                 List.of(DayOfWeek.MONDAY, DayOfWeek.FRIDAY), 20);
 
@@ -70,7 +70,7 @@ public class MissionAcceptanceTest extends AcceptanceTest {
     void 초대코드로_미션을_조회한다() {
         LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
 
-        CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(),
+        CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(5), TimeOfDay.EVERYDAY,
                 List.of(DayOfWeek.MONDAY, DayOfWeek.FRIDAY), 20);
 
@@ -95,7 +95,7 @@ public class MissionAcceptanceTest extends AcceptanceTest {
     void 미션을_생성한_사용자는_자동으로_경쟁에_참가된다() {
         LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
 
-        CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(),
+        CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(5), TimeOfDay.EVERYDAY,
                 List.of(DayOfWeek.MONDAY, DayOfWeek.FRIDAY), 20);
 
