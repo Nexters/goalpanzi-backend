@@ -2,13 +2,12 @@ package com.nexters.goalpanzi.infrastructure.aws;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
-import com.amazonaws.services.s3.transfer.Upload;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
 import com.nexters.goalpanzi.exception.BadRequestException;
 import com.nexters.goalpanzi.exception.BaseException;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -30,21 +29,23 @@ public class S3Client implements ObjectStorageClient {
 
     private final AmazonS3 amazonS3;
 
-    private TransferManager tm;
-
-    @PostConstruct
-    private void buildTransferManager() {
-        tm = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
-    }
-
     public String uploadFile(final MultipartFile file) {
         String fileObjKeyName = UUID.randomUUID().toString();
+        File tempFile = convert(file);
+
         try {
-            Upload upload = tm.upload(bucketName, fileObjKeyName, convert(file));
-            upload.waitForCompletion();
+            PutObjectRequest request = new PutObjectRequest(bucketName, fileObjKeyName, tempFile)
+                    .withCannedAcl(CannedAccessControlList.PublicRead);
+
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(file.getContentType());
+            metadata.setContentLength(tempFile.length());
+
+            request.setMetadata(metadata);
+            amazonS3.putObject(request);
 
             return amazonS3.getUrl(bucketName, fileObjKeyName).toString();
-        } catch (SdkClientException | InterruptedException e) {
+        } catch (SdkClientException e) {
             throw new BaseException(FILE_UPLOAD_FAILED, e);
         }
     }
