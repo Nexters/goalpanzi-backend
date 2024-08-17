@@ -22,14 +22,14 @@ public class JwtProviderTest {
     void JWT_토큰을_생성한다() {
         JwtProvider jwtProvider = JwtProvider.builder()
                 .secret(SECRET)
-                .accessExpiresIn(60000000)
-                .refreshExpiresIn(60000)
+                .accessExpiresInDays(1)
+                .refreshExpiresInDays(1)
                 .build();
 
         Jwt jwt = jwtProvider.generateTokens(MEMBER_ID.toString());
 
         System.out.println(jwt.accessToken());
-        
+
         assertThat(jwt).isNotNull();
     }
 
@@ -37,8 +37,8 @@ public class JwtProviderTest {
     void 유효한_JWT_토큰을_검증한다() {
         JwtProvider jwtProvider = JwtProvider.builder()
                 .secret(SECRET)
-                .accessExpiresIn(60000)
-                .refreshExpiresIn(60000)
+                .accessExpiresInDays(1)
+                .refreshExpiresInDays(1)
                 .build();
 
         Jwt jwt = jwtProvider.generateTokens(MEMBER_ID.toString());
@@ -55,8 +55,8 @@ public class JwtProviderTest {
     void 유효한_JWT_토큰에서_subject를_추출한다() {
         JwtProvider jwtProvider = JwtProvider.builder()
                 .secret(SECRET)
-                .accessExpiresIn(60000)
-                .refreshExpiresIn(60000)
+                .accessExpiresInDays(1)
+                .refreshExpiresInDays(1)
                 .build();
 
         Jwt jwt = jwtProvider.generateTokens(MEMBER_ID.toString());
@@ -73,12 +73,12 @@ public class JwtProviderTest {
     void 만료된_JWT_토큰을_검증한다() throws InterruptedException {
         JwtProvider jwtProvider = JwtProvider.builder()
                 .secret(SECRET)
-                .accessExpiresIn(1000)
-                .refreshExpiresIn(1000)
+                .accessExpiresInDays(0)
+                .refreshExpiresInDays(0)
                 .build();
 
         Jwt jwt = jwtProvider.generateTokens(MEMBER_ID.toString());
-        Thread.sleep(2000);
+
         Boolean isExpiredAccessToken = jwtProvider.validateToken(jwt.accessToken());
         Boolean isExpiredRefreshToken = jwtProvider.validateToken(jwt.refreshToken());
 
@@ -92,12 +92,12 @@ public class JwtProviderTest {
     void 만료된_JWT_토큰에서_subject를_추출한다() throws InterruptedException {
         JwtProvider jwtProvider = JwtProvider.builder()
                 .secret(SECRET)
-                .accessExpiresIn(1000)
-                .refreshExpiresIn(1000)
+                .accessExpiresInDays(0)
+                .refreshExpiresInDays(0)
                 .build();
 
         Jwt jwt = jwtProvider.generateTokens(MEMBER_ID.toString());
-        Thread.sleep(2000);
+
         String accessTokenSubject = jwtProvider.getSubject(jwt.accessToken());
         String refreshTokenSubject = jwtProvider.getSubject(jwt.refreshToken());
 
@@ -111,8 +111,8 @@ public class JwtProviderTest {
     void 서명이_잘못된_JWT_토큰을_검증한다() {
         JwtProvider jwtProvider = JwtProvider.builder()
                 .secret(SECRET)
-                .accessExpiresIn(60000)
-                .refreshExpiresIn(60000)
+                .accessExpiresInDays(1)
+                .refreshExpiresInDays(1)
                 .build();
 
         long currMillis = System.currentTimeMillis();
@@ -136,8 +136,8 @@ public class JwtProviderTest {
     void 잘못된_형식의_JWT_토큰을_검증한다() {
         JwtProvider jwtProvider = JwtProvider.builder()
                 .secret(SECRET)
-                .accessExpiresIn(60000)
-                .refreshExpiresIn(60000)
+                .accessExpiresInDays(1)
+                .refreshExpiresInDays(1)
                 .build();
 
         String malformedToken = "malformedToken";
