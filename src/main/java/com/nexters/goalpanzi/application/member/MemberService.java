@@ -3,6 +3,7 @@ package com.nexters.goalpanzi.application.member;
 import com.nexters.goalpanzi.application.member.dto.request.UpdateProfileCommand;
 import com.nexters.goalpanzi.application.member.dto.response.ProfileResponse;
 import com.nexters.goalpanzi.application.member.event.DeleteMemberEvent;
+import com.nexters.goalpanzi.domain.auth.repository.RefreshTokenRepository;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.exception.AlreadyExistsException;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
@@ -46,6 +48,7 @@ public class MemberService {
     @Transactional
     public void deleteMember(final Long memberId) {
         eventPublisher.publishEvent(new DeleteMemberEvent(memberId));
+        refreshTokenRepository.delete(memberId.toString());
         memberRepository.getMember(memberId).delete();
     }
 }
