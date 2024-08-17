@@ -24,6 +24,13 @@ spring:
     user: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     baseline-version: 0
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 3_000
+            readTimeout: 3_000
 
 jwt:
   secret: ${JWT_SECRET}
