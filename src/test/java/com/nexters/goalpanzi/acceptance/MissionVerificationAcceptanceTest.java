@@ -144,7 +144,7 @@ public class MissionVerificationAcceptanceTest extends AcceptanceTest {
                 .toList();
 
         assertAll(
-                () -> assertThat(verifications.missionVerifications().size()).isEqualTo(4),
+                () -> assertThat(verifications.missionVerifications().size()).isEqualTo(3),
                 () -> assertThat(nicknames).containsExactly(NICKNAME_HOST, NICKNAME_MEMBER_A, NICKNAME_MEMBER_B)
         );
     }
