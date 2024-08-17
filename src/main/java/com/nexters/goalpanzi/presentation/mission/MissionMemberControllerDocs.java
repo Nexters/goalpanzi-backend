@@ -31,7 +31,7 @@ public interface MissionMemberControllerDocs {
     );
 
     @Operation(summary = "참여 가능한 미션 조회")
-    ResponseEntity<MissionDetailResponse> getMissionRank(
+    ResponseEntity<MissionDetailResponse> getJoinableMission(
             @RequestParam final String invitationCode
     );
 }

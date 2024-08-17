@@ -52,7 +52,7 @@ public class MissionMemberController implements MissionMemberControllerDocs {
 
     @Override
     @GetMapping("/mission:joinable")
-    public ResponseEntity<MissionDetailResponse> getMissionRank(
+    public ResponseEntity<MissionDetailResponse> getJoinableMission(
             @RequestParam final String invitationCode
     ) {
         MissionDetailResponse response = missionMemberService.getJoinableMission(new InvitationCode(invitationCode));
