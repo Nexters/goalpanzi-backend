@@ -6,12 +6,13 @@ import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.InvitationCode;
+import com.nexters.goalpanzi.domain.mission.MemberRanks;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.MissionMember;
-import com.nexters.goalpanzi.domain.mission.MemberRanks;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.exception.AlreadyExistsException;
+import com.nexters.goalpanzi.exception.BadRequestException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +30,14 @@ public class MissionMemberService {
     private final MissionRepository missionRepository;
     private final MemberRepository memberRepository;
 
+    private static final int MAX_PERSONNEL = 10;
+
     @Transactional
     public void joinMission(final Long memberId, final InvitationCode invitationCode) {
         Member member = memberRepository.getMember(memberId);
         Mission mission = getMissionByCode(invitationCode);
         validateAlreadyJoin(member, mission);
+        validateMaxPersonnel(mission);
         missionMemberRepository.save(MissionMember.join(member, mission));
     }
 
@@ -47,6 +51,13 @@ public class MissionMemberService {
                 .ifPresent(missionMember -> {
                     throw new AlreadyExistsException(ErrorCode.ALREADY_EXISTS_MISSION_MEMBER, missionMember.getId());
                 });
+    }
+
+    private void validateMaxPersonnel(final Mission mission) {
+        List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(mission.getId());
+        if (missionMembers.size() >= MAX_PERSONNEL) {
+            throw new BadRequestException(ErrorCode.EXCEED_MAX_PERSONNEL, mission.getId());
+        }
     }
 
     public MissionsResponse findAllByMemberId(final Long memberId) {
