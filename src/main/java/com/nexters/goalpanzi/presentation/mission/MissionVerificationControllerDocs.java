@@ -41,6 +41,8 @@ public interface MissionVerificationControllerDocs {
                                         
                     date, sortType, sortDirection 생략 시, **[오늘 기준, 인증 최신순]**으로 조회합니다.
                                         
+                    내가 조회하지 않은 인증 현황은 viewedAt을 null로 전달합니다. (주황색 테두리 표시 용도)
+                                        
                     미션을 인증하지 않은 멤버는 프로필 정보만 포함하여 마지막에 배치됩니다.
                     """
     )
