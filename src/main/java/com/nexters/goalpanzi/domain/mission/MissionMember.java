@@ -19,6 +19,7 @@ import org.hibernate.annotations.SQLRestriction;
 import java.util.Objects;
 
 import static com.nexters.goalpanzi.exception.ErrorCode.CAN_NOT_JOIN_MISSION;
+import static com.nexters.goalpanzi.exception.ErrorCode.EXCEED_MAX_PERSONNEL;
 
 @Entity
 @SQLRestriction("deleted_at is NULL")

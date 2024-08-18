@@ -1,6 +1,7 @@
 package com.nexters.goalpanzi.application.mission;
 
 import com.nexters.goalpanzi.application.mission.dto.response.MemberRankResponse;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.member.Member;
@@ -12,7 +13,6 @@ import com.nexters.goalpanzi.domain.mission.MissionMember;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.exception.AlreadyExistsException;
-import com.nexters.goalpanzi.exception.BadRequestException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -26,18 +26,22 @@ import java.util.List;
 @Service
 public class MissionMemberService {
 
+    private final MissionValidator missionValidator;
     private final MissionMemberRepository missionMemberRepository;
     private final MissionRepository missionRepository;
     private final MemberRepository memberRepository;
 
-    private static final int MAX_PERSONNEL = 10;
+    public MissionDetailResponse getJoinableMission(final InvitationCode invitationCode) {
+        missionValidator.validateJoinableMission(invitationCode);
+        return MissionDetailResponse.from(getMissionByCode(invitationCode));
+    }
 
     @Transactional
     public void joinMission(final Long memberId, final InvitationCode invitationCode) {
         Member member = memberRepository.getMember(memberId);
         Mission mission = getMissionByCode(invitationCode);
         validateAlreadyJoin(member, mission);
-        validateMaxPersonnel(mission);
+        missionValidator.validateMaxPersonnel(mission);
         missionMemberRepository.save(MissionMember.join(member, mission));
     }
 
@@ -51,13 +55,6 @@ public class MissionMemberService {
                 .ifPresent(missionMember -> {
                     throw new AlreadyExistsException(ErrorCode.ALREADY_EXISTS_MISSION_MEMBER.toString());
                 });
-    }
-
-    private void validateMaxPersonnel(final Mission mission) {
-        List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(mission.getId());
-        if (missionMembers.size() >= MAX_PERSONNEL) {
-            throw new BadRequestException(ErrorCode.EXCEED_MAX_PERSONNEL.toString());
-        }
     }
 
     public MissionsResponse findAllByMemberId(final Long memberId) {

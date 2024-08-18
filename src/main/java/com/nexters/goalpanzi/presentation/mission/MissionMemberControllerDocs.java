@@ -1,6 +1,7 @@
 package com.nexters.goalpanzi.presentation.mission;
 
 import com.nexters.goalpanzi.application.mission.dto.response.MemberRankResponse;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import com.nexters.goalpanzi.presentation.mission.dto.JoinMissionRequest;
@@ -27,5 +28,10 @@ public interface MissionMemberControllerDocs {
     ResponseEntity<MemberRankResponse> getMissionRank(
             @RequestParam final Long missionId,
             @Parameter(hidden = true) @LoginMemberId final Long memberId
+    );
+
+    @Operation(summary = "참여 가능한 미션 조회")
+    ResponseEntity<MissionDetailResponse> getJoinableMission(
+            @RequestParam final String invitationCode
     );
 }
