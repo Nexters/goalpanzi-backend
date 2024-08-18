@@ -56,3 +56,14 @@ create table if not exists mission_member
     mission_id         bigint not null,
     verification_count int
 );
+
+create table if not exists mission_verification_view
+(
+    mission_verification_view_id  bigint auto_increment
+        primary key,
+    created_at              datetime(6),
+    deleted_at              datetime(6),
+    updated_at              datetime(6),
+    mission_verification_id bigint not null,
+    member_id               bigint not null
+);
