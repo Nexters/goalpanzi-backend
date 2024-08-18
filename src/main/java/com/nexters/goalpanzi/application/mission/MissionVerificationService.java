@@ -10,12 +10,10 @@ import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
-import com.nexters.goalpanzi.domain.mission.Mission;
-import com.nexters.goalpanzi.domain.mission.MissionMember;
-import com.nexters.goalpanzi.domain.mission.MissionMembers;
-import com.nexters.goalpanzi.domain.mission.MissionVerification;
+import com.nexters.goalpanzi.domain.mission.*;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationRepository;
+import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationViewRepository;
 import com.nexters.goalpanzi.exception.BadRequestException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +32,7 @@ public class MissionVerificationService {
 
     private final MissionVerificationRepository missionVerificationRepository;
     private final MissionMemberRepository missionMemberRepository;
+    private final MissionVerificationViewRepository missionVerificationViewRepository;
     private final MemberRepository memberRepository;
 
     private final ObjectStorageClient objectStorageClient;
@@ -58,7 +57,9 @@ public class MissionVerificationService {
 
         missionMembers.forEach(missionMember -> {
             Member member1 = missionMember.getMember();
-            MissionVerificationResponse missionVerificationResponse = MissionVerificationResponse.of(member1, Optional.ofNullable(map.get(member1.getId())));
+            MissionVerification missionVerification = map.get(member1.getId());
+            MissionVerificationView missionVerificationView = missionVerificationViewRepository.getMissionVerificationView(missionVerification.getId(), member1.getId());
+            MissionVerificationResponse missionVerificationResponse = MissionVerificationResponse.of(member1, Optional.of(missionVerification), Optional.of(missionVerificationView));
             response.add(missionVerificationResponse);
         });
 
@@ -68,6 +69,7 @@ public class MissionVerificationService {
 
     private static Comparator<MissionVerificationResponse> compareMissionVerificationResponses(final String nickname, final MissionVerificationQuery.SortType sortType, final Sort.Direction direction) {
         return Comparator.comparing((MissionVerificationResponse missionVerificationResponse) -> missionVerificationResponse.nickname().equals(nickname)).reversed()
+                .thenComparing((MissionVerificationResponse missionVerificationResponse) -> missionVerificationResponse.viewedAt() == null, Comparator.reverseOrder())
                 .thenComparing(compareMissionVerificationResponsesByOrder(sortType, direction));
     }
 
@@ -85,7 +87,7 @@ public class MissionVerificationService {
     public MissionVerificationResponse getMyVerification(final MyMissionVerificationQuery query) {
         MissionVerification verification = missionVerificationRepository.getMyVerification(query.memberId(), query.missionId(), query.number());
 
-        return MissionVerificationResponse.verified(verification.getMember(), verification);
+        return MissionVerificationResponse.verified(verification.getMember(), verification, null);
     }
 
     @Transactional
@@ -139,6 +141,6 @@ public class MissionVerificationService {
     }
 
     public void viewMissionVerification(final ViewMissionVerificationCommand command) {
-//        TODO : missionVerificationViewRepository.save(new MissionVerificationView());
+        missionVerificationViewRepository.save(new MissionVerificationView(command.missionVerificationId(), command.memberId()));
     }
 }
