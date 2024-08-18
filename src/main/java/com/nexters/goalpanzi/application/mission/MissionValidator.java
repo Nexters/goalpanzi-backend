@@ -34,7 +34,7 @@ public class MissionValidator {
 
     public void validateMissionPeriod(final Mission mission) {
         if (mission.isMissionPeriod()) {
-            throw new IllegalArgumentException(ErrorCode.CAN_NOT_JOIN_MISSION.toString());
+            throw new BadRequestException(ErrorCode.CAN_NOT_JOIN_MISSION.toString());
         }
     }
 
