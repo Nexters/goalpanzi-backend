@@ -141,6 +141,9 @@ public class MissionVerificationService {
     }
 
     public void viewMissionVerification(final ViewMissionVerificationCommand command) {
-        missionVerificationViewRepository.save(new MissionVerificationView(command.missionVerificationId(), command.memberId()));
+        Member member = memberRepository.getMember(command.memberId());
+        MissionVerification missionVerification = missionVerificationRepository.findById(command.missionVerificationId()).get();
+
+        missionVerificationViewRepository.save(new MissionVerificationView(missionVerification, member));
     }
 }

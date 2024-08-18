@@ -26,7 +26,7 @@ public class MissionVerificationView extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    public MissionVerificationView(final Long missionVerificationId, final Long memberId) {
-        new MissionVerificationView(missionVerificationId, memberId);
+    public MissionVerificationView(final MissionVerification missionVerification, final Member member) {
+        new MissionVerificationView(missionVerification, member);
     }
 }
