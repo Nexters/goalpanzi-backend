@@ -30,7 +30,7 @@ public interface MissionMemberControllerDocs {
             @Parameter(hidden = true) @LoginMemberId final Long memberId
     );
 
-    @Operation(summary = "참여 가능한 미션 조회")
+    @Operation(summary = "참여 가능한 미션 여부 확인")
     ResponseEntity<MissionDetailResponse> getJoinableMission(
             @RequestParam final String invitationCode
     );
