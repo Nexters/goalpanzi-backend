@@ -5,13 +5,11 @@ import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface MissionVerificationRepository extends JpaRepository<MissionVerification, Long> {
 
     List<MissionVerification> findAllByMemberId(final Long memberId);
