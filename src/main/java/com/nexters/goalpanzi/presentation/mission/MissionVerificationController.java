@@ -66,6 +66,7 @@ public class MissionVerificationController implements MissionVerificationControl
         return ResponseEntity.ok().build();
     }
 
+    @Override
     @PostMapping(value = "/verifications/view")
     public ResponseEntity<MissionVerificationResponse> viewMissionVerification(
             @RequestBody final ViewMissionVerificationRequest request,

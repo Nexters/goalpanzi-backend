@@ -104,7 +104,7 @@ public interface MissionVerificationControllerDocs {
 
     @Operation(summary = "미션 인증 피드 확인", description = "사용자의 인증 피드를 확인합니다.")
     @PostMapping(value = "/verifications/view")
-    ResponseEntity<MissionVerificationResponse> viewVerification(
+    ResponseEntity<MissionVerificationResponse> viewMissionVerification(
             @RequestBody final ViewMissionVerificationRequest request,
             @LoginMemberId final Long memberId
     );
