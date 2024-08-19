@@ -43,8 +43,7 @@ public class MissionVerificationService {
 
         Member member = memberRepository.getMember(query.memberId());
         MissionMembers missionMembers = new MissionMembers(missionMemberRepository.findAllByMissionId(query.missionId()));
-//        TODO 추후 활성화
-//        missionMembers.verifyMissionMember(member);
+        missionMembers.verifyMissionMember(member);
         List<MissionVerification> missionVerifications = missionVerificationRepository.findAllByMissionIdAndDate(query.missionId(), date);
 
         return new MissionVerificationsResponse(sortMissionVerifications(member, query.sortType(), query.direction(), missionVerifications, missionMembers.getMissionMembers()));
