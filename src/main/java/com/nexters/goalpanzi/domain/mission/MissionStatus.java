@@ -1,8 +1,11 @@
 package com.nexters.goalpanzi.domain.mission;
 
+import com.nexters.goalpanzi.common.time.TimeUtil;
 import lombok.Getter;
+import org.joda.time.LocalDate;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter
 public enum MissionStatus {
@@ -17,14 +20,21 @@ public enum MissionStatus {
         this.description = description;
     }
 
-    public static MissionStatus fromDate(final LocalDateTime missionStartDate, final LocalDateTime missionEndDate) {
-        LocalDateTime today = LocalDateTime.now();
-        if (today.isBefore(missionStartDate)) {
+    public static MissionStatus fromMission(final Mission mission) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime missionStart = TimeUtil.combineDateAndTime(
+                mission.getMissionStartDate(), TimeUtil.of(mission.getUploadStartTime())
+        );
+        LocalDateTime missionEnd = TimeUtil.combineDateAndTime(
+                mission.getMissionEndDate(), TimeUtil.of(mission.getUploadEndTime())
+        );
+
+        if (now.isBefore(missionStart)) {
             return PENDING;
-        } else if (!today.isAfter(missionEndDate)) {
-            return ONGOING;
-        } else {
+        } else if (now.isAfter(missionEnd)) {
             return COMPLETED;
+        } else {
+            return ONGOING;
         }
     }
 }

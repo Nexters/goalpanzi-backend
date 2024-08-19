@@ -72,11 +72,7 @@ public class MissionMemberService {
     private boolean isMissionStatusMatching(final MissionFilter filter, final Mission mission) {
         MissionStatus missionStatus = filter.toMissionStatus();
         if (missionStatus != null) {
-            return Objects.equals(missionStatus,
-                    MissionStatus.fromDate(
-                    mission.getMissionStartDate(),
-                    mission.getMissionEndDate())
-            );
+            return Objects.equals(missionStatus, MissionStatus.fromMission(mission));
         }
         return true;
     }
