@@ -9,6 +9,9 @@ public class TimeUtil {
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     public static LocalTime of(final String timeString) {
+        if ("24:00".equals(timeString)) {
+            return LocalTime.MAX;
+        }
         return LocalTime.parse(timeString, TIME_FORMATTER);
     }
 
