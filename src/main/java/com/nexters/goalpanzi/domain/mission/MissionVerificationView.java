@@ -27,6 +27,7 @@ public class MissionVerificationView extends BaseEntity {
     private Member member;
 
     public MissionVerificationView(final MissionVerification missionVerification, final Member member) {
-        new MissionVerificationView(missionVerification, member);
+        this.missionVerification = missionVerification;
+        this.member = member;
     }
 }
