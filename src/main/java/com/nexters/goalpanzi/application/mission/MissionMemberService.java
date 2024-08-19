@@ -60,7 +60,7 @@ public class MissionMemberService {
                 });
     }
 
-    public MissionsResponse findAllByMemberId(final Long memberId, final MissionFilter filter) {
+    public MissionsResponse findAllByMemberId(final Long memberId, final List<MissionFilter> filter) {
         Member member = memberRepository.getMember(memberId);
         List<MissionMember> missionMembers = missionMemberRepository.findAllWithMissionByMemberId(memberId)
                 .stream()
@@ -69,12 +69,14 @@ public class MissionMemberService {
         return MissionsResponse.of(member, missionMembers);
     }
 
-    private boolean isMissionStatusMatching(final MissionFilter filter, final Mission mission) {
-        MissionStatus missionStatus = filter.toMissionStatus();
-        if (missionStatus != null) {
-            return Objects.equals(missionStatus, MissionStatus.fromMission(mission));
+    private boolean isMissionStatusMatching(final List<MissionFilter> filters, final Mission mission) {
+        for (MissionFilter filter : filters) {
+            MissionStatus missionStatus = filter.toMissionStatus();
+            if (missionStatus != null && Objects.equals(missionStatus, MissionStatus.fromMission(mission))) {
+                return true;
+            }
         }
-        return true;
+        return filters.isEmpty();
     }
 
     @Transactional

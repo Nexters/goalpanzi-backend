@@ -2,10 +2,8 @@ package com.nexters.goalpanzi.domain.mission;
 
 import com.nexters.goalpanzi.common.time.TimeUtil;
 import lombok.Getter;
-import org.joda.time.LocalDate;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Getter
 public enum MissionStatus {

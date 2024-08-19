@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
@@ -28,7 +30,7 @@ public class MissionMemberController implements MissionMemberControllerDocs {
     @GetMapping("/mission-members/me")
     public ResponseEntity<MissionsResponse> getMissions(
             @LoginMemberId final Long memberId,
-            @RequestParam(required = false, defaultValue = "ONGOING") MissionFilter filter
+            @RequestParam(required = false, defaultValue = "ONGOING") List<MissionFilter> filter
     ) {
         return ResponseEntity.ok(missionMemberService.findAllByMemberId(memberId, filter));
     }
