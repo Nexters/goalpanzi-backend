@@ -62,7 +62,7 @@ public class MissionMemberAcceptanceTest extends AcceptanceTest {
         MissionsResponse actual = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + login.accessToken())
-                .when().get("/api/mission-members/me")
+                .when().get("/api/mission-members/me?filter=PENDING")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract()

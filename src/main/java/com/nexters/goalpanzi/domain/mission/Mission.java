@@ -57,6 +57,10 @@ public class Mission extends BaseEntity {
     @Column(name = "mission_day", nullable = false)
     private List<DayOfWeek> missionDays;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private MissionStatus status;
+
     public Mission(final Long hostMemberId, final String description, final InvitationCode invitationCode,
                    final LocalDateTime missionStartDate, final LocalDateTime missionEndDate,
                    final String uploadStartTime, final String uploadEndTime,
