@@ -7,8 +7,7 @@ import lombok.Getter;
 public enum MissionFilter {
     PENDING("대기"),
     ONGOING("진행중"),
-    COMPLETED("완료"),
-    ALL("모두");
+    COMPLETED("완료");
 
     private final String description;
 
@@ -17,9 +16,6 @@ public enum MissionFilter {
     }
 
     public MissionStatus toMissionStatus() {
-        if (this.equals(ALL)) {
-            return null;
-        }
         return MissionStatus.valueOf(this.name());
     }
 }
