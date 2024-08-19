@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
-public class JwtAuthenticationMissionFilterTest {
+public class JwtAuthenticationFilterTest {
 
     @Autowired
     private MockMvc mockMvc;
