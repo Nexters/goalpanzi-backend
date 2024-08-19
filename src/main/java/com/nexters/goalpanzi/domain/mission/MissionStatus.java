@@ -17,7 +17,7 @@ public enum MissionStatus {
         this.description = description;
     }
 
-    public static MissionStatus fromDate(LocalDateTime missionStartDate, LocalDateTime missionEndDate) {
+    public static MissionStatus fromDate(final LocalDateTime missionStartDate, final LocalDateTime missionEndDate) {
         LocalDateTime today = LocalDateTime.now();
         if (today.isBefore(missionStartDate)) {
             return PENDING;
