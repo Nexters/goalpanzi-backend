@@ -1,5 +1,6 @@
 package com.nexters.goalpanzi.presentation.mission;
 
+import com.nexters.goalpanzi.application.mission.dto.request.MissionFilter;
 import com.nexters.goalpanzi.application.mission.dto.response.MemberRankResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
@@ -16,7 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface MissionMemberControllerDocs {
 
     @Operation(summary = "내가 참여한 미션 조회")
-    ResponseEntity<MissionsResponse> getMissions(@Parameter(hidden = true) @LoginMemberId final Long memberId);
+    ResponseEntity<MissionsResponse> getMissions(
+            @LoginMemberId final Long memberId,
+            @Parameter(hidden = true) @RequestParam(required = false) MissionFilter filter
+    );
 
     @Operation(summary = "미션 참여", description = "초대코드로 미션에 참여합니다.")
     ResponseEntity<Void> joinMission(

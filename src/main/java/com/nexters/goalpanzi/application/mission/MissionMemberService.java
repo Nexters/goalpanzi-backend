@@ -1,5 +1,6 @@
 package com.nexters.goalpanzi.application.mission;
 
+import com.nexters.goalpanzi.application.mission.dto.request.MissionFilter;
 import com.nexters.goalpanzi.application.mission.dto.response.MemberRankResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
@@ -10,6 +11,7 @@ import com.nexters.goalpanzi.domain.mission.InvitationCode;
 import com.nexters.goalpanzi.domain.mission.MemberRanks;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.MissionMember;
+import com.nexters.goalpanzi.domain.mission.MissionStatus;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.exception.AlreadyExistsException;
@@ -57,9 +59,12 @@ public class MissionMemberService {
                 });
     }
 
-    public MissionsResponse findAllByMemberId(final Long memberId) {
-        List<MissionMember> missionMembers = missionMemberRepository.findAllByMemberId(memberId);
+    public MissionsResponse findAllByMemberId(final Long memberId, final MissionFilter filter) {
         Member member = memberRepository.getMember(memberId);
+        List<MissionMember> missionMembers = missionMemberRepository.findAllByMemberIdAndMissionStatus(memberId, filter.toMissionStatus())
+                .stream()
+                .toList();
+
         return MissionsResponse.of(member, missionMembers);
     }
 

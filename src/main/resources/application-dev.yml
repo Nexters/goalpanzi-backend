@@ -17,12 +17,11 @@ spring:
       host: localhost
       port: 6379
   flyway:
-    enabled: true
+    enabled: false
     baseline-on-migrate: true
     url: jdbc:mysql://localhost:3306/nexters
     user: test
     password: test
-    baseline-version: 0
   cloud:
     openfeign:
       client:
