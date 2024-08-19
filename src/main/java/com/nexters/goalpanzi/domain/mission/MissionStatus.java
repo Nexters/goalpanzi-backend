@@ -2,6 +2,8 @@ package com.nexters.goalpanzi.domain.mission;
 
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 public enum MissionStatus {
 
@@ -13,5 +15,16 @@ public enum MissionStatus {
 
     MissionStatus(final String description) {
         this.description = description;
+    }
+
+    public static MissionStatus fromDate(LocalDateTime missionStartDate, LocalDateTime missionEndDate) {
+        LocalDateTime today = LocalDateTime.now();
+        if (today.isBefore(missionStartDate)) {
+            return PENDING;
+        } else if (!today.isAfter(missionEndDate)) {
+            return ONGOING;
+        } else {
+            return COMPLETED;
+        }
     }
 }

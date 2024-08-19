@@ -18,8 +18,8 @@ public interface MissionMemberControllerDocs {
 
     @Operation(summary = "내가 참여한 미션 조회")
     ResponseEntity<MissionsResponse> getMissions(
-            @LoginMemberId final Long memberId,
-            @Parameter(hidden = true) @RequestParam(required = false) MissionFilter filter
+            @Parameter(hidden = true) @LoginMemberId final Long memberId,
+            @RequestParam(required = false) MissionFilter filter
     );
 
     @Operation(summary = "미션 참여", description = "초대코드로 미션에 참여합니다.")

@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -61,15 +62,27 @@ public class MissionMemberService {
 
     public MissionsResponse findAllByMemberId(final Long memberId, final MissionFilter filter) {
         Member member = memberRepository.getMember(memberId);
-        List<MissionMember> missionMembers = missionMemberRepository
-                .findAllByMemberIdAndMissionStatus(memberId, filter.toMissionStatus());
-
+        List<MissionMember> missionMembers = missionMemberRepository.findAllWithMissionByMemberId(memberId)
+                .stream()
+                .filter(it -> isMissionStatusMatching(filter, it.getMission()))
+                .toList();
         return MissionsResponse.of(member, missionMembers);
+    }
+
+    private boolean isMissionStatusMatching(final MissionFilter filter, final Mission mission) {
+        MissionStatus missionStatus = filter.toMissionStatus();
+        if (missionStatus != null) {
+            return Objects.equals(missionStatus, MissionStatus.fromDate(
+                    mission.getMissionStartDate(),
+                    mission.getMissionEndDate())
+            );
+        }
+        return true;
     }
 
     @Transactional
     public void deleteAllByMemberId(final Long memberId) {
-        missionMemberRepository.findAllByMemberId(memberId)
+        missionMemberRepository.findAllWithMissionByMemberId(memberId)
                 .forEach(BaseEntity::delete);
     }
 

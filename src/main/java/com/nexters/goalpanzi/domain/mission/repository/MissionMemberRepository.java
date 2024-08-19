@@ -1,7 +1,6 @@
 package com.nexters.goalpanzi.domain.mission.repository;
 
 import com.nexters.goalpanzi.domain.mission.MissionMember;
-import com.nexters.goalpanzi.domain.mission.MissionStatus;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
 import org.springframework.data.domain.Sort;
@@ -20,10 +19,8 @@ public interface MissionMemberRepository extends JpaRepository<MissionMember, Lo
 
     List<MissionMember> findAllByMissionId(final Long missionId, Sort sort);
 
-    List<MissionMember> findAllByMemberId(final Long memberId);
-
-    @Query("SELECT mm FROM MissionMember mm JOIN FETCH mm.mission WHERE mm.member.id = :memberId AND mm.mission.status =:status")
-    List<MissionMember> findAllByMemberIdAndMissionStatus(final Long memberId, final MissionStatus status);
+    @Query("SELECT mm FROM MissionMember mm JOIN FETCH mm.mission WHERE mm.member.id = :memberId")
+    List<MissionMember> findAllWithMissionByMemberId(final Long memberId);
 
     default MissionMember getMissionMember(final Long memberId, final Long missionId) {
         return findByMemberIdAndMissionId(memberId, missionId)
