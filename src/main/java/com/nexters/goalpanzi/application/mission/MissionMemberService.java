@@ -61,9 +61,8 @@ public class MissionMemberService {
 
     public MissionsResponse findAllByMemberId(final Long memberId, final MissionFilter filter) {
         Member member = memberRepository.getMember(memberId);
-        List<MissionMember> missionMembers = missionMemberRepository.findAllByMemberIdAndMissionStatus(memberId, filter.toMissionStatus())
-                .stream()
-                .toList();
+        List<MissionMember> missionMembers = missionMemberRepository
+                .findAllByMemberIdAndMissionStatus(memberId, filter.toMissionStatus());
 
         return MissionsResponse.of(member, missionMembers);
     }
