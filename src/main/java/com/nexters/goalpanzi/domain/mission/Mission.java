@@ -126,6 +126,11 @@ public class Mission extends BaseEntity {
         return now.compareTo(uploadStartTime) >= 0 && now.compareTo(uploadEndTime) <= 0;
     }
 
+    public boolean isExpired() {
+        LocalDate today = LocalDate.now();
+        return today.isAfter(missionEndDate.toLocalDate());
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;

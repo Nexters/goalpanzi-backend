@@ -33,7 +33,7 @@ public class MissionValidator {
     }
 
     public void validateMissionPeriod(final Mission mission) {
-        if (mission.isMissionPeriod()) {
+        if (mission.isMissionPeriod() || mission.isExpired()) {
             throw new BadRequestException(ErrorCode.CAN_NOT_JOIN_MISSION.toString());
         }
     }

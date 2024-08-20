@@ -61,4 +61,19 @@ class MissionTest {
                 InvitationCode.generate()
         ));
     }
+
+    @Test
+    void 미션_종료일이_지나면_만료된_미션이다() {
+        Mission mission = Mission.create(
+                MEMBER_ID,
+                DESCRIPTION,
+                LocalDateTime.now().minusDays(10),
+                LocalDateTime.now().minusDays(7),
+                TimeOfDay.EVERYDAY,
+                List.of(DayOfWeek.FRIDAY),
+                BOARD_COUNT,
+                InvitationCode.generate()
+        );
+        assertThat(mission.isExpired()).isTrue();
+    }
 }
