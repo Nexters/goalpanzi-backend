@@ -7,6 +7,7 @@ import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import com.nexters.goalpanzi.presentation.mission.dto.ViewMissionVerificationRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -53,7 +54,7 @@ public interface MissionVerificationControllerDocs {
     })
     @GetMapping("/{missionId}/verifications")
     ResponseEntity<MissionVerificationsResponse> getVerifications(
-            @Parameter(hidden = true) @LoginMemberId final Long memberId,
+            @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long memberId,
             @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
             @PathVariable(name = "missionId") final Long missionId,
             @Schema(description = "미션 인증 일자 (생략 시 오늘로 간주)", type = "string", format = "date", pattern = "^\\d{4}-\\d{2}-\\d{2}$", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
@@ -72,7 +73,7 @@ public interface MissionVerificationControllerDocs {
     })
     @GetMapping("/{missionId}/verifications/me/{number}")
     ResponseEntity<MissionVerificationResponse> getMyVerification(
-            @Parameter(hidden = true) @LoginMemberId final Long memberId,
+            @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long memberId,
             @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
             @PathVariable(name = "missionId") final Long missionId,
             @Schema(description = "보드칸 번호", type = "integer", format = "int32", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -98,7 +99,7 @@ public interface MissionVerificationControllerDocs {
     })
     @PostMapping(value = "/{missionId}/verifications/me")
     ResponseEntity<Void> createVerification(
-            @Parameter(hidden = true) @LoginMemberId final Long memberId,
+            @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long memberId,
             @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
             @PathVariable(name = "missionId") final Long missionId,
             @Schema(description = "인증 이미지 파일", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -108,6 +109,6 @@ public interface MissionVerificationControllerDocs {
     @PostMapping(value = "/verifications/view")
     ResponseEntity<MissionVerificationResponse> viewMissionVerification(
             @RequestBody final ViewMissionVerificationRequest request,
-            @LoginMemberId final Long memberId
+            @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long memberId
     );
 }
