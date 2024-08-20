@@ -16,6 +16,7 @@ import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationReposi
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationViewRepository;
 import com.nexters.goalpanzi.exception.BadRequestException;
 import com.nexters.goalpanzi.exception.ErrorCode;
+import com.nexters.goalpanzi.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -139,9 +140,11 @@ public class MissionVerificationService {
                 .forEach(BaseEntity::delete);
     }
 
+    @Transactional
     public void viewMissionVerification(final ViewMissionVerificationCommand command) {
         Member member = memberRepository.getMember(command.memberId());
-        MissionVerification missionVerification = missionVerificationRepository.findById(command.missionVerificationId()).get();
+        MissionVerification missionVerification = missionVerificationRepository.findById(command.missionVerificationId())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_VERIFICATION));
 
         missionVerificationViewRepository.save(new MissionVerificationView(missionVerification, member));
     }
