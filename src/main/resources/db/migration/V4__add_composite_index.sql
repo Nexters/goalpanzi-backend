@@ -1,0 +1,1 @@
+create index idx_mission_verification_view__mission_verification_id__member_id on mission_verification_view (mission_verification_id, member_id);
