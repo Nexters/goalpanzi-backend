@@ -58,9 +58,14 @@ public class MissionVerificationService {
         missionMembers.forEach(missionMember -> {
             Member member1 = missionMember.getMember();
             MissionVerification missionVerification = map.get(member1.getId());
-            MissionVerificationView missionVerificationView = missionVerificationViewRepository.getMissionVerificationView(missionVerification.getId(), member1.getId());
-            MissionVerificationResponse missionVerificationResponse = MissionVerificationResponse.of(member1, Optional.of(missionVerification), Optional.of(missionVerificationView));
-            response.add(missionVerificationResponse);
+            if (missionVerification == null) {
+                MissionVerificationResponse missionVerificationResponse = MissionVerificationResponse.of(member1, null, null);
+                response.add(missionVerificationResponse);
+            } else {
+                MissionVerificationView missionVerificationView = missionVerificationViewRepository.getMissionVerificationView(missionVerification.getId(), member1.getId());
+                MissionVerificationResponse missionVerificationResponse = MissionVerificationResponse.of(member1, Optional.of(missionVerification), Optional.of(missionVerificationView));
+                response.add(missionVerificationResponse);
+            }
         });
 
         response.sort(compareMissionVerificationResponses(member.getNickname(), sortType, direction));
