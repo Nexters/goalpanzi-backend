@@ -21,7 +21,7 @@ public class MissionVerificationResponseSorter {
     private final MissionVerificationViewRepository missionVerificationViewRepository;
 
     public List<MissionVerificationResponse> sort(
-            final Member member,
+            final Member me,
             final MissionVerificationQuery.SortType sortType,
             final Sort.Direction direction,
             final List<MissionVerification> missionVerifications,
@@ -34,13 +34,13 @@ public class MissionVerificationResponseSorter {
                         missionVerification -> missionVerification));
 
         missionMembers.forEach(missionMember -> {
-            Member member1 = missionMember.getMember();
-            Optional<MissionVerification> verification = Optional.ofNullable(verifications.get(member1.getId()));
-            MissionVerificationResponse response = createResponse(member1, verification);
+            Member member = missionMember.getMember();
+            Optional<MissionVerification> verification = Optional.ofNullable(verifications.get(member.getId()));
+            MissionVerificationResponse response = createResponse(member, verification);
             responses.add(response);
         });
 
-        responses.sort(compareResponses(member.getNickname(), sortType, direction));
+        responses.sort(compareResponses(me.getNickname(), sortType, direction));
         return responses;
     }
 
@@ -53,14 +53,14 @@ public class MissionVerificationResponseSorter {
                 .orElseGet(() -> MissionVerificationResponse.of(member, Optional.empty(), Optional.empty()));
     }
 
-    private Comparator<MissionVerificationResponse> compareResponses(final String nickname, final MissionVerificationQuery.SortType sortType, final Sort.Direction direction) {
-        return myVerificationFirst(nickname)
+    private Comparator<MissionVerificationResponse> compareResponses(final String myNickname, final MissionVerificationQuery.SortType sortType, final Sort.Direction direction) {
+        return myVerificationFirst(myNickname)
                 .thenComparing(unviewedVerificationFirst())
                 .thenComparing(compareResponsesByOrder(sortType, direction));
     }
 
-    private Comparator<MissionVerificationResponse> myVerificationFirst(final String nickname) {
-        return Comparator.comparing((MissionVerificationResponse missionVerificationResponse) -> missionVerificationResponse.nickname().equals(nickname)).reversed();
+    private Comparator<MissionVerificationResponse> myVerificationFirst(final String myNickname) {
+        return Comparator.comparing((MissionVerificationResponse missionVerificationResponse) -> missionVerificationResponse.nickname().equals(myNickname)).reversed();
     }
 
     private Comparator<MissionVerificationResponse> unviewedVerificationFirst() {
