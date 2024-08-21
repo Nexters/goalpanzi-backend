@@ -63,7 +63,7 @@ public class MissionVerificationService {
                 response.add(missionVerificationResponse);
             } else {
                 MissionVerificationView missionVerificationView = missionVerificationViewRepository.getMissionVerificationView(missionVerification.getId(), member1.getId());
-                MissionVerificationResponse missionVerificationResponse = MissionVerificationResponse.of(member1, Optional.of(missionVerification), Optional.of(missionVerificationView));
+                MissionVerificationResponse missionVerificationResponse = MissionVerificationResponse.of(member1, Optional.of(missionVerification), Optional.ofNullable(missionVerificationView));
                 response.add(missionVerificationResponse);
             }
         });
