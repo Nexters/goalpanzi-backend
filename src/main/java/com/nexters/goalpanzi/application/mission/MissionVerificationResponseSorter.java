@@ -36,7 +36,7 @@ public class MissionVerificationResponseSorter {
         missionMembers.forEach(missionMember -> {
             Member member = missionMember.getMember();
             Optional<MissionVerification> verification = Optional.ofNullable(verifications.get(member.getId()));
-            MissionVerificationResponse response = createResponse(member, verification);
+            MissionVerificationResponse response = createResponseForMissionMember(member, verification);
             responses.add(response);
         });
 
@@ -44,13 +44,12 @@ public class MissionVerificationResponseSorter {
         return responses;
     }
 
-    private MissionVerificationResponse createResponse(final Member member, final Optional<MissionVerification> optionalMissionVerification) {
-        return optionalMissionVerification
-                .map(missionVerification -> {
-                    MissionVerificationView missionVerificationView = missionVerificationViewRepository.getMissionVerificationView(missionVerification.getId(), member.getId());
-                    return MissionVerificationResponse.of(member, Optional.of(missionVerification), Optional.ofNullable(missionVerificationView));
-                })
-                .orElseGet(() -> MissionVerificationResponse.of(member, Optional.empty(), Optional.empty()));
+    private MissionVerificationResponse createResponseForMissionMember(final Member member, final Optional<MissionVerification> missionVerification) {
+        if (missionVerification.isEmpty()) {
+            return MissionVerificationResponse.of(member, Optional.empty(), Optional.empty());
+        }
+        MissionVerificationView missionVerificationView = missionVerificationViewRepository.getMissionVerificationView(missionVerification.get().getId(), member.getId());
+        return MissionVerificationResponse.of(member, missionVerification, Optional.ofNullable(missionVerificationView));
     }
 
     private Comparator<MissionVerificationResponse> compareResponses(final String myNickname, final MissionVerificationQuery.SortType sortType, final Sort.Direction direction) {
