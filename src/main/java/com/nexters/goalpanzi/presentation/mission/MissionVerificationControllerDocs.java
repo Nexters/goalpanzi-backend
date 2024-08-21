@@ -4,8 +4,10 @@ import com.nexters.goalpanzi.application.mission.dto.request.MissionVerification
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationsResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
+import com.nexters.goalpanzi.presentation.mission.dto.ViewMissionVerificationRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,6 +42,8 @@ public interface MissionVerificationControllerDocs {
                                         
                     date, sortType, sortDirection 생략 시, **[오늘 기준, 인증 최신순]**으로 조회합니다.
                                         
+                    내가 조회하지 않은 인증 현황은 viewedAt을 null로 전달합니다. (주황색 테두리 표시 용도)
+                                        
                     미션을 인증하지 않은 멤버는 프로필 정보만 포함하여 마지막에 배치됩니다.
                     """
     )
@@ -50,7 +54,7 @@ public interface MissionVerificationControllerDocs {
     })
     @GetMapping("/{missionId}/verifications")
     ResponseEntity<MissionVerificationsResponse> getVerifications(
-            @Parameter(hidden = true) @LoginMemberId final Long memberId,
+            @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long memberId,
             @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
             @PathVariable(name = "missionId") final Long missionId,
             @Schema(description = "미션 인증 일자 (생략 시 오늘로 간주)", type = "string", format = "date", pattern = "^\\d{4}-\\d{2}-\\d{2}$", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
@@ -69,7 +73,7 @@ public interface MissionVerificationControllerDocs {
     })
     @GetMapping("/{missionId}/verifications/me/{number}")
     ResponseEntity<MissionVerificationResponse> getMyVerification(
-            @Parameter(hidden = true) @LoginMemberId final Long memberId,
+            @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long memberId,
             @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
             @PathVariable(name = "missionId") final Long missionId,
             @Schema(description = "보드칸 번호", type = "integer", format = "int32", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -95,9 +99,16 @@ public interface MissionVerificationControllerDocs {
     })
     @PostMapping(value = "/{missionId}/verifications/me")
     ResponseEntity<Void> createVerification(
-            @Parameter(hidden = true) @LoginMemberId final Long memberId,
+            @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long memberId,
             @Schema(description = "미션 아이디", type = "integer", format = "int64", requiredMode = Schema.RequiredMode.REQUIRED)
             @PathVariable(name = "missionId") final Long missionId,
             @Schema(description = "인증 이미지 파일", requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestPart(name = "imageFile") final MultipartFile imageFile);
+
+    @Operation(summary = "미션 인증 피드 확인", description = "사용자의 인증 피드를 확인합니다.")
+    @PostMapping(value = "/verifications/view")
+    ResponseEntity<MissionVerificationResponse> viewMissionVerification(
+            @RequestBody final ViewMissionVerificationRequest request,
+            @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long memberId
+    );
 }

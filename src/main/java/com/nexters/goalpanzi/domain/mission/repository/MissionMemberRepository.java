@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface MissionMemberRepository extends JpaRepository<MissionMember, Long> {
     Optional<MissionMember> findByMemberIdAndMissionId(final Long memberId, final Long missionId);
 
