@@ -18,7 +18,7 @@ spring:
       port: 6379
 
   flyway:
-    enabled: true
+    enabled: false
     baseline-on-migrate: true
     url: jdbc:mysql://${DB_HOSTNAME}:${DB_PORT}/${DB_DATABASE}
     user: ${DB_USERNAME}
