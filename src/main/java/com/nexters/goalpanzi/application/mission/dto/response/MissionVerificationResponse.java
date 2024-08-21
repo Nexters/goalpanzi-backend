@@ -41,6 +41,7 @@ public record MissionVerificationResponse(
     }
 
     private static LocalDateTime getViewedAt(final Optional<MissionVerificationView> missionVerificationView) {
-        return missionVerificationView.isPresent() ? missionVerificationView.get().getCreatedAt() : null;
+        return missionVerificationView.map(MissionVerificationView::getCreatedAt).orElse(null);
     }
+
 }
