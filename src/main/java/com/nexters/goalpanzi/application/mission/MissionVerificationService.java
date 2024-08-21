@@ -59,7 +59,7 @@ public class MissionVerificationService {
             Member member1 = missionMember.getMember();
             MissionVerification missionVerification = map.get(member1.getId());
             if (missionVerification == null) {
-                MissionVerificationResponse missionVerificationResponse = MissionVerificationResponse.of(member1, null, null);
+                MissionVerificationResponse missionVerificationResponse = MissionVerificationResponse.of(member1, Optional.empty(), Optional.empty());
                 response.add(missionVerificationResponse);
             } else {
                 MissionVerificationView missionVerificationView = missionVerificationViewRepository.getMissionVerificationView(missionVerification.getId(), member1.getId());
