@@ -1,8 +1,6 @@
 package com.nexters.goalpanzi.fixture;
 
 import com.nexters.goalpanzi.domain.member.CharacterType;
-import com.nexters.goalpanzi.domain.member.Member;
-import com.nexters.goalpanzi.domain.member.SocialType;
 
 public class MemberFixture {
     public static final Long MEMBER_ID = 1L;
@@ -18,8 +16,4 @@ public class MemberFixture {
     public static final CharacterType CHARACTER_HOST = CharacterType.BEAR;
     public static final CharacterType CHARACTER_MEMBER_A = CharacterType.BIRD;
     public static final CharacterType CHARACTER_MEMBER_B = CharacterType.CAT;
-
-    public static Member create() {
-        return Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.GOOGLE);
-    }
 }
