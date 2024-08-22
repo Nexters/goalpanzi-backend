@@ -178,8 +178,6 @@ class MissionVerificationResponseSorterTest {
         );
         MissionVerificationView missionVerificationView = mock(MissionVerificationView.class);
 
-        when(mission.getId()).thenReturn(1L);
-
         when(missionVerificationOfMe.getMember()).thenReturn(me);
         when(missionVerificationOfMe.getMission()).thenReturn(mission);
         when(missionVerificationOfMe.getCreatedAt()).thenReturn(LocalDateTime.now());
@@ -188,7 +186,7 @@ class MissionVerificationResponseSorterTest {
         when(viewedMissionVerification.getMember()).thenReturn(missionMembers.get(1).getMember());
         when(viewedMissionVerification.getMission()).thenReturn(mission);
         when(viewedMissionVerification.getCreatedAt()).thenReturn(LocalDateTime.now());
-        
+
         when(unviewedMissionVerification.getMember()).thenReturn(missionMembers.get(2).getMember());
         when(unviewedMissionVerification.getMission()).thenReturn(mission);
         when(unviewedMissionVerification.getCreatedAt()).thenReturn(LocalDateTime.now());
