@@ -43,7 +43,7 @@ public class MissionVerificationValidatorTest {
     void 이미_완주한_미션은_검증에_실패한다() {
         MissionMember missionMember = new MissionMember(MemberFixture.create(), mission, 10);
 
-        BadRequestException exception = assertThrows(BadRequestException.class, () -> missionVerificationValidator.validateVerificationSubmission(missionMember));
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> missionVerificationValidator.validate(missionMember));
         assertEquals(ErrorCode.ALREADY_COMPLETED_MISSION.getMessage(), exception.getMessage());
     }
 
@@ -55,7 +55,7 @@ public class MissionVerificationValidatorTest {
                 .thenReturn(Optional.of(mock(MissionVerification.class)));
 
         BadRequestException exception = assertThrows(BadRequestException.class,
-                () -> missionVerificationValidator.validateVerificationSubmission(missionMember));
+                () -> missionVerificationValidator.validate(missionMember));
         assertEquals(ErrorCode.DUPLICATE_VERIFICATION.getMessage(), exception.getMessage());
     }
 
@@ -68,7 +68,7 @@ public class MissionVerificationValidatorTest {
                 .thenReturn(Optional.empty());
 
         BadRequestException exception = assertThrows(BadRequestException.class,
-                () -> missionVerificationValidator.validateVerificationSubmission(missionMember));
+                () -> missionVerificationValidator.validate(missionMember));
         assertEquals(ErrorCode.NOT_VERIFICATION_PERIOD.getMessage(), exception.getMessage());
     }
 
@@ -82,7 +82,7 @@ public class MissionVerificationValidatorTest {
                 .thenReturn(Optional.empty());
 
         BadRequestException exception = assertThrows(BadRequestException.class,
-                () -> missionVerificationValidator.validateVerificationSubmission(missionMember));
+                () -> missionVerificationValidator.validate(missionMember));
         assertEquals(ErrorCode.NOT_VERIFICATION_DAY.getMessage(), exception.getMessage());
     }
 
@@ -97,7 +97,7 @@ public class MissionVerificationValidatorTest {
                 .thenReturn(Optional.empty());
 
         BadRequestException exception = assertThrows(BadRequestException.class,
-                () -> missionVerificationValidator.validateVerificationSubmission(missionMember));
+                () -> missionVerificationValidator.validate(missionMember));
         assertEquals(ErrorCode.NOT_VERIFICATION_TIME.getMessage(), exception.getMessage());
     }
 }

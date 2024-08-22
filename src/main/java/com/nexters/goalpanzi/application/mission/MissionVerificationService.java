@@ -37,7 +37,7 @@ public class MissionVerificationService {
     private final MemberRepository memberRepository;
 
     private final ObjectStorageClient objectStorageClient;
-    
+
     private final MissionVerificationValidator missionVerificationValidator;
     private final MissionVerificationResponseSorter missionVerificationResponseSorter;
 
@@ -62,7 +62,7 @@ public class MissionVerificationService {
     public void createVerification(final CreateMissionVerificationCommand command) {
         MissionMember missionMember = missionMemberRepository.getMissionMember(command.memberId(), command.missionId());
 
-        missionVerificationValidator.validateVerificationSubmission(missionMember);
+        missionVerificationValidator.validate(missionMember);
 
         String imageUrl = objectStorageClient.uploadFile(command.imageFile());
         missionMember.verify();

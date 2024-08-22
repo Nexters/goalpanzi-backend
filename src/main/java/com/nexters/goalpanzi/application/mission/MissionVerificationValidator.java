@@ -16,7 +16,7 @@ public class MissionVerificationValidator {
 
     private final MissionVerificationRepository missionVerificationRepository;
 
-    public void validateVerificationSubmission(final MissionMember missionMember) {
+    public void validate(final MissionMember missionMember) {
         Mission mission = missionMember.getMission();
 
         validateCompletion(mission, missionMember);
