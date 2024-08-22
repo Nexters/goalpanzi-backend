@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 public class MissionVerificationValidatorTest {
 
-    Mission mockMission;
+    Mission mission;
 
     @MockBean
     private MissionVerificationRepository missionVerificationRepository;
@@ -35,13 +35,13 @@ public class MissionVerificationValidatorTest {
 
     @BeforeEach()
     void setUp() {
-        mockMission = mock(Mission.class);
-        when(mockMission.getBoardCount()).thenReturn(10);
+        mission = mock(Mission.class);
+        when(mission.getBoardCount()).thenReturn(10);
     }
 
     @Test
     void 이미_완주한_미션은_검증에_실패한다() {
-        MissionMember missionMember = new MissionMember(MemberFixture.create(), mockMission, 10);
+        MissionMember missionMember = new MissionMember(MemberFixture.create(), mission, 10);
 
         BadRequestException exception = assertThrows(BadRequestException.class, () -> missionVerificationValidator.validateVerificationSubmission(missionMember));
         assertEquals(ErrorCode.ALREADY_COMPLETED_MISSION.getMessage(), exception.getMessage());
@@ -49,7 +49,7 @@ public class MissionVerificationValidatorTest {
 
     @Test
     void 중복된_인증은_검증에_실패한다() {
-        MissionMember missionMember = new MissionMember(MemberFixture.create(), mockMission, 1);
+        MissionMember missionMember = new MissionMember(MemberFixture.create(), mission, 1);
 
         when(missionVerificationRepository.findByMemberIdAndMissionIdAndDate(any(), any(), any(LocalDate.class)))
                 .thenReturn(Optional.of(mock(MissionVerification.class)));
@@ -61,9 +61,9 @@ public class MissionVerificationValidatorTest {
 
     @Test
     void 미션_기간이_아니므로_검증에_실패한다() {
-        MissionMember missionMember = new MissionMember(MemberFixture.create(), mockMission, 1);
+        MissionMember missionMember = new MissionMember(MemberFixture.create(), mission, 1);
 
-        when(mockMission.isMissionPeriod()).thenReturn(false);
+        when(mission.isMissionPeriod()).thenReturn(false);
         when(missionVerificationRepository.findByMemberIdAndMissionIdAndDate(any(), any(), any(LocalDate.class)))
                 .thenReturn(Optional.empty());
 
@@ -74,10 +74,10 @@ public class MissionVerificationValidatorTest {
 
     @Test
     void 지정한_미션_요일이_아니므로_검증에_실패한다() {
-        MissionMember missionMember = new MissionMember(MemberFixture.create(), mockMission, 1);
+        MissionMember missionMember = new MissionMember(MemberFixture.create(), mission, 1);
 
-        when(mockMission.isMissionPeriod()).thenReturn(true);
-        when(mockMission.isMissionDay()).thenReturn(false);
+        when(mission.isMissionPeriod()).thenReturn(true);
+        when(mission.isMissionDay()).thenReturn(false);
         when(missionVerificationRepository.findByMemberIdAndMissionIdAndDate(any(), any(), any(LocalDate.class)))
                 .thenReturn(Optional.empty());
 
@@ -88,11 +88,11 @@ public class MissionVerificationValidatorTest {
 
     @Test
     void 지정한_미션_시간대가_아니므로_검증에_실패한다() {
-        MissionMember missionMember = new MissionMember(MemberFixture.create(), mockMission, 1);
+        MissionMember missionMember = new MissionMember(MemberFixture.create(), mission, 1);
 
-        when(mockMission.isMissionPeriod()).thenReturn(true);
-        when(mockMission.isMissionDay()).thenReturn(true);
-        when(mockMission.isMissionTime()).thenReturn(false);
+        when(mission.isMissionPeriod()).thenReturn(true);
+        when(mission.isMissionDay()).thenReturn(true);
+        when(mission.isMissionTime()).thenReturn(false);
         when(missionVerificationRepository.findByMemberIdAndMissionIdAndDate(any(), any(), any(LocalDate.class)))
                 .thenReturn(Optional.empty());
 
