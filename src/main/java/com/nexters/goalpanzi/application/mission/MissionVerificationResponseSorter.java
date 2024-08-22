@@ -36,7 +36,7 @@ public class MissionVerificationResponseSorter {
         missionMembers.forEach(missionMember -> {
             Member member = missionMember.getMember();
             Optional<MissionVerification> verification = Optional.ofNullable(verifications.get(member.getId()));
-            MissionVerificationResponse response = createResponseForMissionMember(member, verification);
+            MissionVerificationResponse response = createResponseOfMissionMember(member, verification);
             responses.add(response);
         });
 
@@ -44,7 +44,7 @@ public class MissionVerificationResponseSorter {
         return responses;
     }
 
-    private MissionVerificationResponse createResponseForMissionMember(final Member member, final Optional<MissionVerification> missionVerification) {
+    private MissionVerificationResponse createResponseOfMissionMember(final Member member, final Optional<MissionVerification> missionVerification) {
         if (missionVerification.isEmpty()) {
             return MissionVerificationResponse.of(member, Optional.empty(), Optional.empty());
         }
