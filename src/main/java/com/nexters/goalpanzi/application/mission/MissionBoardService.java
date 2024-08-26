@@ -36,8 +36,7 @@ public class MissionBoardService {
         Member member = memberRepository.getMember(query.memberId());
         Mission mission = missionRepository.getMission(query.missionId());
         MissionMembers missionMembers = getMissionMembers(query.missionId(), query.sortType(), query.direction());
-//        TODO 추후 활성화
-//        missionMembers.verifyMissionMember(member);
+        missionMembers.verifyMissionMember(member);
 
         Map<Integer, List<Member>> boardMap = groupByVerificationCount(mission, missionMembers);
         List<MissionBoardResponse> boards = new ArrayList<>();
