@@ -80,7 +80,9 @@ class MissionBoardServiceTest {
         when(missionMember3.getMember()).thenReturn(members.get(2));
 
         when(memberRepository.getMember(me.getId())).thenReturn(me);
+
         when(missionRepository.getMission(anyLong())).thenReturn(mission);
+
         when(missionMemberRepository.findAllByMissionId(anyLong(), any())).thenReturn(List.of(missionMember1, missionMember2, missionMember3));
 
         MissionBoardsResponse response = missionBoardService.getBoard(query);
