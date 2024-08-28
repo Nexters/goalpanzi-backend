@@ -63,7 +63,15 @@ public class MissionVerificationResponseSorter {
     }
 
     private Comparator<MissionVerificationResponse> unviewedVerificationFirst() {
-        return Comparator.comparing(MissionVerificationResponse::viewedAt, Comparator.nullsFirst(Comparator.naturalOrder()));
+        return Comparator.comparing((MissionVerificationResponse response) -> {
+            if (response.verifiedAt() != null && response.viewedAt() == null) {
+                return 0;
+            }
+            if (response.verifiedAt() != null) {
+                return 1;
+            }
+            return 2;
+        });
     }
 
     private Comparator<MissionVerificationResponse> compareResponsesByOrder(final MissionVerificationQuery.SortType sortType, final Sort.Direction direction) {
