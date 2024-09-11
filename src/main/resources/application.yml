@@ -22,7 +22,7 @@ jwt:
   access-token:
     expires-in-days: 1
   refresh-token:
-    expires-in-days: 30
+    expires-in-days: 360
 
 springdoc:
   swagger-ui:
