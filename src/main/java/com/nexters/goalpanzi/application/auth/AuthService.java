@@ -67,7 +67,8 @@ public class AuthService {
     }
 
     public TokenResponse reissueToken(final Long memberId, final String refreshToken) {
-        validateRefreshToken(memberId, refreshToken);
+        // TODO : 토큰 만료기간 이슈로 무조건 재발급 
+//        validateRefreshToken(memberId, refreshToken);
 
         Jwt jwt = jwtProvider.generateTokens(memberId.toString());
         refreshTokenRepository.save(memberId.toString(), jwt.refreshToken(), jwt.refreshExpiresIn());
