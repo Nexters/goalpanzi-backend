@@ -1,6 +1,5 @@
 package com.nexters.goalpanzi.application.mission;
 
-import com.nexters.goalpanzi.application.mission.dto.request.MissionFilter;
 import com.nexters.goalpanzi.application.mission.dto.response.MemberRankResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -60,23 +58,22 @@ public class MissionMemberService {
                 });
     }
 
-    public MissionsResponse findAllByMemberId(final Long memberId, final List<MissionFilter> filter) {
+    public MissionsResponse findAllByMemberId(final Long memberId, final List<MissionStatus> filter) {
         Member member = memberRepository.getMember(memberId);
-        List<MissionMember> missionMembers = missionMemberRepository.findAllWithMissionByMemberId(memberId)
+        List<MissionMember> missionMembers = missionMemberRepository.findAllWithMissionByMemberId(memberId);
+        if (filter == null || filter.isEmpty()) {
+            return MissionsResponse.of(member, missionMembers);
+        }
+
+        List<MissionMember> filteredMissionMembers = missionMembers
                 .stream()
-                .filter(it -> isMissionStatusMatching(filter, it.getMission()))
+                .filter(it -> isMissionStatusMatching(filter, it))
                 .toList();
-        return MissionsResponse.of(member, missionMembers);
+        return MissionsResponse.of(member, filteredMissionMembers);
     }
 
-    private boolean isMissionStatusMatching(final List<MissionFilter> filters, final Mission mission) {
-        for (MissionFilter filter : filters) {
-            MissionStatus missionStatus = filter.toMissionStatus();
-            if (missionStatus != null && Objects.equals(missionStatus, MissionStatus.fromMission(mission))) {
-                return true;
-            }
-        }
-        return filters.isEmpty();
+    private boolean isMissionStatusMatching(final List<MissionStatus> filters, final MissionMember missionMember) {
+        return filters.contains(missionMember.getMissionStatus());
     }
 
     @Transactional
@@ -98,5 +95,18 @@ public class MissionMemberService {
         MemberRanks memberRanks = MemberRanks.from(missionMembers);
 
         return MemberRankResponse.from(memberRanks.getRankByMember(member));
+    }
+
+    @Transactional
+    public void batchUpdateStatus() {
+        List<Mission> missions = missionRepository.findAll();
+        missions.forEach(mission -> {
+            List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(mission.getId());
+            int memberCount = missionMembers.size();
+            missionMembers
+                    .forEach(missionMember -> {
+                        missionMember.updateMissionStatus(mission, memberCount);
+                    });
+        });
     }
 }

@@ -4,6 +4,8 @@ import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.member.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,7 +21,6 @@ import org.hibernate.annotations.SQLRestriction;
 import java.util.Objects;
 
 import static com.nexters.goalpanzi.exception.ErrorCode.CAN_NOT_JOIN_MISSION;
-import static com.nexters.goalpanzi.exception.ErrorCode.EXCEED_MAX_PERSONNEL;
 
 @Entity
 @SQLRestriction("deleted_at is NULL")
@@ -44,6 +45,13 @@ public class MissionMember extends BaseEntity {
     @Column(name = "verification_count")
     private Integer verificationCount;
 
+    @Column(name = "check_completed")
+    private Boolean checkCompleted;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "mission_status")
+    private MissionStatus missionStatus;
+
     public MissionMember(final Member member, final Mission mission, final Integer verificationCount) {
         this.member = member;
         this.mission = mission;
@@ -59,6 +67,13 @@ public class MissionMember extends BaseEntity {
 
     public void verify() {
         this.verificationCount++;
+    }
+
+    public void updateMissionStatus(
+            final Mission mission,
+            final Integer currentMemberCount
+    ) {
+        missionStatus = MissionStatus.fromMission(mission, currentMemberCount, this);
     }
 
     @Override

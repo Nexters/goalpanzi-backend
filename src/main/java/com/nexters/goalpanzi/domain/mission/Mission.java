@@ -1,5 +1,6 @@
 package com.nexters.goalpanzi.domain.mission;
 
+import com.nexters.goalpanzi.common.time.TimeUtil;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.infrastructure.jpa.DaysOfWeekConverter;
 import jakarta.persistence.*;
@@ -113,8 +114,11 @@ public class Mission extends BaseEntity {
     }
 
     public boolean isMissionPeriod() {
-        LocalDate today = LocalDate.now();
-        return !today.isBefore(this.missionStartDate.toLocalDate()) && !today.isAfter(missionEndDate.toLocalDate());
+        LocalDateTime missionStart = getMissionUploadStartDateTime();
+        LocalDateTime missionEnd = getMissionUploadEndDateTime();
+
+        LocalDateTime today = LocalDateTime.now();
+        return !today.isBefore(missionStart) && !today.isAfter(missionEnd);
     }
 
     public boolean isMissionDay() {
@@ -129,6 +133,18 @@ public class Mission extends BaseEntity {
     public boolean isExpired() {
         LocalDate today = LocalDate.now();
         return today.isAfter(missionEndDate.toLocalDate());
+    }
+
+    public LocalDateTime getMissionUploadStartDateTime() {
+        return TimeUtil.combineDateAndTime(
+                missionStartDate, TimeUtil.of(uploadStartTime)
+        );
+    }
+
+    public LocalDateTime getMissionUploadEndDateTime() {
+        return TimeUtil.combineDateAndTime(
+                missionEndDate, TimeUtil.of(uploadEndTime)
+        );
     }
 
     @Override

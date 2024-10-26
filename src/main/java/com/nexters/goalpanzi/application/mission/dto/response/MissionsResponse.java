@@ -14,13 +14,14 @@ public record MissionsResponse(
         List<MissionResponse> missions
 ) {
 
-    public static MissionsResponse of(Member member, List<MissionMember> missionVerifications) {
+    public static MissionsResponse of(Member member, List<MissionMember> missionMembers) {
         return new MissionsResponse(
                 new ProfileResponse(member.getNickname(), member.getCharacterType()),
-                missionVerifications.stream()
+                missionMembers.stream()
                         .map(missionVerification -> new MissionResponse(
                                 missionVerification.getMission().getId(),
-                                missionVerification.getMission().getDescription())
+                                missionVerification.getMission().getDescription(),
+                                missionVerification.getMissionStatus())
                         )
                         .toList()
         );

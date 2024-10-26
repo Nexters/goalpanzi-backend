@@ -33,17 +33,8 @@
         </encoder>
     </appender>
 
-    <logger name="com.nexters.goalpanzi" level="WARN">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE"/>
-    </logger>
-
-    <logger name="com.nexters.goalpanzi" level="ERROR">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="FILE"/>
-    </logger>
-
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
     </root>
 </configuration>

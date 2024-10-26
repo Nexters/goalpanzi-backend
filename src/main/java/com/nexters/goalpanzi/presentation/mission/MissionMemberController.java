@@ -7,6 +7,7 @@ import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailRespo
 import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import com.nexters.goalpanzi.domain.mission.InvitationCode;
+import com.nexters.goalpanzi.domain.mission.MissionStatus;
 import com.nexters.goalpanzi.presentation.mission.dto.JoinMissionRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class MissionMemberController implements MissionMemberControllerDocs {
     @GetMapping("/mission-members/me")
     public ResponseEntity<MissionsResponse> getMissions(
             @LoginMemberId final Long memberId,
-            @RequestParam(required = false, defaultValue = "PENDING,ONGOING") List<MissionFilter> filter
+            @RequestParam(required = false) List<MissionStatus> filter
     ) {
         return ResponseEntity.ok(missionMemberService.findAllByMemberId(memberId, filter));
     }
