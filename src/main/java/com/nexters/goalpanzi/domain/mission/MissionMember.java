@@ -56,6 +56,8 @@ public class MissionMember extends BaseEntity {
         this.member = member;
         this.mission = mission;
         this.verificationCount = verificationCount;
+        this.checkCompleted = false;
+        this.missionStatus = MissionStatus.CREATED;
     }
 
     public static MissionMember join(final Member member, final Mission mission) {
