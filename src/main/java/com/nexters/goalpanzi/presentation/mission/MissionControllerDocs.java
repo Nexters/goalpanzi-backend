@@ -37,5 +37,4 @@ public interface MissionControllerDocs {
     ResponseEntity<MissionDetailResponse> getMissionByInvitationCode(
             @RequestParam String invitationCode
     );
-
 }
