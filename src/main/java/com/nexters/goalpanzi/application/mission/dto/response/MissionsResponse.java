@@ -18,10 +18,10 @@ public record MissionsResponse(
         return new MissionsResponse(
                 new ProfileResponse(member.getNickname(), member.getCharacterType()),
                 missionMembers.stream()
-                        .map(missionVerification -> new MissionResponse(
-                                missionVerification.getMission().getId(),
-                                missionVerification.getMission().getDescription(),
-                                missionVerification.getMissionStatus())
+                        .map(missionMember -> new MissionResponse(
+                                missionMember.getMission().getId(),
+                                missionMember.getMission().getDescription(),
+                                missionMember.getMissionStatus())
                         )
                         .toList()
         );

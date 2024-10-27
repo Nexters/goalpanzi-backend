@@ -84,9 +84,4 @@ public class MissionService {
             throw new ForbiddenException(ErrorCode.CANNOT_DELETE_MISSION);
         }
     }
-
-    @Transactional
-    public void batchUpdate(final Long missionId) {
-
-    }
 }
