@@ -76,6 +76,11 @@ public class MissionMember extends BaseEntity {
         missionStatus = MissionStatus.fromMission(mission, currentMemberCount, this);
     }
 
+    public void checkCompleted() {
+        this.checkCompleted = true;
+        this.missionStatus = MissionStatus.COMPLETED;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;

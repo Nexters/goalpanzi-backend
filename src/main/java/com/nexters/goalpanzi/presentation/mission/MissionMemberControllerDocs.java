@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -39,5 +40,11 @@ public interface MissionMemberControllerDocs {
     @Operation(summary = "참여 가능한 미션 여부 확인")
     ResponseEntity<MissionDetailResponse> getJoinableMission(
             @RequestParam final String invitationCode
+    );
+
+    @Operation(summary = "미션 랭킹 보드 확인")
+    ResponseEntity<Void> viewMissionRank(
+            @PathVariable final Long missionId,
+            @Parameter(hidden = true) @LoginMemberId final Long memberId
     );
 }

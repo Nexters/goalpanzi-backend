@@ -12,6 +12,7 @@ import com.nexters.goalpanzi.presentation.mission.dto.JoinMissionRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,5 +66,16 @@ public class MissionMemberController implements MissionMemberControllerDocs {
         MissionDetailResponse response = missionMemberService.getJoinableMission(new InvitationCode(invitationCode));
 
         return ResponseEntity.ok(response);
+    }
+
+    @Override
+    @GetMapping("/missions/{missionId}/rank/view")
+    public ResponseEntity<Void> viewMissionRank(
+            @PathVariable final Long missionId,
+            @LoginMemberId final Long memberId
+    ) {
+        missionMemberService.viewMissionRank(missionId, memberId);
+
+        return ResponseEntity.ok().build();
     }
 }

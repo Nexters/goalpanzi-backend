@@ -109,4 +109,10 @@ public class MissionMemberService {
                     });
         });
     }
+
+    @Transactional
+    public void viewMissionRank(final Long missionId, final Long memberId) {
+        MissionMember missionMember = missionMemberRepository.getMissionMember(memberId, missionId);
+        missionMember.checkCompleted();
+    }
 }
