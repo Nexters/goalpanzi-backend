@@ -29,6 +29,21 @@ spring:
           default:
             connectTimeout: 3_000
             readTimeout: 3_000
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: never
+      schema: nexters
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceId: AUTO
+            instanceName: quartzScheduler
+          jobStore:
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            tablePrefix: nexters.QRTZ_
+            isClustered: true
 
 jwt:
   secret: ${JWT_SECRET}

@@ -1,10 +1,10 @@
 package com.nexters.goalpanzi.presentation.mission;
 
-import com.nexters.goalpanzi.application.mission.dto.request.MissionFilter;
 import com.nexters.goalpanzi.application.mission.dto.response.MemberRankResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
+import com.nexters.goalpanzi.domain.mission.MissionStatus;
 import com.nexters.goalpanzi.presentation.mission.dto.JoinMissionRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,7 +21,7 @@ public interface MissionMemberControllerDocs {
     @Operation(summary = "내가 참여한 미션 조회")
     ResponseEntity<MissionsResponse> getMissions(
             @Parameter(hidden = true) @LoginMemberId final Long memberId,
-            @RequestParam(required = false) List<MissionFilter> filter
+            @RequestParam(required = false) List<MissionStatus> filter
     );
 
     @Operation(summary = "미션 참여", description = "초대코드로 미션에 참여합니다.")

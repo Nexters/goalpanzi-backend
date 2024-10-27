@@ -16,6 +16,21 @@ spring:
   servlet:
     multipart:
       max-file-size: 5MB
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: never
+      schema: goalpanzi
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceId: AUTO
+            instanceName: quartzScheduler
+          jobStore:
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            tablePrefix: goalpanzi.QRTZ_
+            isClustered: true
 
 jwt:
   secret: ${JWT_SECRET}
