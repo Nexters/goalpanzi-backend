@@ -1,7 +1,6 @@
 package com.nexters.goalpanzi.presentation.mission;
 
 import com.nexters.goalpanzi.application.mission.MissionMemberService;
-import com.nexters.goalpanzi.application.mission.dto.request.MissionFilter;
 import com.nexters.goalpanzi.application.mission.dto.response.MemberRankResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
@@ -69,7 +68,7 @@ public class MissionMemberController implements MissionMemberControllerDocs {
     }
 
     @Override
-    @GetMapping("/missions/{missionId}/rank/view")
+    @PostMapping("/missions/{missionId}/rank/view")
     public ResponseEntity<Void> viewMissionRank(
             @PathVariable final Long missionId,
             @LoginMemberId final Long memberId
