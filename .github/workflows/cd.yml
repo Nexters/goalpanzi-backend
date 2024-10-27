@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - feat/#82-mission-complete-api
 
 jobs:
   build-and-push:
