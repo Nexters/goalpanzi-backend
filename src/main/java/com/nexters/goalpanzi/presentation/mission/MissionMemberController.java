@@ -7,6 +7,7 @@ import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import com.nexters.goalpanzi.domain.mission.InvitationCode;
 import com.nexters.goalpanzi.domain.mission.MissionStatus;
+import com.nexters.goalpanzi.presentation.mission.dto.CompleteMissionRequest;
 import com.nexters.goalpanzi.presentation.mission.dto.JoinMissionRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -68,12 +69,12 @@ public class MissionMemberController implements MissionMemberControllerDocs {
     }
 
     @Override
-    @PostMapping("/missions/{missionId}/rank/view")
-    public ResponseEntity<Void> viewMissionRank(
-            @PathVariable final Long missionId,
+    @PostMapping("/mission-members/complete")
+    public ResponseEntity<Void> completeMission(
+            @RequestBody final CompleteMissionRequest request,
             @LoginMemberId final Long memberId
     ) {
-        missionMemberService.viewMissionRank(missionId, memberId);
+        missionMemberService.viewMissionRank(request.missionId(), memberId);
 
         return ResponseEntity.ok().build();
     }

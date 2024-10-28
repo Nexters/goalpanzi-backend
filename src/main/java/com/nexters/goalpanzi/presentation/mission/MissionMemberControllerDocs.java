@@ -5,6 +5,7 @@ import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailRespo
 import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import com.nexters.goalpanzi.domain.mission.MissionStatus;
+import com.nexters.goalpanzi.presentation.mission.dto.CompleteMissionRequest;
 import com.nexters.goalpanzi.presentation.mission.dto.JoinMissionRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -42,9 +43,9 @@ public interface MissionMemberControllerDocs {
             @RequestParam final String invitationCode
     );
 
-    @Operation(summary = "미션 랭킹 보드 확인")
-    ResponseEntity<Void> viewMissionRank(
-            @PathVariable final Long missionId,
+    @Operation(summary = "미션 종료")
+    ResponseEntity<Void> completeMission(
+            @RequestBody final CompleteMissionRequest request,
             @Parameter(hidden = true) @LoginMemberId final Long memberId
     );
 }
