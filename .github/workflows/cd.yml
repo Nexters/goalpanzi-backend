@@ -73,6 +73,7 @@ jobs:
             export OBJECT_STORAGE_BUCKET_NAME=${{ secrets.OBJECT_STORAGE_BUCKET_NAME }}
             export OBJECT_STORAGE_ACCESS_KEY_ID=${{ secrets.OBJECT_STORAGE_ACCESS_KEY_ID }}
             export OBJECT_STORAGE_SECRET_KEY=${{ secrets.OBJECT_STORAGE_SECRET_KEY }}
+            export ENCODED_FIREBASE_ADMIN_SDK=${{ secrets.ENCODED_FIREBASE_ADMIN_SDK }}
 
             sudo docker rm -f $(docker ps -qa)
 
