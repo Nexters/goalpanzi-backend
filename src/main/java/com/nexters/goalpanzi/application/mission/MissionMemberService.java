@@ -6,17 +6,14 @@ import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
-import com.nexters.goalpanzi.domain.mission.InvitationCode;
-import com.nexters.goalpanzi.domain.mission.MemberRanks;
-import com.nexters.goalpanzi.domain.mission.Mission;
-import com.nexters.goalpanzi.domain.mission.MissionMember;
-import com.nexters.goalpanzi.domain.mission.MissionStatus;
+import com.nexters.goalpanzi.domain.mission.*;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.exception.AlreadyExistsException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,9 +25,12 @@ import java.util.List;
 public class MissionMemberService {
 
     private final MissionValidator missionValidator;
+
     private final MissionMemberRepository missionMemberRepository;
     private final MissionRepository missionRepository;
     private final MemberRepository memberRepository;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     public MissionDetailResponse getJoinableMission(final InvitationCode invitationCode) {
         missionValidator.validateJoinableMission(invitationCode);
@@ -44,6 +44,9 @@ public class MissionMemberService {
         validateAlreadyJoin(member, mission);
         missionValidator.validateMaxPersonnel(mission);
         missionMemberRepository.save(MissionMember.join(member, mission));
+
+//        TODO
+//        eventPublisher.publishEvent(new JoinMissionEvent(mission.getId(), "TODO deviceToken", member.getNickname()));
     }
 
     private Mission getMissionByCode(final InvitationCode invitationCode) {
