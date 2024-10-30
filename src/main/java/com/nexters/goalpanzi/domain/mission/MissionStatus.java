@@ -1,15 +1,17 @@
 package com.nexters.goalpanzi.domain.mission;
 
-import com.nexters.goalpanzi.common.time.TimeUtil;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static com.nexters.goalpanzi.exception.ErrorCode.UNKNOWN_MISSION;
 
 @Getter
 public enum MissionStatus {
+
+    // 레거시
+    PENDING("생성(레거시)"),
+    ONGOING("진행중(레거시)"),
 
     // 미션 시작 전
     CREATED("생성"),

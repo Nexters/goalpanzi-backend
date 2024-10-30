@@ -32,7 +32,7 @@ public class MissionMemberController implements MissionMemberControllerDocs {
     @GetMapping("/mission-members/me")
     public ResponseEntity<MissionsResponse> getMissions(
             @LoginMemberId final Long memberId,
-            @RequestParam(required = false) List<MissionStatus> filter
+            @RequestParam(required = false, defaultValue = "PENDING,ONGOING") List<MissionStatus> filter
     ) {
         return ResponseEntity.ok(missionMemberService.findAllByMemberId(memberId, filter));
     }
