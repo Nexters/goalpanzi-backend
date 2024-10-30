@@ -4,6 +4,7 @@ import com.nexters.goalpanzi.domain.member.CharacterType;
 
 public class MemberFixture {
     public static final Long MEMBER_ID = 1L;
+    public static final String DEVICE_TOKEN = "device_token";
     public static final String ID_TOKEN_HOST = "token_host";
     public static final String ID_TOKEN_MEMBER_A = "token_member_A";
     public static final String EMAIL_HOST = "host@gmail.com";

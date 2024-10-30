@@ -34,6 +34,8 @@ public class AuthService {
         SocialUserInfo socialUserInfo = appleUserProvider.getSocialUserInfo(command.identityToken());
 
         return socialLogin(socialUserInfo, SocialType.APPLE);
+//        TODO 대체
+//        return socialLogin(socialUserInfo, SocialType.APPLE, command.deviceToken());
     }
 
     @Transactional
@@ -42,12 +44,17 @@ public class AuthService {
                 GoogleIdentityToken.generate(command.email()), command.email());
 
         return socialLogin(socialUserInfo, SocialType.GOOGLE);
+//        TODO 추후 대체
+//        return socialLogin(socialUserInfo, SocialType.GOOGLE, command.deviceToken());
     }
 
+    //    TODO 추후 대체
+//    private LoginResponse socialLogin(final SocialUserInfo socialUserInfo, final SocialType socialType, final String deviceToken) {
     private LoginResponse socialLogin(final SocialUserInfo socialUserInfo, final SocialType socialType) {
         checkDeletedMember(socialUserInfo.socialId());
         Member member = memberRepository.findBySocialIdAndDeletedAtIsNull(socialUserInfo.socialId())
                 .orElseGet(() ->
+                        // TODO device token 저장
                         memberRepository.save(Member.socialLogin(socialUserInfo.socialId(), socialUserInfo.email(), socialType))
                 );
 
