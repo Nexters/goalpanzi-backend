@@ -67,16 +67,6 @@ public class MissionMember extends BaseEntity {
         return new MissionMember(member, mission, 0);
     }
 
-    public MissionStatus getMissionStatus() {
-        if (missionStatus == MissionStatus.PENDING){
-            return MissionStatus.CREATED;
-        }
-        if (missionStatus == MissionStatus.ONGOING){
-            return MissionStatus.IN_PROGRESS;
-        }
-        return missionStatus;
-    }
-
     public void verify() {
         this.verificationCount++;
     }

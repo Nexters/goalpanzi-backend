@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @RestController
@@ -34,7 +35,15 @@ public class MissionMemberController implements MissionMemberControllerDocs {
             @LoginMemberId final Long memberId,
             @RequestParam(required = false, defaultValue = "PENDING,ONGOING") List<MissionStatus> filter
     ) {
-        return ResponseEntity.ok(missionMemberService.findAllByMemberId(memberId, filter));
+        // 레거시 상태 반영 위함
+        var newFilter = filter.stream()
+                .map(it -> switch (it) {
+                    case PENDING -> MissionStatus.CREATED;
+                    case ONGOING -> MissionStatus.IN_PROGRESS;
+                    default -> it;
+                })
+                .toList();
+        return ResponseEntity.ok(missionMemberService.findAllByMemberId(memberId, newFilter));
     }
 
     @PostMapping("/mission-members")
