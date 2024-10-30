@@ -45,6 +45,12 @@ public enum ErrorCode {
     INVALID_FILE("유효하지 않은 파일입니다."),
     FILE_UPLOAD_FAILED("파일 업로드에 실패하였습니다. [%s]"),
 
+    // FIREBASE
+    FAILED_TO_SEND_INDIVIDUAL_MESSAGE("개인 푸시 알림을 보내는 데 실패하였습니다."),
+    FAILED_TO_SEND_GROUP_MESSAGE("그룹 푸시 알림을 보내는 데 실패하였습니다."),
+    FAILED_TO_SUBSCRIBE_TO_TOPIC("토픽을 구독하는 데 실패하였습니다."),
+    FAILED_TO_UNSUBSCRIBE_FROM_TOPIC("토픽을 구독 취소하는 데 실패하였습니다."),
+
     // ETC
     FAILED_TO_GENERATE_HASH("해시값을 생성하는 데 실패하였습니다.");
 
