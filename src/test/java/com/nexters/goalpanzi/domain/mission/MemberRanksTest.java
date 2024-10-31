@@ -16,9 +16,9 @@ class MemberRanksTest {
     @Test
     void 미션_최종_등수를_확인할_수_있다() {
         // given
-        Member memberHost = Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.APPLE);
-        Member memberA = Member.socialLogin(SOCIAL_ID, EMAIL_MEMBER_A, SocialType.APPLE);
-        Member memberB = Member.socialLogin(SOCIAL_ID, EMAIL_MEMBER_B, SocialType.GOOGLE);
+        Member memberHost = Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.APPLE, DEVICE_TOKEN);
+        Member memberA = Member.socialLogin(SOCIAL_ID, EMAIL_MEMBER_A, SocialType.APPLE, DEVICE_TOKEN);
+        Member memberB = Member.socialLogin(SOCIAL_ID, EMAIL_MEMBER_B, SocialType.GOOGLE, DEVICE_TOKEN);
 
         List<MissionMember> missionMembers = List.of(
                 new MissionMember(memberHost, MissionFixture.create(), 10),

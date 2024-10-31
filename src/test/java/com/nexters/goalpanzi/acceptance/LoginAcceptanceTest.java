@@ -36,6 +36,8 @@ public class LoginAcceptanceTest extends AcceptanceTest {
     void 사용자가_애플_로그인을_정상적으로_한다() throws NoSuchAlgorithmException {
         String appleToken = TokenFixture.generateAppleToken();
         AppleLoginCommand request = new AppleLoginCommand(appleToken);
+//        TODO 추후 대체
+//        AppleLoginCommand request = new AppleLoginCommand(appleToken, DEVICE_TOKEN);
 
         when(socialUserProviderFactory.getProvider(any()))
                 .thenReturn(socialUserProvider);
@@ -61,6 +63,8 @@ public class LoginAcceptanceTest extends AcceptanceTest {
     @Test
     void 사용자가_구글_로그인을_정상적으로_한다() {
         GoogleLoginCommand request = new GoogleLoginCommand(EMAIL_HOST);
+//        TODO 추후 대체
+//        GoogleLoginCommand request = new GoogleLoginCommand(EMAIL_HOST, DEVICE_TOKEN);
 
         LoginResponse actual = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -81,9 +85,13 @@ public class LoginAcceptanceTest extends AcceptanceTest {
     @Test
     void 사용자가_탈퇴후_재가입한다() {
         LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+//        TODO 추후 대체
+//        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST, DEVICE_TOKEN)).as(LoginResponse.class);
         회원_탈퇴(login.memberId(), login.accessToken());
 
         LoginResponse actual = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+//        TODO 추후 대체
+//        LoginResponse actual = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST, DEVICE_TOKEN)).as(LoginResponse.class);
 
         assertThat(actual.memberId()).isNotNull();
     }

@@ -63,3 +63,7 @@ cloud:
       auto: false
     s3:
       endpoint: https://kr.object.ncloudstorage.com
+
+firebase:
+  enabled: true
+  admin-sdk: ${ENCODED_FIREBASE_ADMIN_SDK}
