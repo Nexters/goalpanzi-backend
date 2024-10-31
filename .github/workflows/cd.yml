@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - fix/#82-fix-mission-status
 
 jobs:
   build-and-push:
