@@ -5,7 +5,6 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.ByteArrayInputStream;
@@ -19,7 +18,6 @@ public class FirebaseConfig {
     @Value("${firebase.admin-sdk}")
     private String encodedFirebaseAdminSdk;
 
-    @Bean
     public FirebaseApp firebaseApp() throws IOException {
         byte[] decodedBytes = Base64.getDecoder().decode(encodedFirebaseAdminSdk);
         ByteArrayInputStream adminSdk = new ByteArrayInputStream(decodedBytes);

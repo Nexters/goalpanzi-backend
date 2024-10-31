@@ -1,12 +1,10 @@
 package com.nexters.goalpanzi.application.firebase;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
 public enum PushNotificationMessage {
     // 미션 시작 전
     MISSION_READY("미션 시작까지 1시간! 준비 갈 완료?\uD83C\uDF40", "이제 꾸준함을 향한 첫 발을 내딛을 시간!"),
