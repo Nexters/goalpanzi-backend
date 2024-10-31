@@ -65,6 +65,7 @@ public class MissionMemberEventHandler {
         log.info("Handled DeleteMissionEvent for missionId: {}", event.missionId());
     }
 
+    @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     void handleJoinMissionEvent(final JoinMissionEvent event) {
         String topic = TopicGenerator.getTopic(event.missionId());
@@ -78,6 +79,7 @@ public class MissionMemberEventHandler {
         log.info("Handled JoinMissionEvent for missionId: {}", event.missionId());
     }
 
+    @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     void handleCompleteMissionEvent(final CompleteMissionEvent event) {
         pushNotificationSender.sendGroupMessage(
