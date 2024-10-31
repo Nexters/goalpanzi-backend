@@ -16,7 +16,7 @@ import java.util.List;
 
 @Tag(name = "푸시 알림 테스트")
 @RequiredArgsConstructor
-@RequestMapping("/api/fcm-test")
+@RequestMapping("/internal/fcm-test")
 @RestController
 public class FcmTestController {
 
