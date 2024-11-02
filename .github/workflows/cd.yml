@@ -5,7 +5,6 @@ on:
     branches:
       - main
       - develop
-      - fix/#82-fix-scheduler
 
 jobs:
   build-and-push:
