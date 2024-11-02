@@ -1,6 +1,7 @@
 package com.nexters.goalpanzi.schedule;
 
 import com.nexters.goalpanzi.application.mission.MissionMemberService;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.StopWatch;
@@ -22,7 +23,7 @@ public class MissionStatusJob extends AbstractJob<CronTrigger> implements Custom
     @Override
     protected ScheduleBuilder<CronTrigger> getScheduleBuilder() {
         // 00:00, 06:00, 12:00, 18:00 마다 실행
-        return CronScheduleBuilder.cronSchedule("0 0 */6 * * ?")
+        return CronScheduleBuilder.cronSchedule("0 40 16 * * ?")
                 .withMisfireHandlingInstructionDoNothing();
     }
 
