@@ -23,7 +23,7 @@ public class MissionStatusJob extends AbstractJob<CronTrigger> implements Custom
     @Override
     protected ScheduleBuilder<CronTrigger> getScheduleBuilder() {
         // 00:00, 06:00, 12:00, 18:00 마다 실행
-        return CronScheduleBuilder.cronSchedule("0 40 16 * * ?")
+        return CronScheduleBuilder.cronSchedule("0 45 16 * * ?")
                 .withMisfireHandlingInstructionDoNothing();
     }
 
