@@ -6,6 +6,7 @@ on:
       - main
       - develop
       - fix/#82-fix-mission-status
+      - fix/#84-fcm-push
 
 jobs:
   build-and-push:
