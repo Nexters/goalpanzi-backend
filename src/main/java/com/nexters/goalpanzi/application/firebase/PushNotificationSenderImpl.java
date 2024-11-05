@@ -22,7 +22,7 @@ public class PushNotificationSenderImpl implements PushNotificationSender {
         try {
             FirebaseMessaging.getInstance().send(message);
         } catch (FirebaseMessagingException e) {
-            throw new BaseException(ErrorCode.FAILED_TO_SEND_INDIVIDUAL_MESSAGE);
+            throw new BaseException(ErrorCode.FAILED_TO_SEND_INDIVIDUAL_MESSAGE, e);
         }
     }
 
@@ -36,7 +36,7 @@ public class PushNotificationSenderImpl implements PushNotificationSender {
         try {
             FirebaseMessaging.getInstance().send(message);
         } catch (FirebaseMessagingException e) {
-            throw new BaseException(ErrorCode.FAILED_TO_SEND_GROUP_MESSAGE);
+            throw new BaseException(ErrorCode.FAILED_TO_SEND_GROUP_MESSAGE, e);
         }
     }
 

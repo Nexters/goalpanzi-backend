@@ -8,8 +8,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class FcmTestController {
     @GetMapping("individual-message")
     ResponseEntity<Void> sendIndividualMessage(
             @Schema(description = "deviceToken", requiredMode = Schema.RequiredMode.REQUIRED)
-            @RequestBody final String deviceToken) {
+            @RequestParam final String deviceToken) {
         pushNotificationSender.sendIndividualMessage("개별 메시지 테스트", deviceToken + "으로 개별 메시지를 전송합니다.", deviceToken);
 
         return ResponseEntity.ok().build();
@@ -37,7 +37,7 @@ public class FcmTestController {
     @GetMapping("group-message")
     ResponseEntity<Void> sendGroupMessage(
             @Schema(description = "deviceToken", requiredMode = Schema.RequiredMode.REQUIRED)
-            @RequestBody final String deviceToken
+            @RequestParam final String deviceToken
     ) {
         String topic = "topic-test";
         topicSubscriber.subscribeToTopic(List.of(deviceToken), topic);
