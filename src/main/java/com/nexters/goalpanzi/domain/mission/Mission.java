@@ -2,16 +2,18 @@ package com.nexters.goalpanzi.domain.mission;
 
 import com.nexters.goalpanzi.common.time.TimeUtil;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
+import com.nexters.goalpanzi.domain.firebase.PushTime;
 import com.nexters.goalpanzi.infrastructure.jpa.DaysOfWeekConverter;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
-import org.joda.time.LocalTime;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -145,6 +147,23 @@ public class Mission extends BaseEntity {
         return TimeUtil.combineDateAndTime(
                 missionEndDate, TimeUtil.of(uploadEndTime)
         );
+    }
+
+    public boolean isReady() {
+        LocalDateTime startTime = LocalDateTime.of(this.missionStartDate.toLocalDate(), LocalTime.parse(this.uploadStartTime));
+        Duration duration = Duration.between(startTime, LocalDate.now());
+
+        return duration.isNegative() && duration.toHours() <= 1;
+    }
+
+    public boolean isPushTime(final int hour) {
+        if (this.uploadStartTime.equals(TimeOfDay.MORNING.getStartTime())) {
+            return hour == PushTime.MORNING.getHour();
+        }
+        if (this.uploadStartTime.equals(TimeOfDay.AFTERNOON.getStartTime())) {
+            return hour == PushTime.AFTERNOON.getHour();
+        }
+        return hour == PushTime.EVERYDAY.getHour();
     }
 
     @Override
