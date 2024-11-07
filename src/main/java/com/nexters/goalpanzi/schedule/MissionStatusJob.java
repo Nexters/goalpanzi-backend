@@ -3,12 +3,7 @@ package com.nexters.goalpanzi.schedule;
 import com.nexters.goalpanzi.application.mission.MissionMemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.time.StopWatch;
-import org.quartz.CronScheduleBuilder;
-import org.quartz.CronTrigger;
-import org.quartz.DisallowConcurrentExecution;
-import org.quartz.JobExecutionContext;
-import org.quartz.ScheduleBuilder;
+import org.quartz.*;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -28,18 +23,6 @@ public class MissionStatusJob extends AbstractJob<CronTrigger> implements Custom
 
     @Override
     protected void executeInternal(final JobExecutionContext context) {
-        log.info("MissionStatusJob started.");
-
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-
-        try {
-            missionMemberService.batchUpdateStatus();
-        } catch (Exception e) {
-            log.error("Error occurred while executing MissionStatusJob", e);
-        }
-
-        stopWatch.stop();  // 타이머 종료
-        log.info("MissionStatusJob finished. Elapsed time: {} ms", stopWatch.getTime());
+        missionMemberService.batchUpdateStatus();
     }
 }
