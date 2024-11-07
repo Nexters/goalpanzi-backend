@@ -2,6 +2,9 @@ package com.nexters.goalpanzi.schedule;
 
 import com.nexters.goalpanzi.application.firebase.TopicGenerator;
 import com.nexters.goalpanzi.domain.mission.Mission;
+import com.nexters.goalpanzi.domain.mission.MissionMember;
+import com.nexters.goalpanzi.domain.mission.MissionMemberCount;
+import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.infrastructure.firebase.PushNotificationSender;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ import static com.nexters.goalpanzi.domain.firebase.PushNotificationMessage.MISS
 public class MissionReadyPushJob extends AbstractJob<CronTrigger> implements CustomAutomationJob {
 
     private final MissionRepository missionRepository;
+    private final MissionMemberRepository missionMemberRepository;
 
     private final PushNotificationSender pushNotificationSender;
 
@@ -36,13 +40,21 @@ public class MissionReadyPushJob extends AbstractJob<CronTrigger> implements Cus
     protected void executeInternal(final JobExecutionContext context) throws JobExecutionException {
         List<Mission> missions = missionRepository.getReadyMissions();
         missions.forEach(mission -> {
-            if (mission.isReady()) {
+            if (mission.isReadyTime() && hasEnoughMember(mission.getId())) {
+                String topic = TopicGenerator.getTopic(mission.getId());
                 pushNotificationSender.sendGroupMessage(
                         MISSION_READY.getTitle(),
                         MISSION_READY.getBody(),
-                        TopicGenerator.getTopic(mission.getId())
+                        topic
                 );
             }
         });
+    }
+
+    private boolean hasEnoughMember(final Long missionId) {
+        List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(missionId);
+        int memberCount = missionMembers.size();
+
+        return memberCount >= MissionMemberCount.MIN.getCount();
     }
 }

@@ -40,10 +40,7 @@ public class MissionCancellationWarningPushJob extends AbstractJob<CronTrigger> 
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
         List<Mission> missions = missionRepository.getReadyMissions();
         missions.forEach(mission -> {
-            List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(mission.getId());
-            int memberCount = missionMembers.size();
-
-            if (mission.isReady() && memberCount < MissionMemberCount.MIN.getCount()) {
+            if (mission.isReadyTime() && !hasEnoughMember(mission.getId())) {
                 String topic = TopicGenerator.getTopic(mission.getId());
                 pushNotificationSender.sendGroupMessage(
                         MISSION_CANCELLATION_WARNING.getTitle(),
@@ -52,5 +49,12 @@ public class MissionCancellationWarningPushJob extends AbstractJob<CronTrigger> 
                 );
             }
         });
+    }
+
+    private boolean hasEnoughMember(final Long missionId) {
+        List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(missionId);
+        int memberCount = missionMembers.size();
+
+        return memberCount >= MissionMemberCount.MIN.getCount();
     }
 }
