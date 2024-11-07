@@ -44,11 +44,11 @@ public enum MissionStatus {
             return CREATED;
         }
 
-        if (mission.isMissionPeriod() && currentMemberCount <= 1) {
+        if (mission.isMissionPeriod() && currentMemberCount < MissionMemberCount.MIN.getCount()) {
             return CANCELED;
         }
 
-        if (mission.isMissionPeriod() && currentMemberCount > 1) {
+        if (mission.isMissionPeriod() && currentMemberCount >= MissionMemberCount.MIN.getCount()) {
             return IN_PROGRESS;
         }
 
