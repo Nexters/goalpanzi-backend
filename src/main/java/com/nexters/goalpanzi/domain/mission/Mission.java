@@ -149,7 +149,7 @@ public class Mission extends BaseEntity {
         );
     }
 
-    public boolean isReady() {
+    public boolean isReadyTime() {
         LocalDateTime startTime = LocalDateTime.of(this.missionStartDate.toLocalDate(), LocalTime.parse(this.uploadStartTime));
         Duration duration = Duration.between(startTime, LocalDate.now());
 
