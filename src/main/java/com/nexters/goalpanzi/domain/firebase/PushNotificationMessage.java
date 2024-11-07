@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.application.firebase;
+package com.nexters.goalpanzi.domain.firebase;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ public enum PushNotificationMessage {
 
     // 미션 진행 중
     MISSION_VERIFICATION_WARNING("\u23F0 마감임박! 1시간 남았어요!\uD83E\uDDE8\uD83D\uDCA5", "지금 인증 안 하면 오늘은 인증 실패!ㅠㅠ"),
-    MISSION_VERIFIED("˗ˋˏ 와 ˎˊ˗ %s명이 벌써 인증 완료 ˗ˋˏ 와 ˎˊ˗ ", "지금 누가 앞서가는지 확인해볼까요?"),
+    MISSION_VERIFIED("˗ˋˏ 와 ˎˊ˗ %d명이 벌써 인증 완료 ˗ˋˏ 와 ˎˊ˗ ", "지금 누가 앞서가는지 확인해볼까요?"),
     MISSION_NO_ONE_VERIFIED("잊었니?..\uD83C\uDF42", "아직 아무도 인증 안 했어요! 1빠로 인증해 모두를 앞서갈 타이밍!"),
     MISSION_COMPLETED("아니 글쎄..걔가 결국 1등 했다고?! \uD83D\uDDEF\uFE0F", "첫 번째 미션 완수자 등장! 빠르게 확인해 보세요!"),
     MISSION_DELETED("뭐? 미션 끝났다고? 너 누군데? \uD83D\uDC40", "방장이 미션을 끝냈어요! 다음 미션에서 새롭게 만나요!"),
