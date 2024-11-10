@@ -131,7 +131,7 @@ public class MissionMemberService {
     public void sendReadyPushMessage() {
         List<Mission> missions = missionRepository.getReadyMissions();
         missions.forEach(mission -> {
-            if (mission.isReadyTime() && hasEnoughMember(mission.getId())) {
+            if (mission.isReadyTime() && missionValidator.hasEnoughMember(mission.getId())) {
                 String topic = TopicGenerator.getTopic(mission.getId());
                 pushNotificationSender.sendGroupMessage(
                         MISSION_READY.getTitle(),
@@ -146,7 +146,7 @@ public class MissionMemberService {
     public void sendCancellationWarningPushMessage() {
         List<Mission> missions = missionRepository.getReadyMissions();
         missions.forEach(mission -> {
-            if (mission.isReadyTime() && !hasEnoughMember(mission.getId())) {
+            if (mission.isReadyTime() && !missionValidator.hasEnoughMember(mission.getId())) {
                 String topic = TopicGenerator.getTopic(mission.getId());
                 pushNotificationSender.sendGroupMessage(
                         MISSION_CANCELLATION_WARNING.getTitle(),
@@ -156,12 +156,4 @@ public class MissionMemberService {
             }
         });
     }
-
-    private boolean hasEnoughMember(final Long missionId) {
-        List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(missionId);
-        int memberCount = missionMembers.size();
-
-        return memberCount >= MissionMemberCount.MIN.getCount();
-    }
-
 }

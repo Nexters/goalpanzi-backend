@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import static com.nexters.goalpanzi.domain.mission.Mission.MAX_MISSION_MEMBER;
+import static com.nexters.goalpanzi.domain.mission.Mission.MIN_MISSION_MEMBER;
 
 @RequiredArgsConstructor
 @Component
@@ -36,6 +37,10 @@ public class MissionValidator {
         if (mission.isMissionPeriod() || mission.isExpired()) {
             throw new BadRequestException(ErrorCode.CAN_NOT_JOIN_MISSION.toString());
         }
+    }
+
+    public boolean hasEnoughMember(final Long missionId) {
+        return getMissionMemberSize(missionId) >= MIN_MISSION_MEMBER;
     }
 
     private int getMissionMemberSize(final Long missionId) {
