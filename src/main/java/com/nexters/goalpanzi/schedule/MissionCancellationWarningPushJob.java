@@ -1,21 +1,11 @@
 package com.nexters.goalpanzi.schedule;
 
-import com.nexters.goalpanzi.application.firebase.TopicGenerator;
-import com.nexters.goalpanzi.domain.mission.Mission;
-import com.nexters.goalpanzi.domain.mission.MissionMember;
-import com.nexters.goalpanzi.domain.mission.MissionMemberCount;
-import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
-import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
-import com.nexters.goalpanzi.infrastructure.firebase.PushNotificationSender;
+import com.nexters.goalpanzi.application.mission.MissionMemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import static com.nexters.goalpanzi.domain.firebase.PushNotificationMessage.MISSION_CANCELLATION_WARNING;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -23,10 +13,7 @@ import static com.nexters.goalpanzi.domain.firebase.PushNotificationMessage.MISS
 @Component
 public class MissionCancellationWarningPushJob extends AbstractJob<CronTrigger> implements CustomAutomationJob {
 
-    private final MissionRepository missionRepository;
-    private final MissionMemberRepository missionMemberRepository;
-
-    private final PushNotificationSender pushNotificationSender;
+    private final MissionMemberService missionMemberService;
 
     @Override
     protected ScheduleBuilder<CronTrigger> getScheduleBuilder() {
@@ -38,23 +25,6 @@ public class MissionCancellationWarningPushJob extends AbstractJob<CronTrigger> 
     @Override
     @Transactional
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-        List<Mission> missions = missionRepository.getReadyMissions();
-        missions.forEach(mission -> {
-            if (mission.isReadyTime() && !hasEnoughMember(mission.getId())) {
-                String topic = TopicGenerator.getTopic(mission.getId());
-                pushNotificationSender.sendGroupMessage(
-                        MISSION_CANCELLATION_WARNING.getTitle(),
-                        MISSION_CANCELLATION_WARNING.getBody(),
-                        topic
-                );
-            }
-        });
-    }
-
-    private boolean hasEnoughMember(final Long missionId) {
-        List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(missionId);
-        int memberCount = missionMembers.size();
-
-        return memberCount >= MissionMemberCount.MIN.getCount();
+        missionMemberService.sendCancellationWarningPushMessage();
     }
 }
