@@ -1,6 +1,4 @@
 <included>
     <property name="SLACK_USERNAME" value="monitor-mission-mate"/>
     <property name="SLACK_CHANNEL" value="mission-mate-live"/>
-    <property name="SLACK_WEBHOOK_URI"
-              value="https://hooks.slack.com/services/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"/>
 </included>
