@@ -2,16 +2,18 @@ package com.nexters.goalpanzi.domain.mission;
 
 import com.nexters.goalpanzi.common.time.TimeUtil;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
+import com.nexters.goalpanzi.domain.firebase.PushTime;
 import com.nexters.goalpanzi.infrastructure.jpa.DaysOfWeekConverter;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
-import org.joda.time.LocalTime;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,6 +24,7 @@ import java.util.Objects;
 @Getter
 public class Mission extends BaseEntity {
 
+    public static final Integer MIN_MISSION_MEMBER = 2;
     public static final Integer MAX_MISSION_MEMBER = 10;
 
     @Id
@@ -121,10 +124,12 @@ public class Mission extends BaseEntity {
         return !today.isBefore(missionStart) && !today.isAfter(missionEnd);
     }
 
+    // 오늘이 미션 인증 요일인지 검증
     public boolean isMissionDay() {
         return this.missionDays.contains(DayOfWeek.valueOf(LocalDate.now().getDayOfWeek().name()));
     }
 
+    // 현재 시간이 미션 인증 시간인지 검증
     public boolean isMissionTime() {
         String now = LocalTime.now().toString().substring(0, 5);
         return now.compareTo(uploadStartTime) >= 0 && now.compareTo(uploadEndTime) <= 0;
@@ -145,6 +150,28 @@ public class Mission extends BaseEntity {
         return TimeUtil.combineDateAndTime(
                 missionEndDate, TimeUtil.of(uploadEndTime)
         );
+    }
+
+    // 현재 시간이 미션 시작 예고 시간인지 검증
+    // 미션 시작 예고 시간 == 미션 시작 1시간 전
+    public boolean isReadyTime() {
+        LocalDateTime startTime = LocalDateTime.of(this.missionStartDate.toLocalDate(), LocalTime.parse(this.uploadStartTime));
+        Duration duration = Duration.between(startTime, LocalDate.now());
+
+        return duration.isNegative() && duration.toHours() <= 1;
+    }
+
+    // 현재 시간이 푸시 시간인지 검증
+    // 1. 인증 시간이 오전인 경우, 09시에 푸시
+    // 2. 인증 시간이 오후이거나 종일인 경우, 15시에 푸시
+    public boolean isPushTime(final int hour) {
+        if (this.uploadStartTime.equals(TimeOfDay.MORNING.getStartTime())) {
+            return hour == PushTime.MORNING.getHour();
+        }
+        if (this.uploadStartTime.equals(TimeOfDay.AFTERNOON.getStartTime())) {
+            return hour == PushTime.AFTERNOON.getHour();
+        }
+        return hour == PushTime.EVERYDAY.getHour();
     }
 
     @Override

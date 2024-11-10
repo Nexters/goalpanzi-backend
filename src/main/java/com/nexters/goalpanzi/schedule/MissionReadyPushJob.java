@@ -10,19 +10,19 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @DisallowConcurrentExecution
 @Component
-public class MissionStatusJob extends AbstractJob<CronTrigger> implements CustomAutomationJob {
+public class MissionReadyPushJob extends AbstractJob<CronTrigger> implements CustomAutomationJob {
 
     private final MissionMemberService missionMemberService;
 
     @Override
     protected ScheduleBuilder<CronTrigger> getScheduleBuilder() {
-        // 00:00, 06:00, 12:00, 18:00 마다 실행
-        return CronScheduleBuilder.cronSchedule("0 0 */6 * * ?")
+        // 11:00, 23:00 마다 실행
+        return CronScheduleBuilder.cronSchedule("0 0 11,23 * * ?")
                 .withMisfireHandlingInstructionDoNothing();
     }
 
     @Override
-    protected void executeInternal(final JobExecutionContext context) {
-        missionMemberService.batchUpdateStatus();
+    protected void executeInternal(final JobExecutionContext context) throws JobExecutionException {
+        missionMemberService.sendReadyPushMessage();
     }
 }

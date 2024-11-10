@@ -20,9 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-import java.util.List;
-
-import static com.nexters.goalpanzi.application.firebase.PushNotificationMessage.*;
+import static com.nexters.goalpanzi.domain.firebase.PushNotificationMessage.*;
 
 @Slf4j
 @Component
@@ -37,7 +35,7 @@ public class MissionMemberEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     void handleCreateMissionEvent(final CreateMissionEvent event) {
         missionMemberService.joinMission(event.memberId(), new InvitationCode(event.invitationCode()));
-        log.info("Handled JoinMissionEvent for memberId: {}", event.memberId());
+        log.info("Handled CreateMissionEvent for memberId: {}", event.memberId());
     }
 
     @Async
@@ -55,7 +53,7 @@ public class MissionMemberEventHandler {
     void handleDeleteMissionEvent(final DeleteMissionEvent event) {
         missionMemberService.deleteAllByMissionId(event.missionId());
         missionVerificationService.deleteAllByMissionId(event.missionId());
-        
+
         pushNotificationSender.sendGroupMessage(
                 MISSION_DELETED.getTitle(),
                 MISSION_DELETED.getBody(),
@@ -68,13 +66,11 @@ public class MissionMemberEventHandler {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     void handleJoinMissionEvent(final JoinMissionEvent event) {
-        String topic = TopicGenerator.getTopic(event.missionId());
-        pushNotificationSender.sendGroupMessage(
+        pushNotificationSender.sendIndividualMessage(
                 MISSION_JOINED.getTitle(),
                 MISSION_JOINED.getBody(event.nickname()),
-                topic
+                event.deviceToken()
         );
-        topicSubscriber.subscribeToTopic(List.of(event.deviceToken()), topic);
 
         log.info("Handled JoinMissionEvent for missionId: {}", event.missionId());
     }

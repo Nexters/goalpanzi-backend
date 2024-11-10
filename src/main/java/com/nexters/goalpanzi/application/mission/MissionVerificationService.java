@@ -1,5 +1,6 @@
 package com.nexters.goalpanzi.application.mission;
 
+import com.nexters.goalpanzi.application.firebase.TopicGenerator;
 import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionVerificationCommand;
 import com.nexters.goalpanzi.application.mission.dto.request.MissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificationQuery;
@@ -8,23 +9,27 @@ import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificatio
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationsResponse;
 import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
+import com.nexters.goalpanzi.domain.firebase.PushNotificationMessage;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
-import com.nexters.goalpanzi.domain.mission.MissionMember;
-import com.nexters.goalpanzi.domain.mission.MissionMembers;
-import com.nexters.goalpanzi.domain.mission.MissionVerification;
-import com.nexters.goalpanzi.domain.mission.MissionVerificationView;
+import com.nexters.goalpanzi.domain.mission.*;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
+import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationViewRepository;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
+import com.nexters.goalpanzi.infrastructure.firebase.PushNotificationSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
+import static com.nexters.goalpanzi.domain.firebase.PushNotificationMessage.*;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -32,11 +37,13 @@ import java.util.List;
 public class MissionVerificationService {
 
     private final MissionVerificationRepository missionVerificationRepository;
+    private final MissionRepository missionRepository;
     private final MissionMemberRepository missionMemberRepository;
     private final MissionVerificationViewRepository missionVerificationViewRepository;
     private final MemberRepository memberRepository;
 
     private final ObjectStorageClient objectStorageClient;
+    private final PushNotificationSender pushNotificationSender;
 
     private final MissionVerificationValidator missionVerificationValidator;
     private final MissionVerificationResponseSorter missionVerificationResponseSorter;
@@ -88,5 +95,67 @@ public class MissionVerificationService {
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_VERIFICATION));
 
         missionVerificationViewRepository.save(new MissionVerificationView(missionVerification, member));
+    }
+
+    @Transactional
+    public void sendVerificationPushMessage() {
+        LocalDate today = LocalDate.now();
+        int hour = LocalDateTime.now().getHour();
+        List<Mission> missions = missionRepository.getInProgressMissions();
+
+        missions.forEach(mission -> {
+            if (mission.isMissionDay() && mission.isPushTime(hour)) {
+                List<MissionVerification> verifications = missionVerificationRepository.findAllByMissionIdAndDate(mission.getId(), today);
+                int verificationCount = verifications.size();
+                String topic = TopicGenerator.getTopic(mission.getId());
+
+                if (verificationCount == 0) {
+                    sendNoOneVerifiedPushMessage(MISSION_NO_ONE_VERIFIED, topic);
+                } else {
+                    sendVerifiedPushMessage(MISSION_VERIFIED, topic, verificationCount);
+                }
+            }
+        });
+    }
+
+    private void sendVerifiedPushMessage(final PushNotificationMessage message, final String topic, final int verificationCount) {
+        pushNotificationSender.sendGroupMessage(
+                message.getTitle(verificationCount),
+                message.getBody(),
+                topic
+        );
+    }
+
+    private void sendNoOneVerifiedPushMessage(final PushNotificationMessage message, final String topic) {
+        pushNotificationSender.sendGroupMessage(
+                message.getTitle(),
+                message.getBody(),
+                topic
+        );
+    }
+
+    @Transactional
+    public void sendVerificationWarningPushMessage() {
+        LocalDate today = LocalDate.now();
+        int hour = LocalDateTime.now().getHour();
+        List<Mission> missions = missionRepository.getInProgressMissions();
+
+        missions.forEach(mission -> {
+            if (mission.isMissionDay() && mission.isPushTime(hour)) {
+                List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(mission.getId());
+
+                missionMembers.forEach(missionMember -> {
+                    Member member = missionMember.getMember();
+                    Optional<MissionVerification> verification = missionVerificationRepository.findByMemberIdAndMissionIdAndDate(member.getId(), mission.getId(), today);
+                    if (verification.isEmpty() && member.getDeviceToken() != null) {
+                        pushNotificationSender.sendIndividualMessage(
+                                MISSION_VERIFICATION_WARNING.getTitle(),
+                                MISSION_VERIFICATION_WARNING.getBody(),
+                                member.getDeviceToken()
+                        );
+                    }
+                });
+            }
+        });
     }
 }

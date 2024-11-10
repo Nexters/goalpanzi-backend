@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+import static com.nexters.goalpanzi.domain.mission.Mission.MIN_MISSION_MEMBER;
 import static com.nexters.goalpanzi.exception.ErrorCode.UNKNOWN_MISSION;
 
 @Getter
@@ -44,11 +45,11 @@ public enum MissionStatus {
             return CREATED;
         }
 
-        if (mission.isMissionPeriod() && currentMemberCount <= 1) {
+        if (mission.isMissionPeriod() && currentMemberCount < MIN_MISSION_MEMBER) {
             return CANCELED;
         }
 
-        if (mission.isMissionPeriod() && currentMemberCount > 1) {
+        if (mission.isMissionPeriod() && currentMemberCount >= MIN_MISSION_MEMBER) {
             return IN_PROGRESS;
         }
 
