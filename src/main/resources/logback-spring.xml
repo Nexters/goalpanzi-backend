@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <include resource="properties-prod.xml"/>
+    <include resource="properties.xml"/>
     <include resource="appenders/slack-appender.xml"/>
 
     <property name="COLORED_LOG_PATTERN"
