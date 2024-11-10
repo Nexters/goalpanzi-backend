@@ -156,7 +156,7 @@ public class Mission extends BaseEntity {
     // 미션 시작 예고 시간 == 미션 시작 1시간 전
     public boolean isReadyTime() {
         LocalDateTime startTime = LocalDateTime.of(this.missionStartDate.toLocalDate(), LocalTime.parse(this.uploadStartTime));
-        Duration duration = Duration.between(startTime, LocalDate.now());
+        Duration duration = Duration.between(startTime, LocalDateTime.now());
 
         return duration.isNegative() && duration.toHours() <= 1;
     }
