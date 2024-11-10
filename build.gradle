@@ -60,6 +60,9 @@ dependencies {
     // firebase
     implementation 'com.google.firebase:firebase-admin:9.3.0'
 
+    // slack
+    implementation 'com.github.maricn:logback-slack-appender:1.6.1'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

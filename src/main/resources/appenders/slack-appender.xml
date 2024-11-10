@@ -1,0 +1,34 @@
+<included>
+    <appender name="SLACK" class="com.github.maricn.logback.SlackAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>
+                [%thread] %-5level traceId:"%X{traceId:-}" spanId:"%X{spanId:-}"%n%msg%n
+            </pattern>
+        </layout>
+        <webhookUri>${SLACK_WEBHOOK_URI}</webhookUri>
+        <username>${SLACK_USERNAME}</username>
+        <channel>${SLACK_CHANNEL}</channel>
+        <iconEmoji>:bell:</iconEmoji>
+        <colorCoding>true</colorCoding>
+    </appender> <!-- Currently recommended way of using Slack appender -->
+    !
+    <appender name="ASYNC-SLACK" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="SLACK"/>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+
+    <appender name="BOOT-SLACK" class="com.github.maricn.logback.SlackAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>
+                *Server Name:* `${HOSTNAME:-}` %n%msg%n
+            </pattern>
+        </layout>
+        <webhookUri>${SLACK_WEBHOOK_URI}</webhookUri>
+        <username>${SLACK_USERNAME}</username>
+        <channel>${SLACK_CHANNEL}</channel>
+        <iconEmoji>:bell:</iconEmoji>
+        <colorCoding>true</colorCoding>
+    </appender>
+</included>

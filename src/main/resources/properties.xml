@@ -1,0 +1,4 @@
+<included>
+    <property name="SLACK_USERNAME" value="monitor-mission-mate"/>
+    <property name="SLACK_CHANNEL" value="mission-mate-live"/>
+</included>
