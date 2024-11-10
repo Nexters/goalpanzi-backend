@@ -64,3 +64,5 @@ oauth:
     iss: https://appleid.apple.com
     client-id: ${OAUTH_APPLE_CLIENT_ID}
 
+logging:
+  config: classpath:logback-prod.xml
