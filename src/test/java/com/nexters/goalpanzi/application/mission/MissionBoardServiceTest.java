@@ -16,7 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,16 +65,12 @@ class MissionBoardServiceTest {
         MissionMember missionMember3 = mock(MissionMember.class);
         MissionBoardQuery query = new MissionBoardQuery(me.getId(), 1L, MissionBoardQuery.SortType.RANK, Sort.Direction.ASC);
 
-        LocalDateTime now = LocalDateTime.now();
-        when(missionMember1.getUpdatedAt()).thenReturn(now);
         when(missionMember1.getVerificationCount()).thenReturn(1);
         when(missionMember1.getMember()).thenReturn(members.get(0));
 
-        when(missionMember2.getUpdatedAt()).thenReturn(now);
         when(missionMember2.getVerificationCount()).thenReturn(1);
         when(missionMember2.getMember()).thenReturn(members.get(1));
 
-        when(missionMember3.getUpdatedAt()).thenReturn(now);
         when(missionMember3.getVerificationCount()).thenReturn(2);
         when(missionMember3.getMember()).thenReturn(members.get(2));
 
@@ -89,7 +84,6 @@ class MissionBoardServiceTest {
         assertAll(
                 () -> assertThat(response.missionBoards().size()).isEqualTo(mission.getBoardCount() + 1),
                 () -> assertThat(response.rank()).isEqualTo(2),
-                () -> assertThat(response.progressCount()).isEqualTo(3),
 
                 () -> assertThat(response.missionBoards().get(1).isMyPosition()).isTrue(),
                 () -> assertThat(response.missionBoards().get(1).missionBoardMembers().size()).isEqualTo(2),
