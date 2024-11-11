@@ -2,12 +2,12 @@ package com.nexters.goalpanzi.domain.mission;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.nexters.goalpanzi.fixture.MemberFixture.MEMBER_ID;
-import static com.nexters.goalpanzi.fixture.MissionFixture.BOARD_COUNT;
-import static com.nexters.goalpanzi.fixture.MissionFixture.DESCRIPTION;
+import static com.nexters.goalpanzi.fixture.MissionFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -75,5 +75,115 @@ class MissionTest {
                 InvitationCode.generate()
         );
         assertThat(mission.isExpired()).isTrue();
+    }
+
+    @Test
+    void 오늘이_미션_인증_요일이면_true를_반환한다() {
+        Mission mission = Mission.create(
+                MEMBER_ID,
+                DESCRIPTION,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(30),
+                TimeOfDay.EVERYDAY,
+                WEEK,
+                BOARD_COUNT,
+                InvitationCode.generate()
+        );
+        assertThat(mission.isMissionDay()).isTrue();
+    }
+
+    @Test
+    void 오늘이_미션_인증_요일이_아니면_false를_반환한다() {
+        List<DayOfWeek> missionDays = WEEK.stream()
+                .filter(d -> d != DayOfWeek.valueOf(LocalDate.now().getDayOfWeek().name())).toList();
+
+        Mission mission = Mission.create(
+                MEMBER_ID,
+                DESCRIPTION,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(30),
+                TimeOfDay.EVERYDAY,
+                missionDays,
+                BOARD_COUNT,
+                InvitationCode.generate()
+        );
+        assertThat(mission.isMissionDay()).isFalse();
+    }
+
+    @Test
+    void 현재_시간이_미션_인증_시간이면_true를_반환한다() {
+        Mission mission = Mission.create(
+                MEMBER_ID,
+                DESCRIPTION,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(30),
+                TimeOfDay.EVERYDAY,
+                List.of(DayOfWeek.FRIDAY),
+                BOARD_COUNT,
+                InvitationCode.generate()
+        );
+        assertThat(mission.isMissionTime()).isTrue();
+    }
+
+    @Test
+    void 현재_시간이_미션_인증_시간이_아니면_false를_반환한다() {
+        TimeOfDay timeOfDay = (LocalDateTime.now().getHour() < 12) ? TimeOfDay.AFTERNOON : TimeOfDay.MORNING;
+
+        Mission mission = Mission.create(
+                MEMBER_ID,
+                DESCRIPTION,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(30),
+                timeOfDay,
+                List.of(DayOfWeek.FRIDAY),
+                BOARD_COUNT,
+                InvitationCode.generate()
+        );
+        assertThat(mission.isMissionTime()).isFalse();
+    }
+
+    @Test
+    void 인증_시간이_오전인_미션은_푸시_알림_시간이_09시이다() {
+        Mission mission = Mission.create(
+                MEMBER_ID,
+                DESCRIPTION,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(30),
+                TimeOfDay.MORNING,
+                List.of(DayOfWeek.FRIDAY),
+                BOARD_COUNT,
+                InvitationCode.generate()
+        );
+        assertThat(mission.isPushTime(9)).isTrue();
+    }
+
+    @Test
+    void 인증_시간이_오후인_미션은_푸시_알림_시간이_15시이다() {
+        Mission mission = Mission.create(
+                MEMBER_ID,
+                DESCRIPTION,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(30),
+                TimeOfDay.AFTERNOON,
+                List.of(DayOfWeek.FRIDAY),
+                BOARD_COUNT,
+                InvitationCode.generate()
+        );
+        assertThat(mission.isPushTime(15)).isTrue();
+    }
+
+    @Test
+    void 인증_시간이_종일인_미션은_푸시_알림_시간이_15시이다() {
+        Mission mission = Mission.create(
+                MEMBER_ID,
+                DESCRIPTION,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(30),
+                TimeOfDay.EVERYDAY,
+                List.of(DayOfWeek.FRIDAY),
+                BOARD_COUNT,
+                InvitationCode.generate()
+        );
+        assertThat(mission.isPushTime(15)).isTrue();
     }
 }
