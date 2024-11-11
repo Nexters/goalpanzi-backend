@@ -81,6 +81,10 @@ public class Member extends BaseEntity {
         this.characterType = characterType;
     }
 
+    public void updateDeviceToken(final String deviceToken) {
+        this.deviceToken = deviceToken;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
