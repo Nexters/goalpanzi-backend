@@ -5,9 +5,8 @@ import jakarta.validation.constraints.NotEmpty;
 
 public record AppleLoginCommand(
         @Schema(description = "애플 ID 토큰", requiredMode = Schema.RequiredMode.REQUIRED)
-        @NotEmpty String identityToken
-//        TODO 추후 활성화
-//        @Schema(description = "deviceToken", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-//        String deviceToken
+        @NotEmpty String identityToken,
+        @Schema(description = "deviceToken", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        String deviceToken
 ) {
 }

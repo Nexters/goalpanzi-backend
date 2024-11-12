@@ -5,9 +5,8 @@ import jakarta.validation.constraints.NotEmpty;
 
 public record GoogleLoginCommand(
         @Schema(description = "이메일", requiredMode = Schema.RequiredMode.REQUIRED)
-        @NotEmpty String email
-//        TODO 추후 활성화
-//        @Schema(description = "deviceToken", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-//        String deviceToken
+        @NotEmpty String email,
+        @Schema(description = "deviceToken", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        String deviceToken
 ) {
 }

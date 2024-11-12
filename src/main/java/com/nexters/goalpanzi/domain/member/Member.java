@@ -36,29 +36,14 @@ public class Member extends BaseEntity {
     @Column(name = "character_type")
     private CharacterType characterType;
 
-    // TODO
     @Column(name = "device_token")
     private String deviceToken;
-
-    private Member(final String socialId, final String email, final SocialType socialType) {
-        this.socialId = socialId;
-        this.email = email;
-        this.socialType = socialType;
-    }
 
     private Member(final String socialId, final String email, final SocialType socialType, final String deviceToken) {
         this.socialId = socialId;
         this.email = email;
         this.socialType = socialType;
         this.deviceToken = deviceToken;
-    }
-
-    public static Member socialLogin(final String socialId, final String email, final SocialType socialType) {
-        if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException("사용자 정보가 올바르지 않습니다.");
-        }
-
-        return new Member(socialId, email, socialType);
     }
 
     public static Member socialLogin(final String socialId, final String email, final SocialType socialType, final String deviceToken) {
