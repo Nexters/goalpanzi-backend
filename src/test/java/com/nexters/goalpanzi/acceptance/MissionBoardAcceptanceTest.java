@@ -31,17 +31,17 @@
 //    void 보드판_정보를_조회한다() {
 //        when(objectStorageClient.uploadFile(any(MultipartFile.class))).thenReturn(UPLOADED_IMAGE_URL);
 //
-//        LoginResponse hostLogin = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+//        LoginResponse hostLogin = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST, DEVICE_TOKEN)).as(LoginResponse.class);
 //        프로필_설정(new UpdateProfileRequest(NICKNAME_HOST, CHARACTER_HOST), hostLogin.accessToken());
 //        MissionDetailResponse mission = 미션_생성(hostLogin.accessToken()).as(MissionDetailResponse.class);
 //        미션_인증(IMAGE_FILE, mission.missionId(), hostLogin.accessToken());
 //
-//        LoginResponse memberALogin = 구글_로그인(new GoogleLoginCommand(EMAIL_MEMBER_A)).as(LoginResponse.class);
+//        LoginResponse memberALogin = 구글_로그인(new GoogleLoginCommand(EMAIL_MEMBER_A, DEVICE_TOKEN)).as(LoginResponse.class);
 //        프로필_설정(new UpdateProfileRequest(NICKNAME_MEMBER_A, CHARACTER_MEMBER_A), memberALogin.accessToken());
 //        미션_참여(mission.invitationCode(), memberALogin.accessToken());
 //        미션_인증(IMAGE_FILE, mission.missionId(), memberALogin.accessToken());
 //
-//        LoginResponse memberBLogin = 구글_로그인(new GoogleLoginCommand(EMAIL_MEMBER_B)).as(LoginResponse.class);
+//        LoginResponse memberBLogin = 구글_로그인(new GoogleLoginCommand(EMAIL_MEMBER_B, DEVICE_TOKEN)).as(LoginResponse.class);
 //        프로필_설정(new UpdateProfileRequest(NICKNAME_MEMBER_B, CHARACTER_MEMBER_B), memberBLogin.accessToken());
 //        미션_참여(mission.invitationCode(), memberBLogin.accessToken());
 //
@@ -69,12 +69,12 @@
 ////    void 내가_참여하지_않은_미션의_보드판을_조회할_수_없다() {
 ////        when(objectStorageClient.uploadFile(any(MultipartFile.class))).thenReturn(UPLOADED_IMAGE_URL);
 ////
-////        LoginResponse memberALogin = 구글_로그인(new GoogleLoginCommand(EMAIL_MEMBER_A)).as(LoginResponse.class);
+////        LoginResponse memberALogin = 구글_로그인(new GoogleLoginCommand(EMAIL_MEMBER_A, DEVICE_TOKEN)).as(LoginResponse.class);
 ////        CreateMissionRequest missionRequest = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(), LocalDateTime.now().plusDays(1), TimeOfDay.EVERYDAY, WEEK, 1);
 ////        프로필_설정(new UpdateProfileRequest(NICKNAME_MEMBER_A, CHARACTER_MEMBER_A), memberALogin.accessToken());
 ////        MissionDetailResponse mission = 미션_생성(missionRequest, memberALogin.accessToken()).as(MissionDetailResponse.class);
 ////
-////        LoginResponse memberBLogin = 구글_로그인(new GoogleLoginCommand(EMAIL_MEMBER_B)).as(LoginResponse.class);
+////        LoginResponse memberBLogin = 구글_로그인(new GoogleLoginCommand(EMAIL_MEMBER_B, DEVICE_TOKEN)).as(LoginResponse.class);
 ////
 ////        ExtractableResponse<Response> response = 보드판_조회(mission.missionId(), memberBLogin.accessToken());
 ////

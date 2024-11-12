@@ -27,7 +27,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 프로필을_설정한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST, DEVICE_TOKEN)).as(LoginResponse.class);
         프로필_설정(new UpdateProfileRequest(NICKNAME_HOST, CHARACTER_HOST), login.accessToken());
 
         Member actual = memberRepository.getMember(login.memberId());
@@ -39,7 +39,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 프로필을_조회한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST, DEVICE_TOKEN)).as(LoginResponse.class);
         프로필_설정(new UpdateProfileRequest(NICKNAME_HOST, CHARACTER_HOST), login.accessToken());
 
         ProfileResponse actual = RestAssured.given().log().all()
@@ -59,7 +59,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 회원이_탈퇴한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST, DEVICE_TOKEN)).as(LoginResponse.class);
         MissionDetailResponse mission = 미션_생성(login.accessToken()).as(MissionDetailResponse.class);
 
         RestAssured.given().log().all()
