@@ -3,13 +3,12 @@ package com.nexters.goalpanzi.presentation.auth;
 import com.nexters.goalpanzi.application.auth.AuthService;
 import com.nexters.goalpanzi.application.auth.dto.request.AppleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
-import com.nexters.goalpanzi.application.auth.dto.request.RefreshTokenCommand;
 import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
 import com.nexters.goalpanzi.application.auth.dto.response.TokenResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
+import com.nexters.goalpanzi.presentation.auth.dto.ReissueTokenRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -56,10 +55,10 @@ public class AuthController implements AuthControllerDocs {
     @Override
     @PostMapping("/token:reissue")
     public ResponseEntity<TokenResponse> reissueToken(
-            @RequestBody @Valid final RefreshTokenCommand refreshTokenCommand,
+            @RequestBody @Valid final ReissueTokenRequest request,
             @LoginMemberId final Long memberId
     ) {
-        TokenResponse tokenResponse = authService.reissueToken(memberId, refreshTokenCommand.refreshToken());
+        TokenResponse tokenResponse = authService.reissueToken(request.toServiceDto(memberId));
 
         return ResponseEntity.ok(tokenResponse);
     }

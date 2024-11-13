@@ -2,6 +2,7 @@ package com.nexters.goalpanzi.application.auth;
 
 import com.nexters.goalpanzi.application.auth.dto.request.AppleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
+import com.nexters.goalpanzi.application.auth.dto.request.ReissueTokenCommand;
 import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
 import com.nexters.goalpanzi.application.auth.dto.response.TokenResponse;
 import com.nexters.goalpanzi.application.auth.google.GoogleIdentityToken;
@@ -73,14 +74,14 @@ public class AuthService {
         refreshTokenRepository.delete(memberId.toString());
     }
 
-    public TokenResponse reissueToken(final Long memberId, final String refreshToken) {
-        // TODO : 토큰 만료기간 이슈로 무조건 재발급
-//        if (memberId == 104) {
-//            validateRefreshToken(memberId, refreshToken);
+    public TokenResponse reissueToken(final ReissueTokenCommand command) {
+//         TODO : 토큰 만료기간 이슈로 무조건 재발급
+//        if (command.memberId() == 104) {
+//            validateRefreshToken(command.memberId(), command.refreshToken());
 //        }
 
-        Jwt jwt = jwtProvider.generateTokens(memberId.toString());
-        refreshTokenRepository.save(memberId.toString(), jwt.refreshToken(), jwt.refreshExpiresIn());
+        Jwt jwt = jwtProvider.generateTokens(command.memberId().toString());
+        refreshTokenRepository.save(command.memberId().toString(), jwt.refreshToken(), jwt.refreshExpiresIn());
 
         return new TokenResponse(jwt.accessToken(), jwt.refreshToken());
     }
