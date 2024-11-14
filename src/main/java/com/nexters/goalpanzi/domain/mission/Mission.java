@@ -155,7 +155,9 @@ public class Mission extends BaseEntity {
     // 현재 시간이 미션 시작 예고 시간인지 검증
     // 미션 시작 예고 시간 == 미션 시작 1시간 전
     public boolean isReadyTime() {
-        LocalDateTime startTime = LocalDateTime.of(this.missionStartDate.toLocalDate(), LocalTime.parse(this.uploadStartTime));
+        LocalDateTime startTime = TimeUtil.combineDateAndTime(
+                missionStartDate, LocalTime.parse(uploadStartTime)
+        );
         Duration duration = Duration.between(startTime, LocalDate.now());
 
         return duration.isNegative() && duration.toHours() <= 1;
@@ -165,10 +167,10 @@ public class Mission extends BaseEntity {
     // 1. 인증 시간이 오전인 경우, 09시에 푸시
     // 2. 인증 시간이 오후이거나 종일인 경우, 15시에 푸시
     public boolean isPushTime(final int hour) {
-        if (this.uploadStartTime.equals(TimeOfDay.MORNING.getStartTime())) {
+        if (uploadStartTime.equals(TimeOfDay.MORNING.getStartTime())) {
             return hour == PushTime.MORNING.getHour();
         }
-        if (this.uploadStartTime.equals(TimeOfDay.AFTERNOON.getStartTime())) {
+        if (uploadStartTime.equals(TimeOfDay.AFTERNOON.getStartTime())) {
             return hour == PushTime.AFTERNOON.getHour();
         }
         return hour == PushTime.EVERYDAY.getHour();
