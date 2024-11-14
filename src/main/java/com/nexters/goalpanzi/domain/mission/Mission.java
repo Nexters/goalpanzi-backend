@@ -167,10 +167,10 @@ public class Mission extends BaseEntity {
     // 1. 인증 시간이 오전인 경우, 09시에 푸시
     // 2. 인증 시간이 오후이거나 종일인 경우, 15시에 푸시
     public boolean isPushTime(final int hour) {
-        if (uploadStartTime.equals(TimeOfDay.MORNING.getStartTime())) {
+        if (uploadStartTime.equals(TimeOfDay.MORNING.getStartTime()) && uploadEndTime.equals(TimeOfDay.MORNING.getEndTime())) {
             return hour == PushTime.MORNING.getHour();
         }
-        if (uploadStartTime.equals(TimeOfDay.AFTERNOON.getStartTime())) {
+        if (uploadStartTime.equals(TimeOfDay.AFTERNOON.getStartTime()) && uploadEndTime.equals(TimeOfDay.AFTERNOON.getEndTime())) {
             return hour == PushTime.AFTERNOON.getHour();
         }
         return hour == PushTime.EVERYDAY.getHour();
