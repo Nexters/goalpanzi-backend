@@ -158,7 +158,7 @@ public class Mission extends BaseEntity {
         LocalDateTime startTime = TimeUtil.combineDateAndTime(
                 missionStartDate, LocalTime.parse(uploadStartTime)
         );
-        Duration duration = Duration.between(startTime, LocalDate.now());
+        Duration duration = Duration.between(startTime, LocalDateTime.now());
 
         return duration.isNegative() && duration.toHours() <= 1;
     }
