@@ -5,17 +5,16 @@ import com.nexters.goalpanzi.application.mission.dto.response.MissionBoardRespon
 import com.nexters.goalpanzi.application.mission.dto.response.MissionBoardsResponse;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
-import com.nexters.goalpanzi.domain.mission.MemberRanks;
-import com.nexters.goalpanzi.domain.mission.Mission;
-import com.nexters.goalpanzi.domain.mission.MissionMember;
-import com.nexters.goalpanzi.domain.mission.MissionMembers;
+import com.nexters.goalpanzi.domain.mission.*;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
+import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,15 +22,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class MissionBoardService {
 
     private final MissionRepository missionRepository;
     private final MissionMemberRepository missionMemberRepository;
+    private final MissionVerificationRepository missionVerificationRepository;
     private final MemberRepository memberRepository;
 
-    @Transactional(readOnly = true)
     public MissionBoardsResponse getBoard(final MissionBoardQuery query) {
         Member member = memberRepository.getMember(query.memberId());
         Mission mission = missionRepository.getMission(query.missionId());
@@ -45,7 +45,7 @@ public class MissionBoardService {
         }
 
         return new MissionBoardsResponse(
-                missionMembers.getProgressCount(),
+                getProgressCount(query.missionId()),
                 MemberRanks.from(missionMembers.getMissionMembers()).getRankByMember(member).rank(),
                 boards);
     }
@@ -87,5 +87,10 @@ public class MissionBoardService {
         return IntStream.range(0, boardCount + 1)
                 .boxed()
                 .collect(Collectors.toMap(i -> i, i -> new ArrayList<>()));
+    }
+
+    private int getProgressCount(final Long missionId) {
+        List<MissionVerification> missionVerifications = missionVerificationRepository.findAllByMissionIdAndDate(missionId, LocalDate.now());
+        return missionVerifications.size();
     }
 }

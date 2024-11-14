@@ -2,10 +2,10 @@ package com.nexters.goalpanzi.presentation.auth;
 
 import com.nexters.goalpanzi.application.auth.dto.request.AppleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
-import com.nexters.goalpanzi.application.auth.dto.request.RefreshTokenCommand;
 import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
 import com.nexters.goalpanzi.application.auth.dto.response.TokenResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
+import com.nexters.goalpanzi.presentation.auth.dto.ReissueTokenRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -64,7 +64,7 @@ public interface AuthControllerDocs {
     })
     @PostMapping("/token:reissue")
     ResponseEntity<TokenResponse> reissueToken(
-            @RequestBody @Valid final RefreshTokenCommand refreshTokenCommand,
+            @RequestBody @Valid final ReissueTokenRequest request,
             @Parameter(hidden = true) @LoginMemberId final Long memberId
     );
 }
