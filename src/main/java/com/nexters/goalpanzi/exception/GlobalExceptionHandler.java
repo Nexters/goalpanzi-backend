@@ -73,12 +73,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), exception.getMessage(), exception.getErrorCode()));
     }
 
-    @ExceptionHandler({BadRequestException.class, IllegalArgumentException.class})
-    public ResponseEntity<ErrorResponse> handleBadRequestException(final RuntimeException exception) {
+    @ExceptionHandler({IllegalArgumentException.class})
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(final IllegalArgumentException exception) {
         logger.error("message", exception);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage(), ErrorCode.BAD_REQUEST));
+    }
+
+    @ExceptionHandler({BadRequestException.class})
+    public ResponseEntity<ErrorResponse> handleBadRequestException(final BadRequestException exception) {
+        logger.error("message", exception);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage(), exception.getErrorCode()));
     }
 
     @ExceptionHandler({NoSuchElementException.class})

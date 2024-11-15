@@ -1,5 +1,7 @@
 package com.nexters.goalpanzi.domain.mission;
 
+import com.nexters.goalpanzi.exception.BadRequestException;
+import com.nexters.goalpanzi.exception.BaseException;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -61,6 +63,6 @@ public enum MissionStatus {
             return COMPLETED;
         }
 
-        throw new IllegalArgumentException(UNKNOWN_MISSION.getMessage(mission, missionMember));
+        throw new BaseException(UNKNOWN_MISSION, mission.getId(), missionMember.getMember().getId());
     }
 }
