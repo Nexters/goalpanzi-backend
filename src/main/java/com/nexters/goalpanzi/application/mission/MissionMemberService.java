@@ -65,7 +65,7 @@ public class MissionMemberService {
     private void validateAlreadyJoin(final Member member, final Mission mission) {
         missionMemberRepository.findByMemberIdAndMissionId(member.getId(), mission.getId())
                 .ifPresent(missionMember -> {
-                    throw new AlreadyExistsException(ErrorCode.ALREADY_EXISTS_MISSION_MEMBER.toString());
+                    throw new AlreadyExistsException(ErrorCode.ALREADY_EXISTS_MISSION_MEMBER);
                 });
     }
 

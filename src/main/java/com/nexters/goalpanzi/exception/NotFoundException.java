@@ -3,14 +3,10 @@ package com.nexters.goalpanzi.exception;
 public class NotFoundException extends BaseException {
 
     public NotFoundException(final ErrorCode errorCode) {
-        super(errorCode.getMessage());
+        super(errorCode);
     }
 
     public NotFoundException(final ErrorCode errorCode, final Object... args) {
-        super(errorCode.getMessage(args));
-    }
-
-    public NotFoundException(final String message) {
-        super(message);
+        super(errorCode, errorCode.getMessage(args));
     }
 }

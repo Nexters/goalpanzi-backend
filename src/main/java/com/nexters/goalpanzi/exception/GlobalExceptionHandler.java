@@ -26,7 +26,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             WebRequest request) {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), ErrorCode.BAD_REQUEST));
     }
 
     @Override
@@ -38,7 +38,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         logger.error("message", ex);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), ErrorCode.BAD_REQUEST));
     }
 
     @Override
@@ -50,7 +50,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         logger.error("message", ex);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), ErrorCode.BAD_REQUEST));
     }
 
     @Override
@@ -62,15 +62,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         logger.error("message", ex);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), ErrorCode.BAD_REQUEST));
     }
 
     @ExceptionHandler({UnauthorizedException.class})
-    public ResponseEntity<ErrorResponse> handleUnauthorizedException(final RuntimeException exception) {
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException(final UnauthorizedException exception) {
         logger.error("message", exception);
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), exception.getMessage()));
+                .body(new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), exception.getMessage(), exception.getErrorCode()));
     }
 
     @ExceptionHandler({BadRequestException.class, IllegalArgumentException.class})
@@ -78,31 +78,40 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         logger.error("message", exception);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage()));
+                .body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage(), ErrorCode.BAD_REQUEST));
     }
 
-    @ExceptionHandler({NoSuchElementException.class, NotFoundException.class})
-    public ResponseEntity<ErrorResponse> handleNotFoundException(final RuntimeException exception) {
+    @ExceptionHandler({NoSuchElementException.class})
+    public ResponseEntity<ErrorResponse> handleNoSuchElementException(final RuntimeException exception) {
         logger.error("message", exception);
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), exception.getMessage()));
+                .body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), exception.getMessage(), ErrorCode.RESOURCE_NOT_FOUND));
     }
+
+    @ExceptionHandler({NotFoundException.class})
+    public ResponseEntity<ErrorResponse> handleNotFoundException(final NotFoundException exception) {
+        logger.error("message", exception);
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(HttpStatus.NOT_FOUND.value(), exception.getMessage(), exception.getErrorCode()));
+    }
+
 
     @ExceptionHandler(AlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateException(final AlreadyExistsException exception) {
         logger.error("message", exception);
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse(HttpStatus.CONFLICT.value(), exception.getMessage()));
+                .body(new ErrorResponse(HttpStatus.CONFLICT.value(), exception.getMessage(), exception.getErrorCode()));
     }
 
     @ExceptionHandler({ForbiddenException.class})
-    public ResponseEntity<ErrorResponse> handleForbiddenException(final RuntimeException exception) {
+    public ResponseEntity<ErrorResponse> handleForbiddenException(final ForbiddenException exception) {
         logger.error("message", exception);
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(new ErrorResponse(HttpStatus.FORBIDDEN.value(), exception.getMessage()));
+                .body(new ErrorResponse(HttpStatus.FORBIDDEN.value(), exception.getMessage(), exception.getErrorCode()));
     }
 
     @ExceptionHandler(Exception.class)
@@ -110,6 +119,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         logger.error("message", exception);
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getMessage()));
+                .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getMessage(), ErrorCode.INTERNAL_SERVER_ERROR));
     }
 }
