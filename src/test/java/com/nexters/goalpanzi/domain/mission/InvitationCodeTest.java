@@ -1,5 +1,6 @@
 package com.nexters.goalpanzi.domain.mission;
 
+import com.nexters.goalpanzi.exception.BadRequestException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -19,6 +20,6 @@ class InvitationCodeTest {
     @ValueSource(strings = {"", "123738432849234"})
     void 참여코드가_올바르지_않은경우_에러가_발생한다(String code) {
         assertThatThrownBy(() -> new InvitationCode(code))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(BadRequestException.class);
     }
 }
