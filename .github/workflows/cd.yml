@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - refactor/#97-error-code
 
 jobs:
   build-and-push:
