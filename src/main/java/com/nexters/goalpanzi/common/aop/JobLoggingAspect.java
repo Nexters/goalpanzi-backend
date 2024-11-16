@@ -28,6 +28,6 @@ public class JobLoggingAspect {
         }
 
         stopWatch.stop();
-        log.info("{} finished. Elapsed time: {} ms", jobName, 0);
+        log.info("{} finished. Elapsed time: {} ms", jobName, stopWatch.getTime());
     }
 }
