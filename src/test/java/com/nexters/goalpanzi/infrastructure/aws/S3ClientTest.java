@@ -24,7 +24,5 @@ class S3ClientTest {
         String uploadedFileUrl = s3Client.uploadFile(IMAGE_FILE);
 
         assertThat(uploadedFileUrl).isEqualTo(UPLOADED_IMAGE_URL);
-
-        System.out.println(uploadedFileUrl);
     }
 }
