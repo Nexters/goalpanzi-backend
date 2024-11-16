@@ -7,4 +7,12 @@ public record CreateMissionVerificationCommand(
         Long missionId,
         MultipartFile imageFile
 ) {
+
+    @Override
+    public String toString() {
+        return "CreateMissionVerificationCommand{" +
+                "memberId=" + memberId +
+                ", missionId=" + missionId +
+                '}';
+    }
 }
