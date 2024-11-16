@@ -10,7 +10,4 @@ public class AlreadyExistsException extends BaseException {
         super(errorCode, args);
     }
 
-    public AlreadyExistsException(final String message) {
-        super(message);
-    }
 }

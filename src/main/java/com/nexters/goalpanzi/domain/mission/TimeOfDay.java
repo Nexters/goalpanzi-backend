@@ -1,5 +1,6 @@
 package com.nexters.goalpanzi.domain.mission;
 
+import com.nexters.goalpanzi.exception.BadRequestException;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -25,6 +26,6 @@ public enum TimeOfDay {
         return Arrays.stream(TimeOfDay.values())
                 .filter(timeOfDay -> timeOfDay.startTime.equals(startTime) && timeOfDay.endTime.equals(endTime))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(INVALID_UPLOAD_TIME_OF_DAY.getMessage()));
+                .orElseThrow(() -> new BadRequestException(INVALID_UPLOAD_TIME_OF_DAY));
     }
 }

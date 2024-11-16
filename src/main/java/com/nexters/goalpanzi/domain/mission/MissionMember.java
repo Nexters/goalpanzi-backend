@@ -2,6 +2,7 @@ package com.nexters.goalpanzi.domain.mission;
 
 import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.member.Member;
+import com.nexters.goalpanzi.exception.BadRequestException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -62,7 +63,7 @@ public class MissionMember extends BaseEntity {
 
     public static MissionMember join(final Member member, final Mission mission) {
         if (mission.isMissionPeriod()) {
-            throw new IllegalArgumentException(CAN_NOT_JOIN_MISSION.toString());
+            throw new BadRequestException(CAN_NOT_JOIN_MISSION);
         }
         return new MissionMember(member, mission, 0);
     }

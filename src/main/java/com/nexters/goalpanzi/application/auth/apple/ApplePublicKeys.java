@@ -1,5 +1,6 @@
 package com.nexters.goalpanzi.application.auth.apple;
 
+import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.UnauthorizedException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,6 @@ public class ApplePublicKeys {
                 .stream()
                 .filter(k -> k.alg().equals(alg) && k.kid().equals(kid))
                 .findFirst()
-                .orElseThrow(() -> new UnauthorizedException("Apple JWT 값의 alg, kid 정보가 올바르지 않습니다."));
+                .orElseThrow(() -> new UnauthorizedException(ErrorCode.INVALID_APPLE_TOKEN_FORMAT));
     }
 }

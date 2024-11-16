@@ -8,9 +8,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public enum ErrorCode {
-    // AUTH
+    // GENERAL
+    INTERNAL_SERVER_ERROR("일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요."),
+    BAD_REQUEST("잘못된 요청입니다."),
+    UNAUTHORIZED("권한이 없습니다."),
+    RESOURCE_NOT_FOUND("리소스를 찾을 수 없습니다."),
+
+    // OAUTH
     INVALID_APPLE_TOKEN("애플 토큰 검증에 실패하였습니다."),
     EXPIRED_APPLE_TOKEN("애플 토큰이 만료되었습니다."),
+    CAN_NOT_CREATE_PUBLIC_KEY("응답 받은 Apple Public Key로 PublicKey를 생성할 수 없습니다."),
+    INVALID_APPLE_TOKEN_FORMAT("Apple JWT 값의 alg, kid 정보가 올바르지 않습니다."),
 
     INVALID_TOKEN("서버 토큰 검증에 실패하였습니다."),
     INVALID_REFRESH_TOKEN("refresh 토큰이 갱신되어 더 이상 유효하지 않은 refresh 토큰입니다."),
@@ -25,7 +33,7 @@ public enum ErrorCode {
     INVALID_INVITATION_CODE("초대코드가 올바르지 않습니다."),
     INVALID_UPLOAD_TIME_OF_DAY("올바르지 않은 미션 인증 업로드 시간대입니다."),
     CANNOT_DELETE_MISSION("미션 삭제 권한이 없습니다."),
-    UNKNOWN_MISSION("정의되지 않은 미션상태입니다."),
+    UNKNOWN_MISSION("정의되지 않은 미션상태입니다. [missionId=%s, memberId=%s]"),
 
     // MISSION MEMBER
     ALREADY_EXISTS_MISSION_MEMBER("이미 참여한 미션입니다. [%s]"),

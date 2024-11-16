@@ -1,5 +1,6 @@
 package com.nexters.goalpanzi.domain.mission;
 
+import com.nexters.goalpanzi.exception.BadRequestException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -44,7 +45,7 @@ public class InvitationCode {
 
     private void validate() {
         if (!StringUtils.hasText(code) || this.code.length() != CODE_LENGTH) {
-            throw new IllegalArgumentException(INVALID_INVITATION_CODE.getMessage());
+            throw new BadRequestException(INVALID_INVITATION_CODE);
         }
     }
 

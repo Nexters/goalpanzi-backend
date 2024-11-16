@@ -22,20 +22,20 @@ public class MissionValidator {
 
     public void validateJoinableMission(final InvitationCode invitationCode) {
         Mission mission = missionRepository.findByInvitationCode(invitationCode)
-                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MISSION.toString()));
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MISSION));
         validateMissionPeriod(mission);
         validateMaxPersonnel(mission);
     }
 
     public void validateMaxPersonnel(final Mission mission) {
         if (getMissionMemberSize(mission.getId()) > MAX_MISSION_MEMBER) {
-            throw new BadRequestException(ErrorCode.EXCEED_MAX_PERSONNEL.toString());
+            throw new BadRequestException(ErrorCode.EXCEED_MAX_PERSONNEL);
         }
     }
 
     public void validateMissionPeriod(final Mission mission) {
         if (mission.isMissionPeriod() || mission.isExpired()) {
-            throw new BadRequestException(ErrorCode.CAN_NOT_JOIN_MISSION.toString());
+            throw new BadRequestException(ErrorCode.CAN_NOT_JOIN_MISSION);
         }
     }
 

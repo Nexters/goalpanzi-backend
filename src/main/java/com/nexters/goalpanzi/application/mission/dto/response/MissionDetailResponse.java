@@ -2,6 +2,7 @@ package com.nexters.goalpanzi.application.mission.dto.response;
 
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.Mission;
+import com.nexters.goalpanzi.domain.mission.MissionStatus;
 import com.nexters.goalpanzi.domain.mission.TimeOfDay;
 import io.swagger.v3.oas.annotations.media.Schema;
 
