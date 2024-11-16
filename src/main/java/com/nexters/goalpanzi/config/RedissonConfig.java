@@ -7,23 +7,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+
+import java.io.IOException;
 
 @ConditionalOnProperty(name = "spring.data.redis.redisson.enabled", havingValue = "true")
 @Configuration
 public class RedissonConfig {
 
-    private static final String PREFIX = "redis://";
-
-    @Value("${spring.data.redis.host}")
-    private String host;
-
-    @Value("${spring.data.redis.port}")
-    private String port;
+    @Value("${spring.data.redis.redisson.file}")
+    private Resource redissonConfigFile;
 
     @Bean
-    public RedissonClient redissonClient() {
-        Config config = new Config();
-        config.useSingleServer().setAddress(PREFIX + host + ":" + port);
+    public RedissonClient redissonClient() throws IOException {
+        Config config = Config.fromYAML(redissonConfigFile.getInputStream());
 
         return Redisson.create(config);
     }

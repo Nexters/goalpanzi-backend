@@ -1,0 +1,2 @@
+singleServerConfig:
+  address: "redis://${REDIS_HOST:-localhost}:6379"
