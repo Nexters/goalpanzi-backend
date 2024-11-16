@@ -8,6 +8,7 @@ import com.nexters.goalpanzi.application.mission.dto.request.ViewMissionVerifica
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationsResponse;
 import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
+import com.nexters.goalpanzi.common.annotation.RedissonLock;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.firebase.PushNotificationMessage;
 import com.nexters.goalpanzi.domain.member.Member;
@@ -65,6 +66,7 @@ public class MissionVerificationService {
         return MissionVerificationResponse.verified(verification.getMember(), verification, null);
     }
 
+    @RedissonLock("MissionVerification")
     @Transactional
     public void createVerification(final CreateMissionVerificationCommand command) {
         MissionMember missionMember = missionMemberRepository.getMissionMember(command.memberId(), command.missionId());
