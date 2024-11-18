@@ -22,7 +22,7 @@ public class RedissonLockAspect {
     private final RedissonClient redissonClient;
 
     @Around("@annotation(com.nexters.goalpanzi.common.annotation.RedissonLock)")
-    public void lockMissionVerification(final ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object lockMissionVerification(final ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         String methodName = methodSignature.getName();
         RedissonLock annotation = methodSignature.getMethod().getAnnotation(RedissonLock.class);
@@ -42,5 +42,7 @@ public class RedissonLockAspect {
 
         lock.unlock();
         log.info("{} released {} lock with key: {}.", methodName, lockTarget, lockKey);
+        
+        return joinPoint;
     }
 }
