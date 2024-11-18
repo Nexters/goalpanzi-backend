@@ -96,7 +96,10 @@ public class MissionVerificationService {
         MissionVerification missionVerification = missionVerificationRepository.findById(command.missionVerificationId())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_VERIFICATION));
 
-        missionVerificationViewRepository.save(new MissionVerificationView(missionVerification, member));
+        MissionVerificationView missionVerificationView = missionVerificationViewRepository.getMissionVerificationView(command.missionVerificationId(), command.memberId());
+        if (missionVerificationView == null) {
+            missionVerificationViewRepository.save(new MissionVerificationView(missionVerification, member));
+        }
     }
 
     @Transactional
