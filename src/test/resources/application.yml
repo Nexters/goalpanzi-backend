@@ -11,10 +11,8 @@ spring:
         use_sql_comments: true
         highlight_sql: true
     open-in-view: false
-  data:
-    redis:
-      redisson:
-        enabled: false
+  redisson:
+    enabled: false
   flyway:
     enabled: false
 

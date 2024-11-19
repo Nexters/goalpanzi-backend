@@ -11,17 +11,16 @@ import org.springframework.core.io.Resource;
 
 import java.io.IOException;
 
-@ConditionalOnProperty(name = "spring.data.redis.redisson.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "spring.redisson.enabled", havingValue = "true")
 @Configuration
 public class RedissonConfig {
 
-    @Value("${spring.data.redis.redisson.file}")
+    @Value("${spring.redisson.file}")
     private Resource redissonConfigFile;
 
     @Bean
     public RedissonClient redissonClient() throws IOException {
         Config config = Config.fromYAML(redissonConfigFile.getInputStream());
-
         return Redisson.create(config);
     }
 }

@@ -1,8 +1,10 @@
 package com.nexters.goalpanzi.application.auth.apple;
 
+import com.nexters.goalpanzi.config.redis.RedisInitializer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 
@@ -10,6 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
+@ContextConfiguration(
+        initializers = {RedisInitializer.class}
+)
 class AppleApiCallerTest {
 
     @Autowired
