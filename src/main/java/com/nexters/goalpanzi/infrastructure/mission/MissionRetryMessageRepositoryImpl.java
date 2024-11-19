@@ -18,8 +18,8 @@ public class MissionRetryMessageRepositoryImpl implements MissionRetryMessageRep
     private final RedisTemplate<String, String> redisTemplate;
 
     public void save(String memberId, String deviceToken, long ttl) {
-        LocalDate sendDate = LocalDate.now().plusDays(7);
-        String key = makeKey(sendDate, memberId);
+        LocalDate pushDate = computePushDate();
+        String key = makeKey(pushDate, memberId);
         redisTemplate.opsForValue().set(key, deviceToken, Duration.ofMillis(ttl));
     }
 
@@ -29,7 +29,6 @@ public class MissionRetryMessageRepositoryImpl implements MissionRetryMessageRep
         if (keys.isEmpty()) {
             return null;
         }
-        System.out.println(keys);
         String key = String.valueOf(keys.iterator().next());
         return redisTemplate.opsForValue().get(key);
     }
@@ -44,20 +43,24 @@ public class MissionRetryMessageRepositoryImpl implements MissionRetryMessageRep
         return redisTemplate.delete(key);
     }
 
-    public Set<String> keys(LocalDate sendDate) {
-        String pattern = makeAnyMemberPattern(sendDate);
+    public Set<String> keys(LocalDate pushDate) {
+        String pattern = makeAnyMemberPattern(pushDate);
         return redisTemplate.keys(pattern);
     }
 
-    private String makeKey(LocalDate sendDate, String memberId) {
-        return MISSION_RETRY_MESSAGE_PREFIX + sendDate + ":" + memberId;
+    private String makeKey(LocalDate pushDate, String memberId) {
+        return MISSION_RETRY_MESSAGE_PREFIX + pushDate + ":" + memberId;
     }
 
     private String makeAnyDatePattern(String memberId) {
         return MISSION_RETRY_MESSAGE_PREFIX + "*:" + memberId;
     }
 
-    private String makeAnyMemberPattern(LocalDate sendDate) {
-        return MISSION_RETRY_MESSAGE_PREFIX + sendDate + ":*";
+    private String makeAnyMemberPattern(LocalDate pushDate) {
+        return MISSION_RETRY_MESSAGE_PREFIX + pushDate + ":*";
+    }
+
+    private LocalDate computePushDate() {
+        return LocalDate.now().plusDays(7);
     }
 }
