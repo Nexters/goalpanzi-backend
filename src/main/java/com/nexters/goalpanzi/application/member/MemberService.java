@@ -2,6 +2,7 @@ package com.nexters.goalpanzi.application.member;
 
 import com.nexters.goalpanzi.application.member.dto.request.UpdateDeviceTokenCommand;
 import com.nexters.goalpanzi.application.member.dto.request.UpdateProfileCommand;
+import com.nexters.goalpanzi.application.member.dto.request.UpdatePushActivationStatusCommand;
 import com.nexters.goalpanzi.application.member.dto.response.ProfileResponse;
 import com.nexters.goalpanzi.application.member.event.DeleteMemberEvent;
 import com.nexters.goalpanzi.application.member.event.UpdateDeviceTokenEvent;
@@ -59,6 +60,16 @@ public class MemberService {
         Member member = memberRepository.getMember(command.memberId());
 
         member.updateDeviceToken(command.deviceToken());
+        member.updatePushActivationStatus(true);
         eventPublisher.publishEvent(new UpdateDeviceTokenEvent(command.memberId(), command.deviceToken()));
+    }
+
+    @Transactional
+    public void updatePushActivationStatus(final UpdatePushActivationStatusCommand command) {
+        Member member = memberRepository.getMember(command.memberId());
+
+        member.updatePushActivationStatus(command.pushActivationStatus());
+//        TODO
+//        eventPublisher.publishEvent();
     }
 }

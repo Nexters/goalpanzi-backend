@@ -4,6 +4,7 @@ import com.nexters.goalpanzi.application.member.dto.response.ProfileResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import com.nexters.goalpanzi.presentation.member.dto.UpdateDeviceTokenRequest;
 import com.nexters.goalpanzi.presentation.member.dto.UpdateProfileRequest;
+import com.nexters.goalpanzi.presentation.member.dto.UpdatePushActivationStatusRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -17,12 +18,12 @@ public interface MemberControllerDocs {
 
     @Operation(summary = "프로필 조회", description = "캐릭터, 닉네임을 조회합니다.")
     ResponseEntity<ProfileResponse> getProfile(
-            @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long userId
+            @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long memberId
     );
 
     @Operation(summary = "프로필 설정", description = "캐릭터, 닉네임을 설정합니다.")
     ResponseEntity<Void> updateProfile(
-            @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long userId,
+            @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long memberId,
             @RequestBody @Valid final UpdateProfileRequest request
     );
 
@@ -33,7 +34,13 @@ public interface MemberControllerDocs {
 
     @Operation(summary = "디바이스 토큰 갱신")
     ResponseEntity<Void> updateDeviceToken(
-            @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long userId,
+            @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long memberId,
             @RequestBody @Valid final UpdateDeviceTokenRequest request
+    );
+
+    @Operation(summary = "푸시 알림 활성화 상태 변경")
+    ResponseEntity<Void> updatePushActivationStatus(
+            @Parameter(in = ParameterIn.HEADER, hidden = true) @LoginMemberId final Long memberId,
+            @RequestBody @Valid final UpdatePushActivationStatusRequest request
     );
 }

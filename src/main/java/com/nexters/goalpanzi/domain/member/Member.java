@@ -39,6 +39,9 @@ public class Member extends BaseEntity {
     @Column(name = "device_token")
     private String deviceToken;
 
+    @Column(name = "push_activation_status", nullable = false)
+    private Boolean pushActivationStatus;
+
     private Member(final String socialId, final String email, final SocialType socialType, final String deviceToken) {
         this.socialId = socialId;
         this.email = email;
@@ -68,6 +71,10 @@ public class Member extends BaseEntity {
 
     public void updateDeviceToken(final String deviceToken) {
         this.deviceToken = deviceToken;
+    }
+
+    public void updatePushActivationStatus(final Boolean pushActivationStatus) {
+        this.pushActivationStatus = pushActivationStatus;
     }
 
     @Override

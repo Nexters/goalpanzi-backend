@@ -5,6 +5,7 @@ import com.nexters.goalpanzi.application.member.dto.response.ProfileResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import com.nexters.goalpanzi.presentation.member.dto.UpdateDeviceTokenRequest;
 import com.nexters.goalpanzi.presentation.member.dto.UpdateProfileRequest;
+import com.nexters.goalpanzi.presentation.member.dto.UpdatePushActivationStatusRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +56,17 @@ public class MemberController implements MemberControllerDocs {
             final UpdateDeviceTokenRequest request
     ) {
         memberService.updateDeviceToken(request.toServiceDto(memberId));
+
+        return ResponseEntity.ok().build();
+    }
+
+    @Override
+    @PatchMapping("/push-activation-status")
+    public ResponseEntity<Void> updatePushActivationStatus(
+            @LoginMemberId final Long memberId,
+            @RequestBody @Valid final UpdatePushActivationStatusRequest request
+    ) {
+        memberService.updatePushActivationStatus(request.toServiceDto(memberId));
 
         return ResponseEntity.ok().build();
     }
