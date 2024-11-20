@@ -1,6 +1,7 @@
 package com.nexters.goalpanzi.common.aop;
 
 import com.nexters.goalpanzi.common.annotation.RedissonLock;
+import com.nexters.goalpanzi.exception.BaseException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.infrastructure.redisson.LockKey;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class RedissonLockAspect {
 
         boolean lockable = lock.tryLock(annotation.waitTime(), annotation.timeUnit());
         if (!lockable) {
-            throw new RuntimeException(ErrorCode.FAILED_TO_ACQUIRE_REDISSON_LOCK.getMessage());
+            throw new BaseException(ErrorCode.FAILED_TO_ACQUIRE_REDISSON_LOCK);
         }
         log.info("{} acquired {} lock with key: {}.", methodName, lockTarget, lockKey);
 
@@ -42,7 +43,7 @@ public class RedissonLockAspect {
 
         lock.unlock();
         log.info("{} released {} lock with key: {}.", methodName, lockTarget, lockKey);
-        
+
         return joinPoint;
     }
 }
