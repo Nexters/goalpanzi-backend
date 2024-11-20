@@ -15,22 +15,22 @@ public class RefreshTokenRepositoryImpl implements RefreshTokenRepository {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void save(String altKey, String refreshToken, long ttl) {
-        String key = makeKey(altKey);
+    public void save(String memberId, String refreshToken, long ttl) {
+        String key = makeKey(memberId);
         redisTemplate.opsForValue().set(key, refreshToken, Duration.ofMillis(ttl));
     }
 
-    public String find(String altKey) {
-        String key = makeKey(altKey);
+    public String find(String memberId) {
+        String key = makeKey(memberId);
         return redisTemplate.opsForValue().get(key);
     }
 
-    public Boolean delete(String altKey) {
-        String key = makeKey(altKey);
+    public Boolean delete(String memberId) {
+        String key = makeKey(memberId);
         return redisTemplate.delete(key);
     }
 
-    private String makeKey(String altKey) {
-        return altKey + REFRESH_TOKEN_POSTFIX;
+    private String makeKey(String memberId) {
+        return memberId + REFRESH_TOKEN_POSTFIX;
     }
 }

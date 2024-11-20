@@ -11,19 +11,23 @@ import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.*;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
+import com.nexters.goalpanzi.domain.mission.repository.MissionRetryMessageRepository;
 import com.nexters.goalpanzi.exception.AlreadyExistsException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
 import com.nexters.goalpanzi.infrastructure.firebase.PushNotificationSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.redis.core.TimeoutUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
-import static com.nexters.goalpanzi.domain.firebase.PushNotificationMessage.MISSION_CANCELLATION_WARNING;
-import static com.nexters.goalpanzi.domain.firebase.PushNotificationMessage.MISSION_READY;
+import static com.nexters.goalpanzi.domain.firebase.PushNotificationMessage.*;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -35,6 +39,7 @@ public class MissionMemberService {
     private final MissionMemberRepository missionMemberRepository;
     private final MissionRepository missionRepository;
     private final MemberRepository memberRepository;
+    private final MissionRetryMessageRepository missionRetryMessageRepository;
 
     private final ApplicationEventPublisher eventPublisher;
     private final PushNotificationSender pushNotificationSender;
@@ -54,6 +59,7 @@ public class MissionMemberService {
 
         if (member.getDeviceToken() != null) {
             eventPublisher.publishEvent(new JoinMissionEvent(mission.getId(), member.getDeviceToken(), member.getNickname()));
+            cancelRetryPushMessage(member.getId());
         }
     }
 
@@ -114,10 +120,13 @@ public class MissionMemberService {
         missions.forEach(mission -> {
             List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(mission.getId());
             int memberCount = missionMembers.size();
-            missionMembers
-                    .forEach(missionMember -> {
-                        missionMember.updateMissionStatus(mission, memberCount);
-                    });
+            missionMembers.forEach(missionMember -> {
+                missionMember.updateMissionStatus(mission, memberCount);
+                Member member = missionMember.getMember();
+                if (missionMember.isCompleted() && member.getDeviceToken() != null) {
+                    reserveRetryPushMessage(member.getId(), member.getDeviceToken());
+                }
+            });
         });
     }
 
@@ -155,5 +164,27 @@ public class MissionMemberService {
                 );
             }
         });
+    }
+
+    @Transactional
+    public void sendRetryPushMessage() {
+        Set<String> keys = missionRetryMessageRepository.keys(LocalDate.now());
+        keys.forEach(key -> {
+            String deviceToken = missionRetryMessageRepository.find(key);
+            pushNotificationSender.sendGroupMessage(
+                    MISSION_RETRY.getTitle(),
+                    MISSION_RETRY.getBody(),
+                    deviceToken
+            );
+        });
+    }
+
+    private void reserveRetryPushMessage(final Long memberId, final String deviceToken) {
+        long ttl = TimeoutUtils.toMillis(8, TimeUnit.DAYS);
+        missionRetryMessageRepository.save(memberId.toString(), deviceToken, ttl);
+    }
+
+    private void cancelRetryPushMessage(final Long memberId) {
+        missionRetryMessageRepository.delete(memberId.toString());
     }
 }

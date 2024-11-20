@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,9 +24,20 @@ public interface MissionMemberRepository extends JpaRepository<MissionMember, Lo
     @Query("SELECT mm FROM MissionMember mm JOIN FETCH mm.mission WHERE mm.member.id = :memberId")
     List<MissionMember> findAllWithMissionByMemberId(final Long memberId);
 
+    Optional<MissionMember> findTop1ByMemberIdOrderByUpdatedAtDesc(final Long memberId);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     default MissionMember getMissionMember(final Long memberId, final Long missionId) {
         return findByMemberIdAndMissionId(memberId, missionId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_JOINED_MISSION_MEMBER));
+    }
+
+    default long getDaysAfterMissionCompletion(final Long memberId) {
+        Optional<MissionMember> missionMember = findTop1ByMemberIdOrderByUpdatedAtDesc(memberId);
+        if (missionMember.isEmpty() || !missionMember.get().isCompleted()) {
+            return 0L;
+        }
+        Duration duration = Duration.between(LocalDateTime.now(), missionMember.get().getUpdatedAt());
+        return duration.toDays();
     }
 }
