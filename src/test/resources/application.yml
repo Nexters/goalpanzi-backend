@@ -42,4 +42,3 @@ cloud:
 
 firebase:
   enabled: false
-  admin-sdk: --
