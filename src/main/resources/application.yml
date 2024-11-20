@@ -16,9 +16,6 @@ spring:
     redis:
       host: localhost
       port: 6379
-  redisson:
-    enabled: true
-    file: classpath:redisson-config.yml
   servlet:
     multipart:
       max-file-size: 5MB
