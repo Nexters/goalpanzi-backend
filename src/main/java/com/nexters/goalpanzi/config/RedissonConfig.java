@@ -3,24 +3,23 @@ package com.nexters.goalpanzi.config;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
 
-import java.io.IOException;
-
-@ConditionalOnProperty(name = "spring.redisson.enabled", havingValue = "true")
 @Configuration
 public class RedissonConfig {
 
-    @Value("${spring.redisson.file}")
-    private Resource redissonConfigFile;
+    private static final String HOST_PREFIX = "redis://";
 
     @Bean
-    public RedissonClient redissonClient() throws IOException {
-        Config config = Config.fromYAML(redissonConfigFile.getInputStream());
+    public RedissonClient redissonClient(RedisProperties redisProperties) {
+        Config config = new Config();
+        config.useSingleServer().setAddress(makeAddress(redisProperties));
         return Redisson.create(config);
+    }
+
+    private String makeAddress(RedisProperties redisProperties) {
+        return HOST_PREFIX + redisProperties.getHost() + ":" + redisProperties.getPort();
     }
 }
