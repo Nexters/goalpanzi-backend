@@ -22,6 +22,9 @@ public interface MissionMemberRepository extends JpaRepository<MissionMember, Lo
     @Query("SELECT mm FROM MissionMember mm JOIN FETCH mm.mission WHERE mm.member.id = :memberId")
     List<MissionMember> findAllWithMissionByMemberId(final Long memberId);
 
+    @Query("SELECT mm FROM MissionMember mm JOIN FETCH mm.member WHERE mm.mission.id = :missionId")
+    List<MissionMember> findAllWithMemberByMissionId(final Long missionId);
+
     Optional<MissionMember> findTop1ByMemberIdOrderByUpdatedAtDesc(final Long memberId);
 
     default MissionMember getMissionMember(final Long memberId, final Long missionId) {
