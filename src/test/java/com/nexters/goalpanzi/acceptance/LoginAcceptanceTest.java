@@ -3,10 +3,10 @@ package com.nexters.goalpanzi.acceptance;
 import com.nexters.goalpanzi.application.auth.SocialUserInfo;
 import com.nexters.goalpanzi.application.auth.SocialUserProvider;
 import com.nexters.goalpanzi.application.auth.SocialUserProviderFactory;
-import com.nexters.goalpanzi.application.auth.dto.request.AppleLoginCommand;
-import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
 import com.nexters.goalpanzi.fixture.TokenFixture;
+import com.nexters.goalpanzi.presentation.auth.dto.AppleLoginRequest;
+import com.nexters.goalpanzi.presentation.auth.dto.GoogleLoginRequest;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -18,7 +18,6 @@ import java.security.NoSuchAlgorithmException;
 
 import static com.nexters.goalpanzi.acceptance.AcceptanceStep.구글_로그인;
 import static com.nexters.goalpanzi.acceptance.AcceptanceStep.회원_탈퇴;
-import static com.nexters.goalpanzi.fixture.MemberFixture.DEVICE_TOKEN;
 import static com.nexters.goalpanzi.fixture.MemberFixture.EMAIL_HOST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -36,7 +35,7 @@ public class LoginAcceptanceTest extends AcceptanceTest {
     @Test
     void 사용자가_애플_로그인을_정상적으로_한다() throws NoSuchAlgorithmException {
         String appleToken = TokenFixture.generateAppleToken();
-        AppleLoginCommand request = new AppleLoginCommand(appleToken, DEVICE_TOKEN);
+        AppleLoginRequest request = new AppleLoginRequest(appleToken);
 
         when(socialUserProviderFactory.getProvider(any()))
                 .thenReturn(socialUserProvider);
@@ -61,7 +60,7 @@ public class LoginAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 사용자가_구글_로그인을_정상적으로_한다() {
-        GoogleLoginCommand request = new GoogleLoginCommand(EMAIL_HOST, DEVICE_TOKEN);
+        GoogleLoginRequest request = new GoogleLoginRequest(EMAIL_HOST);
 
         LoginResponse actual = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -81,10 +80,10 @@ public class LoginAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 사용자가_탈퇴후_재가입한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST, DEVICE_TOKEN)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
         회원_탈퇴(login.memberId(), login.accessToken());
-        
-        LoginResponse actual = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST, DEVICE_TOKEN)).as(LoginResponse.class);
+
+        LoginResponse actual = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
 
         assertThat(actual.memberId()).isNotNull();
     }
