@@ -40,21 +40,20 @@ public class Member extends BaseEntity {
     private String deviceToken;
 
     @Column(name = "push_activation_status", nullable = false)
-    private Boolean pushActivationStatus;
+    private Boolean pushActivationStatus = false;
 
-    private Member(final String socialId, final String email, final SocialType socialType, final String deviceToken) {
+    private Member(final String socialId, final String email, final SocialType socialType) {
         this.socialId = socialId;
         this.email = email;
         this.socialType = socialType;
-        this.deviceToken = deviceToken;
     }
 
-    public static Member socialLogin(final String socialId, final String email, final SocialType socialType, final String deviceToken) {
+    public static Member socialLogin(final String socialId, final String email, final SocialType socialType) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("사용자 정보가 올바르지 않습니다.");
         }
 
-        return new Member(socialId, email, socialType, deviceToken);
+        return new Member(socialId, email, socialType);
     }
 
     public Boolean isProfileSet() {

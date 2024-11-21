@@ -34,7 +34,7 @@ public class AuthService {
         SocialUserProvider appleUserProvider = socialUserProviderFactory.getProvider(SocialType.APPLE);
         SocialUserInfo socialUserInfo = appleUserProvider.getSocialUserInfo(command.identityToken());
 
-        return socialLogin(socialUserInfo, SocialType.APPLE, command.deviceToken());
+        return socialLogin(socialUserInfo, SocialType.APPLE);
     }
 
     @Transactional
@@ -42,14 +42,14 @@ public class AuthService {
         SocialUserInfo socialUserInfo = new SocialUserInfo(
                 GoogleIdentityToken.generate(command.email()), command.email());
 
-        return socialLogin(socialUserInfo, SocialType.GOOGLE, command.deviceToken());
+        return socialLogin(socialUserInfo, SocialType.GOOGLE);
     }
 
-    private LoginResponse socialLogin(final SocialUserInfo socialUserInfo, final SocialType socialType, final String deviceToken) {
+    private LoginResponse socialLogin(final SocialUserInfo socialUserInfo, final SocialType socialType) {
         checkDeletedMember(socialUserInfo.socialId());
         Member member = memberRepository.findBySocialIdAndDeletedAtIsNull(socialUserInfo.socialId())
                 .orElseGet(() ->
-                        memberRepository.save(Member.socialLogin(socialUserInfo.socialId(), socialUserInfo.email(), socialType, deviceToken))
+                        memberRepository.save(Member.socialLogin(socialUserInfo.socialId(), socialUserInfo.email(), socialType))
                 );
 
         Jwt jwt = jwtProvider.generateTokens(member.getId().toString());
