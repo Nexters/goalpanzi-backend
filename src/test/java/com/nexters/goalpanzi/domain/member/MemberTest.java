@@ -39,4 +39,20 @@ class MemberTest {
 
         assertThat(member.isProfileSet()).isFalse();
     }
+
+    @Test
+    void 디바이스_토큰을_갱신한다() {
+        Member member = Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.APPLE);
+        member.updateDeviceToken(DEVICE_TOKEN);
+
+        assertThat(member.getDeviceToken()).isEqualTo(DEVICE_TOKEN);
+    }
+
+    @Test
+    void 푸시_알림_활성화_여부를_수정한다() {
+        Member member = Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.APPLE);
+        member.updatePushActivationStatus(true);
+
+        assertThat(member.isPushActivated()).isTrue();
+    }
 }
