@@ -9,5 +9,5 @@ public interface MissionRetryMessageRepository extends RedisRepository {
 
     void update(String memberId, String deviceToken);
 
-    Set<String> keys(LocalDate sendDate);
+    Set<String> keys(LocalDate pushDate);
 }

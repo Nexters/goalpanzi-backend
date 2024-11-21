@@ -53,7 +53,7 @@ public class MemberController implements MemberControllerDocs {
     @PatchMapping("/device-token")
     public ResponseEntity<Void> updateDeviceToken(
             @LoginMemberId final Long memberId,
-            final UpdateDeviceTokenRequest request
+            @RequestBody @Valid final UpdateDeviceTokenRequest request
     ) {
         memberService.updateDeviceToken(request.toServiceDto(memberId));
 
