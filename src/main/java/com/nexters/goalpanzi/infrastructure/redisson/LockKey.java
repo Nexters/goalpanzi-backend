@@ -6,8 +6,8 @@ import java.util.Arrays;
 
 @RequiredArgsConstructor
 public class LockKey {
-    
-    public static final String LOCK_PREFIX = "LOCK";
+
+    private static final String LOCK_PREFIX = "LOCK";
 
     private final String target;
     private final String value;
