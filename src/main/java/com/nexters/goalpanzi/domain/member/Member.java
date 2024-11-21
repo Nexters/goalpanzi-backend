@@ -61,6 +61,10 @@ public class Member extends BaseEntity {
         return (characterType != null) && (nickname != null);
     }
 
+    public boolean isPushActivated() {
+        return pushActivationStatus;
+    }
+
     public void updateNickname(final String nickname) {
         this.nickname = nickname;
     }
