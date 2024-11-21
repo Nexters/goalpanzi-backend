@@ -6,6 +6,7 @@ import com.nexters.goalpanzi.application.member.dto.request.UpdatePushActivation
 import com.nexters.goalpanzi.application.member.dto.response.ProfileResponse;
 import com.nexters.goalpanzi.application.member.event.DeleteMemberEvent;
 import com.nexters.goalpanzi.application.member.event.UpdateDeviceTokenEvent;
+import com.nexters.goalpanzi.application.member.event.UpdatePushActivationStatusEvent;
 import com.nexters.goalpanzi.domain.auth.repository.RefreshTokenRepository;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
@@ -58,10 +59,13 @@ public class MemberService {
     @Transactional
     public void updateDeviceToken(final UpdateDeviceTokenCommand command) {
         Member member = memberRepository.getMember(command.memberId());
+        String deprecatedDeviceToken = member.getDeviceToken();
 
         member.updateDeviceToken(command.deviceToken());
         member.updatePushActivationStatus(true);
-        eventPublisher.publishEvent(new UpdateDeviceTokenEvent(command.memberId(), command.deviceToken()));
+        eventPublisher.publishEvent(
+                new UpdateDeviceTokenEvent(command.memberId(), deprecatedDeviceToken, command.deviceToken())
+        );
     }
 
     @Transactional
@@ -69,7 +73,8 @@ public class MemberService {
         Member member = memberRepository.getMember(command.memberId());
 
         member.updatePushActivationStatus(command.pushActivationStatus());
-//        TODO
-//        eventPublisher.publishEvent();
+        eventPublisher.publishEvent(
+                new UpdatePushActivationStatusEvent(command.memberId(), member.getDeviceToken(), command.pushActivationStatus())
+        );
     }
 }
