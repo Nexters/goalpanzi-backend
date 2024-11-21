@@ -7,5 +7,7 @@ import java.util.Set;
 
 public interface MissionRetryMessageRepository extends RedisRepository {
 
+    void update(String memberId, String deviceToken);
+
     Set<String> keys(LocalDate sendDate);
 }
