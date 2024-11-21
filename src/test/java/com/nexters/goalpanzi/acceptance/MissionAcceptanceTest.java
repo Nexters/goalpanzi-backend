@@ -1,12 +1,12 @@
 package com.nexters.goalpanzi.acceptance;
 
-import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.TimeOfDay;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
+import com.nexters.goalpanzi.presentation.auth.dto.GoogleLoginRequest;
 import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionRequest;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
@@ -35,7 +35,7 @@ public class MissionAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 미션을_생성한다() {
-        LoginResponse loginResponse = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+        LoginResponse loginResponse = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
 
         CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(5), TimeOfDay.EVERYDAY, List.of(DayOfWeek.FRIDAY), 5);
 
@@ -49,7 +49,7 @@ public class MissionAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 미션을_조회한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
 
         CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(5), TimeOfDay.EVERYDAY,
@@ -68,7 +68,7 @@ public class MissionAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 초대코드로_미션을_조회한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
 
         CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(5), TimeOfDay.EVERYDAY,
@@ -93,7 +93,7 @@ public class MissionAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 미션을_생성한_사용자는_자동으로_경쟁에_참가된다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
 
         CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(5), TimeOfDay.EVERYDAY,
@@ -107,7 +107,7 @@ public class MissionAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 미션을_삭제한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
         MissionDetailResponse mission = 미션_생성(login.accessToken()).as(MissionDetailResponse.class);
 
         RestAssured.given().log().all()

@@ -1,8 +1,12 @@
 package com.nexters.goalpanzi.application.member;
 
+import com.nexters.goalpanzi.application.member.dto.request.UpdateDeviceTokenCommand;
 import com.nexters.goalpanzi.application.member.dto.request.UpdateProfileCommand;
+import com.nexters.goalpanzi.application.member.dto.request.UpdatePushActivationStatusCommand;
 import com.nexters.goalpanzi.application.member.dto.response.ProfileResponse;
 import com.nexters.goalpanzi.application.member.event.DeleteMemberEvent;
+import com.nexters.goalpanzi.application.member.event.UpdateDeviceTokenEvent;
+import com.nexters.goalpanzi.application.member.event.UpdatePushActivationStatusEvent;
 import com.nexters.goalpanzi.domain.auth.repository.RefreshTokenRepository;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
@@ -50,5 +54,27 @@ public class MemberService {
         eventPublisher.publishEvent(new DeleteMemberEvent(memberId));
         refreshTokenRepository.delete(memberId.toString());
         memberRepository.getMember(memberId).delete();
+    }
+
+    @Transactional
+    public void updateDeviceToken(final UpdateDeviceTokenCommand command) {
+        Member member = memberRepository.getMember(command.memberId());
+        String deprecatedDeviceToken = member.getDeviceToken();
+
+        member.updateDeviceToken(command.deviceToken());
+        member.updatePushActivationStatus(true);
+        eventPublisher.publishEvent(
+                new UpdateDeviceTokenEvent(command.memberId(), deprecatedDeviceToken, command.deviceToken())
+        );
+    }
+
+    @Transactional
+    public void updatePushActivationStatus(final UpdatePushActivationStatusCommand command) {
+        Member member = memberRepository.getMember(command.memberId());
+
+        member.updatePushActivationStatus(command.pushActivationStatus());
+        eventPublisher.publishEvent(
+                new UpdatePushActivationStatusEvent(command.memberId(), member.getDeviceToken(), command.pushActivationStatus())
+        );
     }
 }

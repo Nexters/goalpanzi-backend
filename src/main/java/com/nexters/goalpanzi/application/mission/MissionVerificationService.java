@@ -152,7 +152,7 @@ public class MissionVerificationService {
                 missionMembers.forEach(missionMember -> {
                     Member member = missionMember.getMember();
                     Optional<MissionVerification> verification = missionVerificationRepository.findByMemberIdAndMissionIdAndDate(member.getId(), mission.getId(), today);
-                    if (verification.isEmpty() && member.getDeviceToken() != null) {
+                    if (verification.isEmpty() && member.isPushActivated()) {
                         pushNotificationSender.sendIndividualMessage(
                                 MISSION_VERIFICATION_WARNING.getTitle(),
                                 MISSION_VERIFICATION_WARNING.getBody(),

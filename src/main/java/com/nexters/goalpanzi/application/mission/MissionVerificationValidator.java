@@ -2,14 +2,18 @@ package com.nexters.goalpanzi.application.mission;
 
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.MissionMember;
+import com.nexters.goalpanzi.domain.mission.MissionVerification;
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationRepository;
 import com.nexters.goalpanzi.exception.BadRequestException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
+@Slf4j // TODO 오류 확인 후 삭제
 @RequiredArgsConstructor
 @Component
 public class MissionVerificationValidator {
@@ -41,7 +45,13 @@ public class MissionVerificationValidator {
     }
 
     private boolean isDuplicatedVerification(final Long memberId, final Long missionId) {
-        return missionVerificationRepository.findByMemberIdAndMissionIdAndDate(memberId, missionId, LocalDate.now()).isPresent();
+//        TODO
+//        return missionVerificationRepository.findByMemberIdAndMissionIdAndDate(memberId, missionId, LocalDate.now()).isPresent();
+        log.info("Check Duplication of Mission Verification.");
+        LocalDate today = LocalDate.now();
+        Optional<MissionVerification> missionVerification = missionVerificationRepository.findByMemberIdAndMissionIdAndDate(memberId, missionId, today);
+        log.info("[{}] Is Duplicated : {}", today, missionVerification.isPresent());
+        return missionVerification.isPresent();
     }
 
     private void validateTime(final Mission mission) {

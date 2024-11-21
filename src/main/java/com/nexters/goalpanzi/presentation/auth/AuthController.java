@@ -1,11 +1,11 @@
 package com.nexters.goalpanzi.presentation.auth;
 
 import com.nexters.goalpanzi.application.auth.AuthService;
-import com.nexters.goalpanzi.application.auth.dto.request.AppleLoginCommand;
-import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
 import com.nexters.goalpanzi.application.auth.dto.response.TokenResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
+import com.nexters.goalpanzi.presentation.auth.dto.AppleLoginRequest;
+import com.nexters.goalpanzi.presentation.auth.dto.GoogleLoginRequest;
 import com.nexters.goalpanzi.presentation.auth.dto.ReissueTokenRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +25,9 @@ public class AuthController implements AuthControllerDocs {
     @Override
     @PostMapping("/login/apple")
     public ResponseEntity<LoginResponse> loginApple(
-            @RequestBody @Valid final AppleLoginCommand appleLoginCommand
+            @RequestBody @Valid final AppleLoginRequest request
     ) {
-        LoginResponse response = authService.appleOAuthLogin(appleLoginCommand);
+        LoginResponse response = authService.appleOAuthLogin(request.toServiceDto());
 
         return ResponseEntity.ok(response);
     }
@@ -35,9 +35,9 @@ public class AuthController implements AuthControllerDocs {
     @Override
     @PostMapping("/login/google")
     public ResponseEntity<LoginResponse> loginGoogle(
-            @RequestBody @Valid final GoogleLoginCommand googleLoginCommand
+            @RequestBody @Valid final GoogleLoginRequest request
     ) {
-        LoginResponse response = authService.googleOAuthLogin(googleLoginCommand);
+        LoginResponse response = authService.googleOAuthLogin(request.toServiceDto());
 
         return ResponseEntity.ok(response);
     }

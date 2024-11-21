@@ -1,13 +1,12 @@
 package com.nexters.goalpanzi.acceptance;
 
-import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.TimeOfDay;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
-import com.nexters.goalpanzi.exception.ErrorResponse;
+import com.nexters.goalpanzi.presentation.auth.dto.GoogleLoginRequest;
 import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionRequest;
 import com.nexters.goalpanzi.presentation.mission.dto.JoinMissionRequest;
 import io.restassured.RestAssured;
@@ -36,9 +35,9 @@ public class MissionMemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 초대코드로_미션에_참여한다() {
-        LoginResponse loginHost = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+        LoginResponse loginHost = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
         MissionDetailResponse mission = 미션_생성(loginHost.accessToken()).as(MissionDetailResponse.class);
-        LoginResponse loginMember = 구글_로그인(new GoogleLoginCommand(EMAIL_MEMBER_A)).as(LoginResponse.class);
+        LoginResponse loginMember = 구글_로그인(new GoogleLoginRequest(EMAIL_MEMBER_A)).as(LoginResponse.class);
 
         JoinMissionRequest joinRequest = new JoinMissionRequest(mission.invitationCode());
         RestAssured.given().log().all()
@@ -56,7 +55,7 @@ public class MissionMemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 참여하고있는_미션을_조회한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
         미션_생성(login.accessToken()).as(MissionDetailResponse.class);
 
         MissionsResponse actual = RestAssured.given().log().all()
@@ -73,7 +72,7 @@ public class MissionMemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 미션기간이_아닌경우_참여가_불가능하다() {
-        LoginResponse loginHost = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+        LoginResponse loginHost = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
         CreateMissionRequest request = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(), LocalDateTime.now().plusDays(5), TimeOfDay.EVERYDAY, List.of(DayOfWeek.FRIDAY), 5);
 
         RestAssured.given().log().all()

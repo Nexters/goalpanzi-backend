@@ -43,6 +43,17 @@ public class MissionRetryMessageRepositoryImpl implements MissionRetryMessageRep
         return redisTemplate.delete(key);
     }
 
+    public void update(String memberId, String deviceToken) {
+        String pattern = makeAnyDatePattern(memberId);
+        Set<String> keys = redisTemplate.keys(pattern);
+        if (keys.isEmpty()) {
+            return;
+        }
+        String key = String.valueOf(keys.iterator().next());
+        Long ttl = redisTemplate.getExpire(key);
+        redisTemplate.opsForValue().set(key, deviceToken, Duration.ofMillis(ttl));
+    }
+
     public Set<String> keys(LocalDate pushDate) {
         String pattern = makeAnyMemberPattern(pushDate);
         return redisTemplate.keys(pattern);

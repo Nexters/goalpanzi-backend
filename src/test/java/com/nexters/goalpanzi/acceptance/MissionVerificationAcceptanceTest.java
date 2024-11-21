@@ -1,6 +1,6 @@
 //package com.nexters.goalpanzi.acceptance;
 //
-//import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
+//import com.nexters.goalpanzi.presentation.auth.dto.GoogleLoginRequest;
 //import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
 //import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 //import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
@@ -38,7 +38,7 @@
 //    void 미션_인증에_성공한다() {
 //        when(objectStorageClient.uploadFile(any(MultipartFile.class))).thenReturn(UPLOADED_IMAGE_URL);
 //
-//        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+//        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
 //        CreateMissionRequest missionRequest = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(), LocalDateTime.now().plusDays(1), TimeOfDay.EVERYDAY, WEEK, 1);
 //        MissionDetailResponse mission = 미션_생성(missionRequest, login.accessToken()).as(MissionDetailResponse.class);
 //
@@ -51,7 +51,7 @@
 //    void 미션_기간이_아니므로_인증에_실패한다() {
 //        when(objectStorageClient.uploadFile(any(MultipartFile.class))).thenReturn(UPLOADED_IMAGE_URL);
 //
-//        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+//        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
 //        CreateMissionRequest missionRequest = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2), TimeOfDay.EVERYDAY, WEEK, 1);
 //        MissionDetailResponse mission = 미션_생성(missionRequest, login.accessToken()).as(MissionDetailResponse.class);
 //
@@ -67,7 +67,7 @@
 //    void 지정한_인증_일자가_아니므로_인증에_실패한다() {
 //        when(objectStorageClient.uploadFile(any(MultipartFile.class))).thenReturn(UPLOADED_IMAGE_URL);
 //
-//        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+//        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
 //        LocalDate today = LocalDate.now();
 //        List<DayOfWeek> missionDays = WEEK.stream().filter(d -> d != DayOfWeek.valueOf(today.getDayOfWeek().name())).toList();
 //        CreateMissionRequest missionRequest = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(), LocalDateTime.now().plusDays(1), TimeOfDay.EVERYDAY, missionDays, 1);
@@ -85,7 +85,7 @@
 //    void 이미_완료된_미션이므로_인증에_실패한다() {
 //        when(objectStorageClient.uploadFile(any(MultipartFile.class))).thenReturn(UPLOADED_IMAGE_URL);
 //
-//        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+//        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
 //        CreateMissionRequest missionRequest = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(), LocalDateTime.now().plusDays(1), TimeOfDay.EVERYDAY, WEEK, 1);
 //        MissionDetailResponse mission = 미션_생성(missionRequest, login.accessToken()).as(MissionDetailResponse.class);
 //
@@ -103,7 +103,7 @@
 //    void 이미_인증한_미션이므로_인증에_실패한다() {
 //        when(objectStorageClient.uploadFile(any(MultipartFile.class))).thenReturn(UPLOADED_IMAGE_URL);
 //
-//        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+//        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
 //        CreateMissionRequest missionRequest = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(), LocalDateTime.now().plusDays(1), TimeOfDay.EVERYDAY, WEEK, 2);
 //        MissionDetailResponse mission = 미션_생성(missionRequest, login.accessToken()).as(MissionDetailResponse.class);
 //
@@ -121,18 +121,18 @@
 //    void 특정_일자의_미션_인증_현황을_조회한다() {
 //        when(objectStorageClient.uploadFile(any(MultipartFile.class))).thenReturn(UPLOADED_IMAGE_URL);
 //
-//        LoginResponse hostLogin = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+//        LoginResponse hostLogin = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
 //        CreateMissionRequest missionRequest = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(), LocalDateTime.now().plusDays(1), TimeOfDay.EVERYDAY, WEEK, 1);
 //        프로필_설정(new UpdateProfileRequest(NICKNAME_HOST, CHARACTER_HOST), hostLogin.accessToken());
 //        MissionDetailResponse mission = 미션_생성(missionRequest, hostLogin.accessToken()).as(MissionDetailResponse.class);
 //        미션_인증(IMAGE_FILE, mission.missionId(), hostLogin.accessToken());
 //
-//        LoginResponse memberALogin = 구글_로그인(new GoogleLoginCommand(EMAIL_MEMBER_A)).as(LoginResponse.class);
+//        LoginResponse memberALogin = 구글_로그인(new GoogleLoginRequest(EMAIL_MEMBER_A)).as(LoginResponse.class);
 //        프로필_설정(new UpdateProfileRequest(NICKNAME_MEMBER_A, CHARACTER_MEMBER_A), memberALogin.accessToken());
 //        미션_참여(mission.invitationCode(), memberALogin.accessToken());
 //        미션_인증(IMAGE_FILE, mission.missionId(), memberALogin.accessToken());
 //
-//        LoginResponse memberBLogin = 구글_로그인(new GoogleLoginCommand(EMAIL_MEMBER_B)).as(LoginResponse.class);
+//        LoginResponse memberBLogin = 구글_로그인(new GoogleLoginRequest(EMAIL_MEMBER_B)).as(LoginResponse.class);
 //        프로필_설정(new UpdateProfileRequest(NICKNAME_MEMBER_B, CHARACTER_MEMBER_B), memberBLogin.accessToken());
 //        미션_참여(mission.invitationCode(), memberBLogin.accessToken());
 //        미션_인증(IMAGE_FILE, mission.missionId(), memberBLogin.accessToken());
@@ -153,7 +153,7 @@
 //    void 보드칸_번호에_해당하는_나의_미션_인증_내역을_조회한다() {
 //        when(objectStorageClient.uploadFile(any(MultipartFile.class))).thenReturn(UPLOADED_IMAGE_URL);
 //
-//        LoginResponse login = 구글_로그인(new GoogleLoginCommand(EMAIL_HOST)).as(LoginResponse.class);
+//        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
 //        프로필_설정(new UpdateProfileRequest(NICKNAME_HOST, CHARACTER_HOST), login.accessToken());
 //
 //        CreateMissionRequest missionRequest = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(), LocalDateTime.now().plusDays(1), TimeOfDay.EVERYDAY, WEEK, 1);
@@ -172,13 +172,13 @@
 //    //    void 내가_참여하지_않은_미션의_인증_현황을_조회할_수_없다() {
 ////        when(objectStorageClient.uploadFile(any(MultipartFile.class))).thenReturn(UPLOADED_IMAGE_URL);
 ////
-////        LoginResponse memberALogin = 구글_로그인(new GoogleLoginCommand(EMAIL_MEMBER_A)).as(LoginResponse.class);
+////        LoginResponse memberALogin = 구글_로그인(new GoogleLoginRequest(EMAIL_MEMBER_A)).as(LoginResponse.class);
 ////        CreateMissionRequest missionRequest = new CreateMissionRequest(DESCRIPTION, LocalDateTime.now(), LocalDateTime.now().plusDays(1), TimeOfDay.EVERYDAY, WEEK, 1);
 ////        프로필_설정(new UpdateProfileRequest(NICKNAME_MEMBER_A, CHARACTER_MEMBER_A), memberALogin.accessToken());
 ////        MissionDetailResponse mission = 미션_생성(missionRequest, memberALogin.accessToken()).as(MissionDetailResponse.class);
 ////        미션_인증(IMAGE_FILE, mission.missionId(), memberALogin.accessToken());
 ////
-////        LoginResponse memberBLogin = 구글_로그인(new GoogleLoginCommand(EMAIL_MEMBER_B)).as(LoginResponse.class);
+////        LoginResponse memberBLogin = 구글_로그인(new GoogleLoginRequest(EMAIL_MEMBER_B)).as(LoginResponse.class);
 ////
 ////        ExtractableResponse<Response> response = 일자별_미션_인증_조회(mission.missionId(), LocalDate.now(), memberBLogin.accessToken());
 ////

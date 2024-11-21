@@ -2,6 +2,8 @@ package com.nexters.goalpanzi.application.mission.event.handler;
 
 import com.nexters.goalpanzi.application.firebase.TopicGenerator;
 import com.nexters.goalpanzi.application.member.event.DeleteMemberEvent;
+import com.nexters.goalpanzi.application.member.event.UpdateDeviceTokenEvent;
+import com.nexters.goalpanzi.application.member.event.UpdatePushActivationStatusEvent;
 import com.nexters.goalpanzi.application.mission.MissionMemberService;
 import com.nexters.goalpanzi.application.mission.MissionVerificationService;
 import com.nexters.goalpanzi.application.mission.event.CreateMissionEvent;
@@ -57,5 +59,28 @@ public class MissionMemberEventHandler {
                 topic
         );
         log.info("Handled DeleteMissionEvent for missionId: {}", event.missionId());
+    }
+
+    @Async
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    void handleUpdateDeviceTokenEvent(final UpdateDeviceTokenEvent event) {
+        if (event.deprecatedDeviceToken() != null) {
+            missionMemberService.unsubscribeFromMyMissions(event.memberId(), event.deprecatedDeviceToken());
+        }
+        missionMemberService.subscribeToMyMissions(event.memberId(), event.deviceToken());
+        log.info("Handled UpdateDeviceTokenEvent for memberId: {}", event.memberId());
+    }
+
+    @Async
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    void handleUpdatePushActivationStatusEvent(final UpdatePushActivationStatusEvent event) {
+        if (event.isPushActivated()) {
+            missionMemberService.subscribeToMyMissions(event.memberId(), event.deviceToken());
+        } else {
+            missionMemberService.unsubscribeFromMyMissions(event.memberId(), event.deviceToken());
+        }
+        log.info("Handled UpdatePushActivationStatusEvent for memberId: {}", event.memberId());
     }
 }

@@ -1,10 +1,10 @@
 package com.nexters.goalpanzi.presentation.auth;
 
-import com.nexters.goalpanzi.application.auth.dto.request.AppleLoginCommand;
-import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
 import com.nexters.goalpanzi.application.auth.dto.response.TokenResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
+import com.nexters.goalpanzi.presentation.auth.dto.AppleLoginRequest;
+import com.nexters.goalpanzi.presentation.auth.dto.GoogleLoginRequest;
 import com.nexters.goalpanzi.presentation.auth.dto.ReissueTokenRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,13 +32,13 @@ public interface AuthControllerDocs {
     @Operation(summary = "Apple 로그인", description = "Apple 로그인을 처리합니다.")
     @PostMapping("/login/apple")
     ResponseEntity<LoginResponse> loginApple(
-            @RequestBody @Valid final AppleLoginCommand appleLoginCommand
+            @RequestBody @Valid final AppleLoginRequest request
     );
 
     @Operation(summary = "Google 로그인", description = "Google 로그인을 처리합니다.")
     @PostMapping("/login/google")
     ResponseEntity<LoginResponse> loginGoogle(
-            @RequestBody @Valid final GoogleLoginCommand googleLoginCommand
+            @RequestBody @Valid final GoogleLoginRequest request
     );
 
     @Operation(summary = "로그아웃", description = "로그아웃합니다.")

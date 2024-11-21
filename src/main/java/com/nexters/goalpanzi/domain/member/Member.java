@@ -36,21 +36,16 @@ public class Member extends BaseEntity {
     @Column(name = "character_type")
     private CharacterType characterType;
 
-    // TODO
     @Column(name = "device_token")
     private String deviceToken;
+
+    @Column(name = "push_activation_status", nullable = false)
+    private Boolean pushActivationStatus = false;
 
     private Member(final String socialId, final String email, final SocialType socialType) {
         this.socialId = socialId;
         this.email = email;
         this.socialType = socialType;
-    }
-
-    private Member(final String socialId, final String email, final SocialType socialType, final String deviceToken) {
-        this.socialId = socialId;
-        this.email = email;
-        this.socialType = socialType;
-        this.deviceToken = deviceToken;
     }
 
     public static Member socialLogin(final String socialId, final String email, final SocialType socialType) {
@@ -61,16 +56,12 @@ public class Member extends BaseEntity {
         return new Member(socialId, email, socialType);
     }
 
-    public static Member socialLogin(final String socialId, final String email, final SocialType socialType, final String deviceToken) {
-        if (email == null || email.isBlank()) {
-            throw new IllegalArgumentException("사용자 정보가 올바르지 않습니다.");
-        }
-
-        return new Member(socialId, email, socialType, deviceToken);
-    }
-
     public Boolean isProfileSet() {
         return (characterType != null) && (nickname != null);
+    }
+
+    public boolean isPushActivated() {
+        return pushActivationStatus;
     }
 
     public void updateNickname(final String nickname) {
@@ -79,6 +70,14 @@ public class Member extends BaseEntity {
 
     public void updateCharacterType(final CharacterType characterType) {
         this.characterType = characterType;
+    }
+
+    public void updateDeviceToken(final String deviceToken) {
+        this.deviceToken = deviceToken;
+    }
+
+    public void updatePushActivationStatus(final Boolean pushActivationStatus) {
+        this.pushActivationStatus = pushActivationStatus;
     }
 
     @Override
