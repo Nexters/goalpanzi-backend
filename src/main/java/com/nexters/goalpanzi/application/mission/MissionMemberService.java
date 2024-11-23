@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -142,9 +143,10 @@ public class MissionMemberService {
 
     @Transactional
     public void sendReadyPushMessage() {
+        LocalDateTime now = LocalDateTime.now();
         List<Mission> missions = missionRepository.getReadyMissions();
         missions.forEach(mission -> {
-            if (mission.isReadyTime() && missionValidator.hasEnoughMember(mission.getId())) {
+            if (mission.isReadyTime(now) && missionValidator.hasEnoughMember(mission.getId())) {
                 String topic = TopicGenerator.getTopic(mission.getId());
                 pushNotificationSender.sendGroupMessage(
                         MISSION_READY.getTitle(),
@@ -157,9 +159,10 @@ public class MissionMemberService {
 
     @Transactional
     public void sendCancellationWarningPushMessage() {
+        LocalDateTime now = LocalDateTime.now();
         List<Mission> missions = missionRepository.getReadyMissions();
         missions.forEach(mission -> {
-            if (mission.isReadyTime() && !missionValidator.hasEnoughMember(mission.getId())) {
+            if (mission.isReadyTime(now) && !missionValidator.hasEnoughMember(mission.getId())) {
                 String topic = TopicGenerator.getTopic(mission.getId());
                 pushNotificationSender.sendGroupMessage(
                         MISSION_CANCELLATION_WARNING.getTitle(),
