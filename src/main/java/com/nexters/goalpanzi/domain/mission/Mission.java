@@ -124,12 +124,20 @@ public class Mission extends BaseEntity {
         return !today.isBefore(missionStart) && !today.isAfter(missionEnd);
     }
 
-    // 오늘이 미션 인증 요일인지 검증
+    /**
+     * <b>오늘이 미션 인증 요일인지 검증</b>
+     *
+     * @return 미션 인증 요일 여부
+     */
     public boolean isMissionDay() {
         return this.missionDays.contains(DayOfWeek.valueOf(LocalDate.now().getDayOfWeek().name()));
     }
 
-    // 현재 시간이 미션 인증 시간인지 검증
+    /**
+     * <b>현재 시각이 미션 인증 시간인지 검증</b>
+     *
+     * @return 미션 인증 시간 여부
+     */
     public boolean isMissionTime() {
         String now = LocalTime.now().toString().substring(0, 5);
         return now.compareTo(uploadStartTime) >= 0 && now.compareTo(uploadEndTime) <= 0;
@@ -152,20 +160,30 @@ public class Mission extends BaseEntity {
         );
     }
 
-    // 현재 시간이 미션 시작 예고 시간인지 검증
-    // 미션 시작 예고 시간 == 미션 시작 1시간 전
-    public boolean isReadyTime() {
+    /**
+     * <b>현재 시각이 미션 시작 예고 시간인지 검증</b> <br>
+     * 미션 시작 예고 시간 == 미션 시작 1시간 전
+     *
+     * @param now 현재 시각
+     * @return 미션 시작 예고 시간 여부
+     */
+    public boolean isReadyTime(final LocalDateTime now) {
         LocalDateTime startTime = TimeUtil.combineDateAndTime(
                 missionStartDate, LocalTime.parse(uploadStartTime)
         );
-        Duration duration = Duration.between(startTime, LocalDateTime.now());
+        Duration duration = Duration.between(now, startTime);
 
-        return duration.isNegative() && duration.toHours() <= 1;
+        return duration.isPositive() && duration.toHours() <= 1;
     }
 
-    // 현재 시간이 푸시 시간인지 검증
-    // 1. 인증 시간이 오전인 경우, 09시에 푸시
-    // 2. 인증 시간이 오후이거나 종일인 경우, 15시에 푸시
+    /**
+     * <b>현재 시간이 푸시 시간인지 검증</b> <br>
+     * 1. 인증 시간이 오전인 경우, 09시에 푸시 <br>
+     * 2. 인증 시간이 오후이거나 종일인 경우, 15시에 푸시
+     *
+     * @param hour 현재 시각의 시간
+     * @return 미션 인증 푸시 시간 여부
+     */
     public boolean isPushTime(final int hour) {
         if (uploadStartTime.equals(TimeOfDay.MORNING.getStartTime()) && uploadEndTime.equals(TimeOfDay.MORNING.getEndTime())) {
             return hour == PushTime.MORNING.getHour();
