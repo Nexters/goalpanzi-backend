@@ -1,10 +1,8 @@
 package com.nexters.goalpanzi.config.redisson;
 
 import com.nexters.goalpanzi.common.annotation.RedissonLock;
-import org.springframework.stereotype.Component;
 
-@Component
-public class RedissonLockBean {
+public class RedissonLockTestBean {
 
     @RedissonLock(waitTime = 1L)
     void serializeFunction(final Object args) throws InterruptedException {

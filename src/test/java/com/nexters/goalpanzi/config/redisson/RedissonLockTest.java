@@ -14,7 +14,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
+@SpringBootTest(
+        classes = RedissonTestConfig.class
+)
 @ContextConfiguration(
         initializers = {RedisInitializer.class}
 )
@@ -23,7 +25,7 @@ public class RedissonLockTest {
     private static final int THREAD_CNT = 2;
 
     @Autowired
-    private RedissonLockBean redissonLockBean;
+    private RedissonLockTestBean redissonLockTestBean;
 
     private ExecutorService executorService;
     private AtomicInteger acquiredLockCnt;
@@ -39,7 +41,7 @@ public class RedissonLockTest {
         for (int i = 0; i < THREAD_CNT; i++) {
             executorService.submit(() -> {
                 try {
-                    redissonLockBean.serializeFunction("Shared Resource");
+                    redissonLockTestBean.serializeFunction("Shared Resource");
                     acquiredLockCnt.incrementAndGet();
                 } catch (InterruptedException ignored) {
                 }
@@ -57,7 +59,7 @@ public class RedissonLockTest {
             String resource = "Resource" + i;
             executorService.submit(() -> {
                 try {
-                    redissonLockBean.serializeFunction(resource);
+                    redissonLockTestBean.serializeFunction(resource);
                     acquiredLockCnt.incrementAndGet();
                 } catch (InterruptedException ignored) {
                 }
