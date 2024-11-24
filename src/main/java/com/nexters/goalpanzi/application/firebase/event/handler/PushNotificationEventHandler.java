@@ -5,6 +5,7 @@ import com.nexters.goalpanzi.application.mission.event.CompleteMissionEvent;
 import com.nexters.goalpanzi.application.mission.event.JoinMissionEvent;
 import com.nexters.goalpanzi.infrastructure.firebase.PushNotificationSender;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -15,6 +16,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import static com.nexters.goalpanzi.domain.firebase.PushNotificationMessage.MISSION_COMPLETED;
 import static com.nexters.goalpanzi.domain.firebase.PushNotificationMessage.MISSION_JOINED;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class PushNotificationEventHandler {
@@ -30,6 +32,7 @@ public class PushNotificationEventHandler {
                 MISSION_JOINED.getBody(event.nickname()),
                 event.deviceToken()
         );
+        log.info("Handled JoinMissionEvent for missionId: {}", event.missionId());
     }
 
     @Async
@@ -42,5 +45,6 @@ public class PushNotificationEventHandler {
                 MISSION_COMPLETED.getBody(),
                 topic
         );
+        log.info("Handled CompleteMissionEvent for missionId: {}", event.missionId());
     }
 }

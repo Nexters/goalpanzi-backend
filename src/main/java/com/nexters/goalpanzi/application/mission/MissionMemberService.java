@@ -18,6 +18,7 @@ import com.nexters.goalpanzi.exception.NotFoundException;
 import com.nexters.goalpanzi.infrastructure.firebase.PushNotificationSender;
 import com.nexters.goalpanzi.infrastructure.firebase.TopicSubscriber;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.TimeoutUtils;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 import static com.nexters.goalpanzi.domain.firebase.PushNotificationMessage.*;
 import static com.nexters.goalpanzi.domain.mission.MissionStatus.*;
 
+@Slf4j // TODO 오류 확인 후 삭제
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
@@ -169,6 +171,7 @@ public class MissionMemberService {
                         MISSION_CANCELLATION_WARNING.getBody(),
                         topic
                 );
+                log.info("Send CancellationWarningPushMessage to topic: {}", topic);
             }
         });
     }
