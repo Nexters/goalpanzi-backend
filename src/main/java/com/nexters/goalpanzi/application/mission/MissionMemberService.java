@@ -18,12 +18,14 @@ import com.nexters.goalpanzi.exception.NotFoundException;
 import com.nexters.goalpanzi.infrastructure.firebase.PushNotificationSender;
 import com.nexters.goalpanzi.infrastructure.firebase.TopicSubscriber;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.TimeoutUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 import static com.nexters.goalpanzi.domain.firebase.PushNotificationMessage.*;
 import static com.nexters.goalpanzi.domain.mission.MissionStatus.*;
 
+@Slf4j // TODO 오류 확인 후 삭제
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
@@ -142,9 +145,10 @@ public class MissionMemberService {
 
     @Transactional
     public void sendReadyPushMessage() {
+        LocalDateTime now = LocalDateTime.now();
         List<Mission> missions = missionRepository.getReadyMissions();
         missions.forEach(mission -> {
-            if (mission.isReadyTime() && missionValidator.hasEnoughMember(mission.getId())) {
+            if (mission.isReadyTime(now) && missionValidator.hasEnoughMember(mission.getId())) {
                 String topic = TopicGenerator.getTopic(mission.getId());
                 pushNotificationSender.sendGroupMessage(
                         MISSION_READY.getTitle(),
@@ -157,15 +161,17 @@ public class MissionMemberService {
 
     @Transactional
     public void sendCancellationWarningPushMessage() {
+        LocalDateTime now = LocalDateTime.now();
         List<Mission> missions = missionRepository.getReadyMissions();
         missions.forEach(mission -> {
-            if (mission.isReadyTime() && !missionValidator.hasEnoughMember(mission.getId())) {
+            if (mission.isReadyTime(now) && !missionValidator.hasEnoughMember(mission.getId())) {
                 String topic = TopicGenerator.getTopic(mission.getId());
                 pushNotificationSender.sendGroupMessage(
                         MISSION_CANCELLATION_WARNING.getTitle(),
                         MISSION_CANCELLATION_WARNING.getBody(),
                         topic
                 );
+                log.info("Send CancellationWarningPushMessage to topic: {}", topic);
             }
         });
     }

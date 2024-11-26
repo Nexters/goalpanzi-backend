@@ -186,4 +186,24 @@ class MissionTest {
         );
         assertThat(mission.isPushTime(15)).isTrue();
     }
+
+    @Test
+    void 미션_시작까지_1시간_덜_남은_경우_미션_준비_시간이다() {
+        LocalDateTime now = LocalDateTime.now();
+        Mission mission = Mission.create(
+                MEMBER_ID,
+                DESCRIPTION,
+                now,
+                now.plusDays(30),
+                TimeOfDay.EVERYDAY,
+                List.of(DayOfWeek.FRIDAY),
+                BOARD_COUNT,
+                InvitationCode.generate()
+        );
+
+        assertAll(
+                () -> assertThat(mission.isReadyTime(mission.getMissionUploadStartDateTime().minusHours(1))).isTrue(),
+                () -> assertThat(mission.isReadyTime(mission.getMissionUploadStartDateTime().minusMinutes(30))).isTrue()
+        );
+    }
 }

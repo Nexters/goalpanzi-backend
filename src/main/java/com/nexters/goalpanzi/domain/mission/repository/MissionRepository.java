@@ -17,7 +17,7 @@ public interface MissionRepository extends JpaRepository<Mission, Long> {
 
     List<Mission> findByMissionStartDateGreaterThanEqual(final LocalDateTime todayStart);
 
-    List<Mission> findByMissionStartDateGreaterThanEqualAndMissionEndDateLessThanEqual(final LocalDateTime startDate, final LocalDateTime endDate);
+    List<Mission> findByMissionStartDateLessThanEqualAndMissionEndDateGreaterThanEqual(final LocalDateTime startDate, final LocalDateTime endDate);
 
     default Mission getMission(final Long missionId) {
         return findById(missionId)
@@ -31,6 +31,6 @@ public interface MissionRepository extends JpaRepository<Mission, Long> {
 
     default List<Mission> getInProgressMissions() {
         LocalDateTime todayStart = LocalDate.now().atStartOfDay();
-        return findByMissionStartDateGreaterThanEqualAndMissionEndDateLessThanEqual(todayStart, todayStart);
+        return findByMissionStartDateLessThanEqualAndMissionEndDateGreaterThanEqual(todayStart, todayStart);
     }
 }
