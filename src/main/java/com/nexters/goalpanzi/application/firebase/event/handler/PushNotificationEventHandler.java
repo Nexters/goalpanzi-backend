@@ -27,7 +27,7 @@ public class PushNotificationEventHandler {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     void handleJoinMissionEvent(final JoinMissionEvent event) {
-        pushNotificationSender.sendIndividualMessage(
+        pushNotificationSender.sendIndividualNotification(
                 MISSION_JOINED.getTitle(),
                 MISSION_JOINED.getBody(event.nickname()),
                 event.deviceToken()
@@ -40,7 +40,7 @@ public class PushNotificationEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     void handleCompleteMissionEvent(final CompleteMissionEvent event) {
         String topic = TopicGenerator.getTopic(event.missionId());
-        pushNotificationSender.sendGroupMessage(
+        pushNotificationSender.sendGroupNotification(
                 MISSION_COMPLETED.getTitle(),
                 MISSION_COMPLETED.getBody(),
                 topic
