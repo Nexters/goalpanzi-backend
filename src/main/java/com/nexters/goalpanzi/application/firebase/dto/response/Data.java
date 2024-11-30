@@ -10,8 +10,6 @@ public record Data(
         String title,
         @Schema(description = "푸시 알림 내용", requiredMode = Schema.RequiredMode.REQUIRED)
         String body,
-        @Schema(description = "멤버 아이디", requiredMode = Schema.RequiredMode.REQUIRED)
-        Long memberId,
         @Schema(description = "푸시 알림에 해당하는 미션 아이디", requiredMode = Schema.RequiredMode.REQUIRED)
         Long missionId
 ) {
@@ -21,7 +19,6 @@ public record Data(
         map.put("title", title);
         map.put("body", body);
         map.put("missionId", missionId.toString());
-        map.put("memberId", memberId.toString());
         return map;
     }
 }

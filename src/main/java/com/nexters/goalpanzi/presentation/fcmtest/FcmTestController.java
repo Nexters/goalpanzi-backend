@@ -53,7 +53,7 @@ public class FcmTestController {
             @Schema(description = "deviceToken", requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam final String deviceToken
     ) {
-        pushNotificationSender.sendIndividualData("Data 타입 테스트", "Data 타입 전송 테스트입니다.", deviceToken, 0L, 0L);
+        pushNotificationSender.sendIndividualData("Data 타입 테스트", "Data 타입 전송 테스트입니다.", deviceToken, 1L);
 
         return ResponseEntity.ok().build();
     }

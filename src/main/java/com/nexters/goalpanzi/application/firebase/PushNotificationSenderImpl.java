@@ -48,8 +48,8 @@ public class PushNotificationSenderImpl implements PushNotificationSender {
                 .build();
     }
 
-    public void sendIndividualData(final String title, final String body, final String token, final Long missionId, final Long memberId) {
-        Data data = makeData(title, body, missionId, memberId);
+    public void sendIndividualData(final String title, final String body, final String token, final Long missionId) {
+        Data data = makeData(title, body, missionId);
         Message message = Message.builder()
                 .putAllData(data.toMap())
                 .setToken(token)
@@ -62,8 +62,8 @@ public class PushNotificationSenderImpl implements PushNotificationSender {
         }
     }
 
-    public void sendGroupData(final String title, final String body, final String topic, final Long missionId, final Long memberId) {
-        Data data = makeData(title, body, missionId, memberId);
+    public void sendGroupData(final String title, final String body, final String topic, final Long missionId) {
+        Data data = makeData(title, body, missionId);
         Message message = Message.builder()
                 .putAllData(data.toMap())
                 .setTopic(topic)
@@ -76,7 +76,7 @@ public class PushNotificationSenderImpl implements PushNotificationSender {
         }
     }
 
-    private Data makeData(final String title, final String body, final Long missionId, final Long memberId) {
-        return new Data(title, body, memberId, missionId);
+    private Data makeData(final String title, final String body, final Long missionId) {
+        return new Data(title, body, missionId);
     }
 }

@@ -6,7 +6,7 @@ public interface PushNotificationSender {
 
     void sendGroupNotification(final String title, final String body, final String topic);
 
-    void sendIndividualData(final String title, final String body, final String token, final Long missionId, final Long memberId);
+    void sendIndividualData(final String title, final String body, final String token, final Long missionId);
 
-    void sendGroupData(final String title, final String body, final String topic, final Long missionId, final Long memberId);
+    void sendGroupData(final String title, final String body, final String topic, final Long missionId);
 }
