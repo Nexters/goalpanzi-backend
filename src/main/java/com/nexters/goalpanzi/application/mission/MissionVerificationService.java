@@ -124,7 +124,7 @@ public class MissionVerificationService {
     }
 
     private void sendVerifiedPushMessage(final PushNotificationMessage message, final String topic, final int verificationCount) {
-        pushNotificationSender.sendGroupMessage(
+        pushNotificationSender.sendGroupNotification(
                 message.getTitle(verificationCount),
                 message.getBody(),
                 topic
@@ -132,7 +132,7 @@ public class MissionVerificationService {
     }
 
     private void sendNoOneVerifiedPushMessage(final PushNotificationMessage message, final String topic) {
-        pushNotificationSender.sendGroupMessage(
+        pushNotificationSender.sendGroupNotification(
                 message.getTitle(),
                 message.getBody(),
                 topic
@@ -153,7 +153,7 @@ public class MissionVerificationService {
                     Member member = missionMember.getMember();
                     Optional<MissionVerification> verification = missionVerificationRepository.findByMemberIdAndMissionIdAndDate(member.getId(), mission.getId(), today);
                     if (verification.isEmpty() && member.isPushActivated()) {
-                        pushNotificationSender.sendIndividualMessage(
+                        pushNotificationSender.sendIndividualNotification(
                                 MISSION_VERIFICATION_WARNING.getTitle(),
                                 MISSION_VERIFICATION_WARNING.getBody(),
                                 member.getDeviceToken()
