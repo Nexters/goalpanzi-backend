@@ -9,7 +9,7 @@ import com.nexters.goalpanzi.application.mission.MissionVerificationService;
 import com.nexters.goalpanzi.application.mission.event.CreateMissionEvent;
 import com.nexters.goalpanzi.application.mission.event.DeleteMissionEvent;
 import com.nexters.goalpanzi.domain.mission.InvitationCode;
-import com.nexters.goalpanzi.infrastructure.firebase.PushNotificationSender;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-import static com.nexters.goalpanzi.domain.firebase.PushNotificationMessage.MISSION_DELETED;
+import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_DELETED;
 
 @Slf4j
 @Component
@@ -29,7 +29,7 @@ public class MissionMemberEventHandler {
     private final MissionMemberService missionMemberService;
     private final MissionVerificationService missionVerificationService;
 
-    private final PushNotificationSender pushNotificationSender;
+    private final PushMessageSender pushMessageSender;
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     void handleCreateMissionEvent(final CreateMissionEvent event) {
@@ -53,10 +53,11 @@ public class MissionMemberEventHandler {
         missionMemberService.deleteAllByMissionId(event.missionId());
         missionVerificationService.deleteAllByMissionId(event.missionId());
         String topic = TopicGenerator.getTopic(event.missionId());
-        pushNotificationSender.sendGroupMessage(
+        pushMessageSender.sendGroupData(
                 MISSION_DELETED.getTitle(),
                 MISSION_DELETED.getBody(),
-                topic
+                topic,
+                event.missionId()
         );
         log.info("Handled DeleteMissionEvent for missionId: {}", event.missionId());
     }

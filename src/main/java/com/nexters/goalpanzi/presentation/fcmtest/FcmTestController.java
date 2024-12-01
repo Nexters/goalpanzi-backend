@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.presentation.fcmtest;
 
-import com.nexters.goalpanzi.infrastructure.firebase.PushNotificationSender;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
 import com.nexters.goalpanzi.infrastructure.firebase.TopicSubscriber;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,29 +20,40 @@ import java.util.List;
 @RestController
 public class FcmTestController {
 
-    private final PushNotificationSender pushNotificationSender;
+    private final PushMessageSender pushMessageSender;
     private final TopicSubscriber topicSubscriber;
 
     @Operation(summary = "개별 메시지 전송")
     @GetMapping("individual-message")
-    ResponseEntity<Void> sendIndividualMessage(
+    ResponseEntity<Void> sendIndividualNotification(
             @Schema(description = "deviceToken", requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam final String deviceToken) {
-        pushNotificationSender.sendIndividualMessage("개별 메시지 테스트", deviceToken + "으로 개별 메시지를 전송합니다.", deviceToken);
+        pushMessageSender.sendIndividualNotification("개별 메시지 테스트", deviceToken + "으로 개별 메시지를 전송합니다.", deviceToken);
 
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "그룹 메시지 전송")
     @GetMapping("group-message")
-    ResponseEntity<Void> sendGroupMessage(
+    ResponseEntity<Void> sendGroupNotification(
             @Schema(description = "deviceToken", requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam final String deviceToken
     ) {
         String topic = "topic-test";
         topicSubscriber.subscribeToTopic(List.of(deviceToken), topic);
-        pushNotificationSender.sendGroupMessage("그룹 메시지 테스트", topic + "으로 그룹 메시지를 전송합니다.", topic);
+        pushMessageSender.sendGroupNotification("그룹 메시지 테스트", topic + "으로 그룹 메시지를 전송합니다.", topic);
         topicSubscriber.unsubscribeFromTopic(List.of(deviceToken), topic);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation
+    @GetMapping("data")
+    ResponseEntity<Void> sendData(
+            @Schema(description = "deviceToken", requiredMode = Schema.RequiredMode.REQUIRED)
+            @RequestParam final String deviceToken
+    ) {
+        pushMessageSender.sendIndividualData("Data 타입 테스트", "Data 타입 전송 테스트입니다.", deviceToken, 1L);
 
         return ResponseEntity.ok().build();
     }

@@ -94,6 +94,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
     @Test
     void 푸시_알림_활성화_여부를_수정한다() {
         LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
+        디바이스_토큰_갱신(login.accessToken());
 
         UpdatePushActivationStatusRequest request = new UpdatePushActivationStatusRequest(true);
         RestAssured.given().log().all()

@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(
-        classes = RedissonTestConfig.class
+        classes = {RedissonTestConfig.class}
 )
 @ContextConfiguration(
         initializers = {RedisInitializer.class}
