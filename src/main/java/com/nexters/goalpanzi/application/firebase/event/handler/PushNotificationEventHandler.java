@@ -27,10 +27,11 @@ public class PushNotificationEventHandler {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     void handleJoinMissionEvent(final JoinMissionEvent event) {
-        pushNotificationSender.sendIndividualNotification(
+        pushNotificationSender.sendIndividualData(
                 MISSION_JOINED.getTitle(),
                 MISSION_JOINED.getBody(event.nickname()),
-                event.deviceToken()
+                event.deviceToken(),
+                event.missionId()
         );
         log.info("Handled JoinMissionEvent for missionId: {}", event.missionId());
     }
@@ -40,10 +41,11 @@ public class PushNotificationEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     void handleCompleteMissionEvent(final CompleteMissionEvent event) {
         String topic = TopicGenerator.getTopic(event.missionId());
-        pushNotificationSender.sendGroupNotification(
+        pushNotificationSender.sendGroupData(
                 MISSION_COMPLETED.getTitle(),
                 MISSION_COMPLETED.getBody(),
-                topic
+                topic,
+                event.missionId()
         );
         log.info("Handled CompleteMissionEvent for missionId: {}", event.missionId());
     }

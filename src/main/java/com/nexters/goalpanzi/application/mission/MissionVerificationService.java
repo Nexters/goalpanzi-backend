@@ -112,30 +112,33 @@ public class MissionVerificationService {
             if (mission.isMissionDay() && mission.isPushTime(hour)) {
                 List<MissionVerification> verifications = missionVerificationRepository.findAllByMissionIdAndDate(mission.getId(), today);
                 int verificationCount = verifications.size();
-                String topic = TopicGenerator.getTopic(mission.getId());
 
                 if (verificationCount == 0) {
-                    sendNoOneVerifiedPushMessage(MISSION_NO_ONE_VERIFIED, topic);
+                    sendNoOneVerifiedPushMessage(MISSION_NO_ONE_VERIFIED, mission.getId());
                 } else {
-                    sendVerifiedPushMessage(MISSION_VERIFIED, topic, verificationCount);
+                    sendVerifiedPushMessage(MISSION_VERIFIED, mission.getId(), verificationCount);
                 }
             }
         });
     }
 
-    private void sendVerifiedPushMessage(final PushNotificationMessage message, final String topic, final int verificationCount) {
-        pushNotificationSender.sendGroupNotification(
+    private void sendVerifiedPushMessage(final PushNotificationMessage message, final Long missionId, final int verificationCount) {
+        String topic = TopicGenerator.getTopic(missionId);
+        pushNotificationSender.sendGroupData(
                 message.getTitle(verificationCount),
                 message.getBody(),
-                topic
+                topic,
+                missionId
         );
     }
 
-    private void sendNoOneVerifiedPushMessage(final PushNotificationMessage message, final String topic) {
-        pushNotificationSender.sendGroupNotification(
+    private void sendNoOneVerifiedPushMessage(final PushNotificationMessage message, final Long missionId) {
+        String topic = TopicGenerator.getTopic(missionId);
+        pushNotificationSender.sendGroupData(
                 message.getTitle(),
                 message.getBody(),
-                topic
+                topic,
+                missionId
         );
     }
 
@@ -146,17 +149,18 @@ public class MissionVerificationService {
         List<Mission> missions = missionRepository.getInProgressMissions();
 
         missions.forEach(mission -> {
-            if (mission.isMissionDay() && mission.isPushTime(hour)) {
+            if (mission.isMissionDay()) {
                 List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(mission.getId());
 
                 missionMembers.forEach(missionMember -> {
                     Member member = missionMember.getMember();
                     Optional<MissionVerification> verification = missionVerificationRepository.findByMemberIdAndMissionIdAndDate(member.getId(), mission.getId(), today);
                     if (verification.isEmpty() && member.isPushActivated()) {
-                        pushNotificationSender.sendIndividualNotification(
+                        pushNotificationSender.sendIndividualData(
                                 MISSION_VERIFICATION_WARNING.getTitle(),
                                 MISSION_VERIFICATION_WARNING.getBody(),
-                                member.getDeviceToken()
+                                member.getDeviceToken(),
+                                mission.getId()
                         );
                     }
                 });

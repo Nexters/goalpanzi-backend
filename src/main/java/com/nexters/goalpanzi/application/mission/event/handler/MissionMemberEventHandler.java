@@ -53,10 +53,11 @@ public class MissionMemberEventHandler {
         missionMemberService.deleteAllByMissionId(event.missionId());
         missionVerificationService.deleteAllByMissionId(event.missionId());
         String topic = TopicGenerator.getTopic(event.missionId());
-        pushNotificationSender.sendGroupNotification(
+        pushNotificationSender.sendGroupData(
                 MISSION_DELETED.getTitle(),
                 MISSION_DELETED.getBody(),
-                topic
+                topic,
+                event.missionId()
         );
         log.info("Handled DeleteMissionEvent for missionId: {}", event.missionId());
     }

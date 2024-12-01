@@ -62,8 +62,9 @@ public class MissionMemberService {
         missionValidator.validateMaxPersonnel(mission);
         missionMemberRepository.save(MissionMember.join(member, mission));
 
-        if (!member.isPushActivated()) {
+        if (member.isPushActivated()) {
             eventPublisher.publishEvent(new JoinMissionEvent(mission.getId(), member.getDeviceToken(), member.getNickname()));
+        } else {
             cancelRetryPushMessage(member.getId());
         }
     }
@@ -148,10 +149,11 @@ public class MissionMemberService {
         missions.forEach(mission -> {
             if (mission.isReadyTime(now) && missionValidator.hasEnoughMember(mission.getId())) {
                 String topic = TopicGenerator.getTopic(mission.getId());
-                pushNotificationSender.sendGroupNotification(
+                pushNotificationSender.sendGroupData(
                         MISSION_READY.getTitle(),
                         MISSION_READY.getBody(),
-                        topic
+                        topic,
+                        mission.getId()
                 );
             }
         });
@@ -164,10 +166,11 @@ public class MissionMemberService {
         missions.forEach(mission -> {
             if (mission.isReadyTime(now) && !missionValidator.hasEnoughMember(mission.getId())) {
                 String topic = TopicGenerator.getTopic(mission.getId());
-                pushNotificationSender.sendGroupNotification(
+                pushNotificationSender.sendGroupData(
                         MISSION_CANCELLATION_WARNING.getTitle(),
                         MISSION_CANCELLATION_WARNING.getBody(),
-                        topic
+                        topic,
+                        mission.getId()
                 );
             }
         });
@@ -179,7 +182,7 @@ public class MissionMemberService {
         keys.forEach(key -> {
             String deviceToken = missionRetryMessageRepository.find(key);
             if (deviceToken != null) {
-                pushNotificationSender.sendGroupNotification(
+                pushNotificationSender.sendIndividualNotification(
                         MISSION_RETRY.getTitle(),
                         MISSION_RETRY.getBody(),
                         deviceToken
