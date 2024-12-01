@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.infrastructure.firebase;
 
-public interface PushNotificationSender {
+public interface PushMessageSender {
 
     void sendIndividualNotification(final String title, final String body, final String token);
 

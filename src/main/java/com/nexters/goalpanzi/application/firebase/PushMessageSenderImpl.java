@@ -7,11 +7,11 @@ import com.google.firebase.messaging.Notification;
 import com.nexters.goalpanzi.application.firebase.dto.response.Data;
 import com.nexters.goalpanzi.exception.BaseException;
 import com.nexters.goalpanzi.exception.ErrorCode;
-import com.nexters.goalpanzi.infrastructure.firebase.PushNotificationSender;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PushNotificationSenderImpl implements PushNotificationSender {
+public class PushMessageSenderImpl implements PushMessageSender {
 
     public void sendIndividualNotification(final String title, final String body, final String token) {
         Notification notification = makeNotification(title, body);

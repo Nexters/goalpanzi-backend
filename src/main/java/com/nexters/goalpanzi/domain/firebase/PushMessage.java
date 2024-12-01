@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public enum PushNotificationMessage {
+public enum PushMessage {
     // 미션 시작 전
     MISSION_READY("미션 시작까지 1시간! 준비 갈 완료?\uD83C\uDF40", "이제 꾸준함을 향한 첫 발을 내딛을 시간!"),
     MISSION_JOINED("엇? 누가 미션에 합류했어요! \uD83D\uDE4C", "이제 메이트 %s님과 미션 경쟁을 할 수 있어요."),

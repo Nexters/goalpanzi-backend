@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.presentation.fcmtest;
 
-import com.nexters.goalpanzi.infrastructure.firebase.PushNotificationSender;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
 import com.nexters.goalpanzi.infrastructure.firebase.TopicSubscriber;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 public class FcmTestController {
 
-    private final PushNotificationSender pushNotificationSender;
+    private final PushMessageSender pushMessageSender;
     private final TopicSubscriber topicSubscriber;
 
     @Operation(summary = "개별 메시지 전송")
@@ -28,7 +28,7 @@ public class FcmTestController {
     ResponseEntity<Void> sendIndividualNotification(
             @Schema(description = "deviceToken", requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam final String deviceToken) {
-        pushNotificationSender.sendIndividualNotification("개별 메시지 테스트", deviceToken + "으로 개별 메시지를 전송합니다.", deviceToken);
+        pushMessageSender.sendIndividualNotification("개별 메시지 테스트", deviceToken + "으로 개별 메시지를 전송합니다.", deviceToken);
 
         return ResponseEntity.ok().build();
     }
@@ -41,7 +41,7 @@ public class FcmTestController {
     ) {
         String topic = "topic-test";
         topicSubscriber.subscribeToTopic(List.of(deviceToken), topic);
-        pushNotificationSender.sendGroupNotification("그룹 메시지 테스트", topic + "으로 그룹 메시지를 전송합니다.", topic);
+        pushMessageSender.sendGroupNotification("그룹 메시지 테스트", topic + "으로 그룹 메시지를 전송합니다.", topic);
         topicSubscriber.unsubscribeFromTopic(List.of(deviceToken), topic);
 
         return ResponseEntity.ok().build();
@@ -53,7 +53,7 @@ public class FcmTestController {
             @Schema(description = "deviceToken", requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam final String deviceToken
     ) {
-        pushNotificationSender.sendIndividualData("Data 타입 테스트", "Data 타입 전송 테스트입니다.", deviceToken, 1L);
+        pushMessageSender.sendIndividualData("Data 타입 테스트", "Data 타입 전송 테스트입니다.", deviceToken, 1L);
 
         return ResponseEntity.ok().build();
     }

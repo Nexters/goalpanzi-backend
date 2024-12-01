@@ -15,7 +15,7 @@ import com.nexters.goalpanzi.domain.mission.repository.MissionRetryMessageReposi
 import com.nexters.goalpanzi.exception.AlreadyExistsException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
-import com.nexters.goalpanzi.infrastructure.firebase.PushNotificationSender;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
 import com.nexters.goalpanzi.infrastructure.firebase.TopicSubscriber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -30,7 +30,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.nexters.goalpanzi.domain.firebase.PushNotificationMessage.*;
+import static com.nexters.goalpanzi.domain.firebase.PushMessage.*;
 import static com.nexters.goalpanzi.domain.mission.MissionStatus.*;
 
 @Transactional(readOnly = true)
@@ -46,7 +46,7 @@ public class MissionMemberService {
     private final MissionRetryMessageRepository missionRetryMessageRepository;
 
     private final ApplicationEventPublisher eventPublisher;
-    private final PushNotificationSender pushNotificationSender;
+    private final PushMessageSender pushMessageSender;
     private final TopicSubscriber topicSubscriber;
 
     public MissionDetailResponse getJoinableMission(final InvitationCode invitationCode) {
@@ -149,7 +149,7 @@ public class MissionMemberService {
         missions.forEach(mission -> {
             if (mission.isReadyTime(now) && missionValidator.hasEnoughMember(mission.getId())) {
                 String topic = TopicGenerator.getTopic(mission.getId());
-                pushNotificationSender.sendGroupData(
+                pushMessageSender.sendGroupData(
                         MISSION_READY.getTitle(),
                         MISSION_READY.getBody(),
                         topic,
@@ -166,7 +166,7 @@ public class MissionMemberService {
         missions.forEach(mission -> {
             if (mission.isReadyTime(now) && !missionValidator.hasEnoughMember(mission.getId())) {
                 String topic = TopicGenerator.getTopic(mission.getId());
-                pushNotificationSender.sendGroupData(
+                pushMessageSender.sendGroupData(
                         MISSION_CANCELLATION_WARNING.getTitle(),
                         MISSION_CANCELLATION_WARNING.getBody(),
                         topic,
@@ -182,7 +182,7 @@ public class MissionMemberService {
         keys.forEach(key -> {
             String deviceToken = missionRetryMessageRepository.find(key);
             if (deviceToken != null) {
-                pushNotificationSender.sendIndividualNotification(
+                pushMessageSender.sendIndividualNotification(
                         MISSION_RETRY.getTitle(),
                         MISSION_RETRY.getBody(),
                         deviceToken

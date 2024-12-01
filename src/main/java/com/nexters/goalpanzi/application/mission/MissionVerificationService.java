@@ -10,7 +10,7 @@ import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificatio
 import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
 import com.nexters.goalpanzi.common.annotation.RedissonLock;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
-import com.nexters.goalpanzi.domain.firebase.PushNotificationMessage;
+import com.nexters.goalpanzi.domain.firebase.PushMessage;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.*;
@@ -20,7 +20,7 @@ import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationReposi
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationViewRepository;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
-import com.nexters.goalpanzi.infrastructure.firebase.PushNotificationSender;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +30,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static com.nexters.goalpanzi.domain.firebase.PushNotificationMessage.*;
+import static com.nexters.goalpanzi.domain.firebase.PushMessage.*;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -44,7 +44,7 @@ public class MissionVerificationService {
     private final MemberRepository memberRepository;
 
     private final ObjectStorageClient objectStorageClient;
-    private final PushNotificationSender pushNotificationSender;
+    private final PushMessageSender pushMessageSender;
 
     private final MissionVerificationValidator missionVerificationValidator;
     private final MissionVerificationResponseSorter missionVerificationResponseSorter;
@@ -122,9 +122,9 @@ public class MissionVerificationService {
         });
     }
 
-    private void sendVerifiedPushMessage(final PushNotificationMessage message, final Long missionId, final int verificationCount) {
+    private void sendVerifiedPushMessage(final PushMessage message, final Long missionId, final int verificationCount) {
         String topic = TopicGenerator.getTopic(missionId);
-        pushNotificationSender.sendGroupData(
+        pushMessageSender.sendGroupData(
                 message.getTitle(verificationCount),
                 message.getBody(),
                 topic,
@@ -132,9 +132,9 @@ public class MissionVerificationService {
         );
     }
 
-    private void sendNoOneVerifiedPushMessage(final PushNotificationMessage message, final Long missionId) {
+    private void sendNoOneVerifiedPushMessage(final PushMessage message, final Long missionId) {
         String topic = TopicGenerator.getTopic(missionId);
-        pushNotificationSender.sendGroupData(
+        pushMessageSender.sendGroupData(
                 message.getTitle(),
                 message.getBody(),
                 topic,
@@ -156,7 +156,7 @@ public class MissionVerificationService {
                     Member member = missionMember.getMember();
                     Optional<MissionVerification> verification = missionVerificationRepository.findByMemberIdAndMissionIdAndDate(member.getId(), mission.getId(), today);
                     if (verification.isEmpty() && member.isPushActivated()) {
-                        pushNotificationSender.sendIndividualData(
+                        pushMessageSender.sendIndividualData(
                                 MISSION_VERIFICATION_WARNING.getTitle(),
                                 MISSION_VERIFICATION_WARNING.getBody(),
                                 member.getDeviceToken(),
