@@ -15,10 +15,9 @@ import com.nexters.goalpanzi.domain.mission.repository.MissionRetryMessageReposi
 import com.nexters.goalpanzi.exception.AlreadyExistsException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
-import com.nexters.goalpanzi.infrastructure.firebase.PushNotificationSender;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
 import com.nexters.goalpanzi.infrastructure.firebase.TopicSubscriber;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.TimeoutUtils;
 import org.springframework.stereotype.Service;
@@ -31,10 +30,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.nexters.goalpanzi.domain.firebase.PushNotificationMessage.*;
+import static com.nexters.goalpanzi.domain.firebase.PushMessage.*;
 import static com.nexters.goalpanzi.domain.mission.MissionStatus.*;
 
-@Slf4j // TODO 오류 확인 후 삭제
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
@@ -48,7 +46,7 @@ public class MissionMemberService {
     private final MissionRetryMessageRepository missionRetryMessageRepository;
 
     private final ApplicationEventPublisher eventPublisher;
-    private final PushNotificationSender pushNotificationSender;
+    private final PushMessageSender pushMessageSender;
     private final TopicSubscriber topicSubscriber;
 
     public MissionDetailResponse getJoinableMission(final InvitationCode invitationCode) {
@@ -64,8 +62,9 @@ public class MissionMemberService {
         missionValidator.validateMaxPersonnel(mission);
         missionMemberRepository.save(MissionMember.join(member, mission));
 
-        if (!member.isPushActivated()) {
+        if (member.isPushActivated()) {
             eventPublisher.publishEvent(new JoinMissionEvent(mission.getId(), member.getDeviceToken(), member.getNickname()));
+        } else {
             cancelRetryPushMessage(member.getId());
         }
     }
@@ -150,10 +149,11 @@ public class MissionMemberService {
         missions.forEach(mission -> {
             if (mission.isReadyTime(now) && missionValidator.hasEnoughMember(mission.getId())) {
                 String topic = TopicGenerator.getTopic(mission.getId());
-                pushNotificationSender.sendGroupMessage(
+                pushMessageSender.sendGroupData(
                         MISSION_READY.getTitle(),
                         MISSION_READY.getBody(),
-                        topic
+                        topic,
+                        mission.getId()
                 );
             }
         });
@@ -166,12 +166,12 @@ public class MissionMemberService {
         missions.forEach(mission -> {
             if (mission.isReadyTime(now) && !missionValidator.hasEnoughMember(mission.getId())) {
                 String topic = TopicGenerator.getTopic(mission.getId());
-                pushNotificationSender.sendGroupMessage(
+                pushMessageSender.sendGroupData(
                         MISSION_CANCELLATION_WARNING.getTitle(),
                         MISSION_CANCELLATION_WARNING.getBody(),
-                        topic
+                        topic,
+                        mission.getId()
                 );
-                log.info("Send CancellationWarningPushMessage to topic: {}", topic);
             }
         });
     }
@@ -182,7 +182,7 @@ public class MissionMemberService {
         keys.forEach(key -> {
             String deviceToken = missionRetryMessageRepository.find(key);
             if (deviceToken != null) {
-                pushNotificationSender.sendGroupMessage(
+                pushMessageSender.sendIndividualNotification(
                         MISSION_RETRY.getTitle(),
                         MISSION_RETRY.getBody(),
                         deviceToken

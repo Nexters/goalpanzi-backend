@@ -61,7 +61,7 @@ public class Member extends BaseEntity {
     }
 
     public boolean isPushActivated() {
-        return pushActivationStatus;
+        return pushActivationStatus && deviceToken != null;
     }
 
     public void updateNickname(final String nickname) {

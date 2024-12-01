@@ -1,0 +1,142 @@
+package com.nexters.goalpanzi.application.mission;
+
+import com.nexters.goalpanzi.application.firebase.TopicGenerator;
+import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
+import com.nexters.goalpanzi.config.redis.RedisInitializer;
+import com.nexters.goalpanzi.domain.member.Member;
+import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
+import com.nexters.goalpanzi.domain.mission.Mission;
+import com.nexters.goalpanzi.domain.mission.MissionMember;
+import com.nexters.goalpanzi.domain.mission.MissionVerification;
+import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
+import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
+import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationRepository;
+import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationViewRepository;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBeans;
+import org.springframework.test.context.ContextConfiguration;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import static com.nexters.goalpanzi.domain.firebase.PushMessage.*;
+import static com.nexters.goalpanzi.fixture.MemberFixture.DEVICE_TOKEN;
+import static com.nexters.goalpanzi.fixture.MissionFixture.UPLOADED_IMAGE_URL;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.*;
+
+@SpringBootTest
+@ContextConfiguration(
+        initializers = {RedisInitializer.class}
+)
+@MockBeans({
+        @MockBean(MemberRepository.class),
+        @MockBean(MissionVerificationViewRepository.class),
+        @MockBean(ObjectStorageClient.class),
+        @MockBean(MissionVerificationValidator.class),
+        @MockBean(MissionVerificationResponseSorter.class)
+})
+class MissionVerificationServiceTest {
+
+    @Autowired
+    private MissionVerificationService missionVerificationService;
+
+    @MockBean
+    private MissionVerificationRepository missionVerificationRepository;
+
+    @MockBean
+    private MissionRepository missionRepository;
+
+    @MockBean
+    private MissionMemberRepository missionMemberRepository;
+
+    @MockBean
+    private PushMessageSender pushMessageSender;
+
+    private final Long MISSION_ID = 1L;
+
+    @Test
+    void 미션_인증_푸시_시간이고_친구_중_한_명이라도_미션을_인증한_경우_MISSION_VERIFIED_푸시_알림을_보낸다() {
+        Mission mockMission = mock(Mission.class);
+        MissionVerification missionVerification = new MissionVerification(
+                mock(Member.class),
+                mockMission,
+                UPLOADED_IMAGE_URL,
+                1
+        );
+        List<MissionVerification> verifications = List.of(missionVerification);
+
+        when(mockMission.getId()).thenReturn(MISSION_ID);
+        when(mockMission.isMissionDay()).thenReturn(true);
+        when(mockMission.isPushTime(anyInt())).thenReturn(true);
+
+        when(missionRepository.getInProgressMissions()).thenReturn(List.of(mockMission));
+        when(missionVerificationRepository.findAllByMissionIdAndDate(MISSION_ID, LocalDate.now())).thenReturn(verifications);
+
+        missionVerificationService.sendVerificationPushMessage();
+
+        verify(pushMessageSender).sendGroupData(
+                MISSION_VERIFIED.getTitle(verifications.size()),
+                MISSION_VERIFIED.getBody(),
+                TopicGenerator.getTopic(MISSION_ID),
+                MISSION_ID
+        );
+    }
+
+    @Test
+    void 미션_인증_푸시_시간이고_아무도_미션을_인증하지_않은_경우_MISSION_NO_ONE_VERIFIED_푸시_알림을_보낸다() {
+        Mission mockMission = mock(Mission.class);
+
+        when(mockMission.getId()).thenReturn(MISSION_ID);
+        when(mockMission.isMissionDay()).thenReturn(true);
+        when(mockMission.isPushTime(anyInt())).thenReturn(true);
+
+        when(missionRepository.getInProgressMissions()).thenReturn(List.of(mockMission));
+        when(missionVerificationRepository.findAllByMissionIdAndDate(MISSION_ID, LocalDate.now())).thenReturn(List.of());
+
+        missionVerificationService.sendVerificationPushMessage();
+
+        verify(pushMessageSender).sendGroupData(
+                MISSION_NO_ONE_VERIFIED.getTitle(),
+                MISSION_NO_ONE_VERIFIED.getBody(),
+                TopicGenerator.getTopic(MISSION_ID),
+                MISSION_ID
+        );
+    }
+
+    @Test
+    void 미션을_인증하지_않은_경우_MISSION_VERIFICATION_WARNING_푸시_알림을_보낸다() {
+        Long MEMBER_ID = 2L;
+        Mission mockMission = mock(Mission.class);
+        MissionMember mockMissionMember = mock(MissionMember.class);
+        Member mockMember = mock(Member.class);
+        List<MissionMember> missionMembers = List.of(mockMissionMember);
+
+        when(mockMission.getId()).thenReturn(MISSION_ID);
+        when(mockMission.isMissionDay()).thenReturn(true);
+
+        when(mockMissionMember.getMember()).thenReturn(mockMember);
+
+        when(mockMember.getId()).thenReturn(MEMBER_ID);
+        when(mockMember.isPushActivated()).thenReturn(true);
+        when(mockMember.getDeviceToken()).thenReturn(DEVICE_TOKEN);
+
+        when(missionRepository.getInProgressMissions()).thenReturn(List.of(mockMission));
+        when(missionMemberRepository.findAllByMissionId(MISSION_ID)).thenReturn(missionMembers);
+        when(missionVerificationRepository.findByMemberIdAndMissionIdAndDate(MEMBER_ID, MISSION_ID, LocalDate.now())).thenReturn(Optional.empty());
+
+        missionVerificationService.sendVerificationWarningPushMessage();
+
+        verify(pushMessageSender).sendIndividualData(
+                MISSION_VERIFICATION_WARNING.getTitle(),
+                MISSION_VERIFICATION_WARNING.getBody(),
+                DEVICE_TOKEN,
+                MISSION_ID
+        );
+    }
+}
