@@ -2,6 +2,7 @@ package com.nexters.goalpanzi.application.mission;
 
 import com.nexters.goalpanzi.application.firebase.TopicGenerator;
 import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
+import com.nexters.goalpanzi.config.redis.RedisInitializer;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.Mission;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,6 +31,9 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@ContextConfiguration(
+        initializers = {RedisInitializer.class}
+)
 @MockBeans({
         @MockBean(MemberRepository.class),
         @MockBean(MissionVerificationViewRepository.class),

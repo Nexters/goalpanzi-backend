@@ -2,6 +2,7 @@ package com.nexters.goalpanzi.application.mission;
 
 import com.nexters.goalpanzi.application.mission.dto.request.MissionBoardQuery;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionBoardsResponse;
+import com.nexters.goalpanzi.config.redis.RedisInitializer;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.Mission;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
 
@@ -26,6 +28,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
+@ContextConfiguration(
+        initializers = {RedisInitializer.class}
+)
 class MissionBoardServiceTest {
 
     Member me;
