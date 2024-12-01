@@ -1,7 +1,6 @@
 package com.nexters.goalpanzi.application.mission;
 
 import com.nexters.goalpanzi.application.firebase.TopicGenerator;
-import com.nexters.goalpanzi.config.redis.RedisInitializer;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
@@ -15,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,9 +24,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-@ContextConfiguration(
-        initializers = {RedisInitializer.class}
-)
 @MockBeans({
         @MockBean(MemberRepository.class),
         @MockBean(MissionRetryMessageRepository.class),
