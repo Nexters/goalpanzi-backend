@@ -74,7 +74,6 @@ public class MissionMemberEventHandler {
     }
 
     @Async
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     void handleUpdatePushActivationStatusEvent(final UpdatePushActivationStatusEvent event) {
         if (event.isPushActivated()) {
