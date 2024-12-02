@@ -6,11 +6,12 @@ import com.nexters.goalpanzi.application.mission.MissionMemberService;
 import com.nexters.goalpanzi.application.mission.MissionVerificationService;
 import com.nexters.goalpanzi.config.event.SyncEventConfig;
 import com.nexters.goalpanzi.config.redis.RedisInitializer;
-import com.nexters.goalpanzi.infrastructure.firebase.PushNotificationSender;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -24,6 +25,9 @@ import static org.mockito.Mockito.verify;
 @ContextConfiguration(
         initializers = {RedisInitializer.class}
 )
+@MockBeans({
+        @MockBean(MissionVerificationService.class)
+})
 class MissionMemberEventHandlerTest {
 
     @Autowired
@@ -39,10 +43,7 @@ class MissionMemberEventHandlerTest {
     private MissionMemberService missionMemberService;
 
     @MockBean
-    private MissionVerificationService missionVerificationService;
-
-    @MockBean
-    private PushNotificationSender pushNotificationSender;
+    private PushMessageSender pushMessageSender;
 
     @Test
     void 기존_디바이스_토큰이_null인_상황에서_디바이스_토큰을_갱신하면_토픽_구독만_진행한다() {
