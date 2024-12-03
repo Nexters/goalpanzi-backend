@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -109,7 +110,7 @@ public class MissionVerificationService {
         List<Mission> missions = missionRepository.getInProgressMissions();
 
         missions.forEach(mission -> {
-            if (mission.isMissionDay() && mission.isPushTime(hour)) {
+            if (mission.isMissionDay() && mission.isVerificationStatusPushTime(hour)) {
                 List<MissionVerification> verifications = missionVerificationRepository.findAllByMissionIdAndDate(mission.getId(), today);
                 int verificationCount = verifications.size();
 
@@ -145,11 +146,11 @@ public class MissionVerificationService {
     @Transactional
     public void sendVerificationWarningPushMessage() {
         LocalDate today = LocalDate.now();
-        int hour = LocalDateTime.now().getHour();
+        LocalTime time = LocalTime.now();
         List<Mission> missions = missionRepository.getInProgressMissions();
 
         missions.forEach(mission -> {
-            if (mission.isMissionDay()) {
+            if (mission.isMissionDay() && mission.isVerificationWarningPushTime(time)) {
                 List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(mission.getId());
 
                 missionMembers.forEach(missionMember -> {
