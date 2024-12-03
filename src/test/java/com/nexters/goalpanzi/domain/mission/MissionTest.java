@@ -1,9 +1,11 @@
 package com.nexters.goalpanzi.domain.mission;
 
+import com.nexters.goalpanzi.common.time.TimeUtil;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import static com.nexters.goalpanzi.fixture.MemberFixture.MEMBER_ID;
@@ -154,7 +156,7 @@ class MissionTest {
                 BOARD_COUNT,
                 InvitationCode.generate()
         );
-        assertThat(mission.isPushTime(9)).isTrue();
+        assertThat(mission.isVerificationStatusPushTime(9)).isTrue();
     }
 
     @Test
@@ -169,7 +171,7 @@ class MissionTest {
                 BOARD_COUNT,
                 InvitationCode.generate()
         );
-        assertThat(mission.isPushTime(15)).isTrue();
+        assertThat(mission.isVerificationStatusPushTime(15)).isTrue();
     }
 
     @Test
@@ -184,7 +186,7 @@ class MissionTest {
                 BOARD_COUNT,
                 InvitationCode.generate()
         );
-        assertThat(mission.isPushTime(15)).isTrue();
+        assertThat(mission.isVerificationStatusPushTime(15)).isTrue();
     }
 
     @Test
@@ -204,6 +206,27 @@ class MissionTest {
         assertAll(
                 () -> assertThat(mission.isReadyTime(mission.getMissionUploadStartDateTime().minusHours(1))).isTrue(),
                 () -> assertThat(mission.isReadyTime(mission.getMissionUploadStartDateTime().minusMinutes(30))).isTrue()
+        );
+    }
+
+    @Test
+    void 미션_인증_마감까지_1시간_덜_남은_경우_미션_인증_경고_시간이다() {
+        LocalDateTime now = LocalDateTime.now();
+        Mission mission = Mission.create(
+                MEMBER_ID,
+                DESCRIPTION,
+                now,
+                now.plusDays(30),
+                TimeOfDay.EVERYDAY,
+                List.of(DayOfWeek.FRIDAY),
+                BOARD_COUNT,
+                InvitationCode.generate()
+        );
+        LocalTime uploadEndTime = TimeUtil.of(mission.getUploadEndTime());
+
+        assertAll(
+                () -> assertThat(mission.isVerificationWarningPushTime(uploadEndTime.minusHours(1))).isTrue(),
+                () -> assertThat(mission.isVerificationWarningPushTime(uploadEndTime.minusMinutes(30))).isTrue()
         );
     }
 }

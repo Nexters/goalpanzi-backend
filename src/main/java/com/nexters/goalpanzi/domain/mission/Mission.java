@@ -177,14 +177,27 @@ public class Mission extends BaseEntity {
     }
 
     /**
-     * <b>현재 시간이 푸시 시간인지 검증</b> <br>
+     * <b>현재 시간이 미션 인증 경고 시간인지 검증</b> <br>
+     * 미션 인증 경고 시간 == 미션 인증 마감 1시간 전
+     *
+     * @param now 현재 시각
+     * @return 미션 인증 경고 시간 여부
+     */
+    public boolean isVerificationWarningPushTime(final LocalTime now) {
+        Duration duration = Duration.between(now, TimeUtil.of(uploadEndTime));
+
+        return duration.isPositive() && duration.toHours() <= 1;
+    }
+
+    /**
+     * <b>현재 시간이 인증 현황 안내 시간인지 검증</b> <br>
      * 1. 인증 시간이 오전인 경우, 09시에 푸시 <br>
      * 2. 인증 시간이 오후이거나 종일인 경우, 15시에 푸시
      *
      * @param hour 현재 시각의 시간
-     * @return 미션 인증 푸시 시간 여부
+     * @return 미션 인증 현황 안내 시간 여부
      */
-    public boolean isPushTime(final int hour) {
+    public boolean isVerificationStatusPushTime(final int hour) {
         if (uploadStartTime.equals(TimeOfDay.MORNING.getStartTime()) && uploadEndTime.equals(TimeOfDay.MORNING.getEndTime())) {
             return hour == PushTime.MORNING.getHour();
         }
