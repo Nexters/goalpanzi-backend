@@ -21,6 +21,7 @@ import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,7 +74,7 @@ class MissionVerificationServiceTest {
 
         when(mockMission.getId()).thenReturn(MISSION_ID);
         when(mockMission.isMissionDay()).thenReturn(true);
-        when(mockMission.isPushTime(anyInt())).thenReturn(true);
+        when(mockMission.isVerificationStatusPushTime(anyInt())).thenReturn(true);
 
         when(missionRepository.getInProgressMissions()).thenReturn(List.of(mockMission));
         when(missionVerificationRepository.findAllByMissionIdAndDate(MISSION_ID, LocalDate.now())).thenReturn(verifications);
@@ -94,7 +95,7 @@ class MissionVerificationServiceTest {
 
         when(mockMission.getId()).thenReturn(MISSION_ID);
         when(mockMission.isMissionDay()).thenReturn(true);
-        when(mockMission.isPushTime(anyInt())).thenReturn(true);
+        when(mockMission.isVerificationStatusPushTime(anyInt())).thenReturn(true);
 
         when(missionRepository.getInProgressMissions()).thenReturn(List.of(mockMission));
         when(missionVerificationRepository.findAllByMissionIdAndDate(MISSION_ID, LocalDate.now())).thenReturn(List.of());
@@ -110,7 +111,7 @@ class MissionVerificationServiceTest {
     }
 
     @Test
-    void 미션을_인증하지_않은_경우_MISSION_VERIFICATION_WARNING_푸시_알림을_보낸다() {
+    void 미션을_인증하지_않았고_인증_마감_경고_시간인_경우_MISSION_VERIFICATION_WARNING_푸시_알림을_보낸다() {
         Long MEMBER_ID = 2L;
         Mission mockMission = mock(Mission.class);
         MissionMember mockMissionMember = mock(MissionMember.class);
@@ -119,6 +120,7 @@ class MissionVerificationServiceTest {
 
         when(mockMission.getId()).thenReturn(MISSION_ID);
         when(mockMission.isMissionDay()).thenReturn(true);
+        when(mockMission.isVerificationWarningPushTime(any(LocalTime.class))).thenReturn(true);
 
         when(mockMissionMember.getMember()).thenReturn(mockMember);
 
