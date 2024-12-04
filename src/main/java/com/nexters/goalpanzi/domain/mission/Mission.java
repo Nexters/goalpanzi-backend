@@ -207,6 +207,16 @@ public class Mission extends BaseEntity {
         return hour == PushTime.EVERYDAY.getHour();
     }
 
+    /**
+     * <b>오늘 일자가 미션 마지막 날인지 검증</b>
+     *
+     * @param today 오늘 일자
+     * @return 미션 마지막 날 여부
+     */
+    public boolean isEndDate(final LocalDate today) {
+        return today.isEqual(missionEndDate.toLocalDate());
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
