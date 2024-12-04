@@ -15,6 +15,12 @@ import java.util.Optional;
 public interface MissionMemberRepository extends JpaRepository<MissionMember, Long> {
     Optional<MissionMember> findByMemberIdAndMissionId(final Long memberId, final Long missionId);
 
+    @Query("SELECT mm FROM MissionMember mm"
+            + " JOIN FETCH mm.member JOIN FETCH mm.mission"
+            + " WHERE mm.member.id = :memberId AND mm.mission.id = :missionId"
+    )
+    Optional<MissionMember> findWithMemberAndMissionByMemberIdAndMissionId(final Long memberId, final Long missionId);
+
     List<MissionMember> findAllByMissionId(final Long MissionId);
 
     List<MissionMember> findAllByMissionId(final Long missionId, Sort sort);
@@ -29,6 +35,11 @@ public interface MissionMemberRepository extends JpaRepository<MissionMember, Lo
 
     default MissionMember getMissionMember(final Long memberId, final Long missionId) {
         return findByMemberIdAndMissionId(memberId, missionId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_JOINED_MISSION_MEMBER));
+    }
+
+    default MissionMember getMissionMemberWithMemberAndMission(final Long memberId, final Long missionId) {
+        return findWithMemberAndMissionByMemberIdAndMissionId(memberId, missionId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_JOINED_MISSION_MEMBER));
     }
 
