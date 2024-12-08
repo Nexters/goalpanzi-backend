@@ -65,10 +65,12 @@ public class FcmTestController {
             @Schema(description = "deviceToken", requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam final String deviceToken
     ) {
+        String topic = TopicGenerator.getTopic(1L);
+        topicSubscriber.subscribeToTopic(List.of(deviceToken), topic);
         pushMessageSender.sendNotificationWithData(
                 "혼합 메시지 테스트",
                 "notification { title: string, body: string }, data { missionId: string }",
-                TopicGenerator.getTopic(1L)
+                topic
         );
 
         return ResponseEntity.ok().build();
