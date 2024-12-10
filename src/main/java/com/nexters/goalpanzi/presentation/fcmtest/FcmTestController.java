@@ -1,5 +1,6 @@
 package com.nexters.goalpanzi.presentation.fcmtest;
 
+import com.nexters.goalpanzi.application.firebase.TopicGenerator;
 import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
 import com.nexters.goalpanzi.infrastructure.firebase.TopicSubscriber;
 import io.swagger.v3.oas.annotations.Operation;
@@ -54,6 +55,23 @@ public class FcmTestController {
             @RequestParam final String deviceToken
     ) {
         pushMessageSender.sendIndividualData("Data 타입 테스트", "Data 타입 전송 테스트입니다.", deviceToken, 1L);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation
+    @GetMapping("notification-with-data")
+    ResponseEntity<Void> sendNotificationWithData(
+            @Schema(description = "deviceToken", requiredMode = Schema.RequiredMode.REQUIRED)
+            @RequestParam final String deviceToken
+    ) {
+        String topic = TopicGenerator.getTopic(1L);
+        topicSubscriber.subscribeToTopic(List.of(deviceToken), topic);
+        pushMessageSender.sendNotificationWithData(
+                "혼합 메시지 테스트",
+                "notification { title: string, body: string }, data { missionId: string }",
+                topic
+        );
 
         return ResponseEntity.ok().build();
     }

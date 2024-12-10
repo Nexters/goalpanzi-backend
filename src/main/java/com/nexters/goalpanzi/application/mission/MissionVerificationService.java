@@ -7,6 +7,7 @@ import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificati
 import com.nexters.goalpanzi.application.mission.dto.request.ViewMissionVerificationCommand;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificationsResponse;
+import com.nexters.goalpanzi.application.mission.event.CompleteMissionEvent;
 import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
 import com.nexters.goalpanzi.common.annotation.RedissonLock;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
@@ -22,6 +23,7 @@ import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
 import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +48,7 @@ public class MissionVerificationService {
 
     private final ObjectStorageClient objectStorageClient;
     private final PushMessageSender pushMessageSender;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     private final MissionVerificationValidator missionVerificationValidator;
     private final MissionVerificationResponseSorter missionVerificationResponseSorter;
@@ -70,13 +73,26 @@ public class MissionVerificationService {
     @RedissonLock("MissionVerification")
     @Transactional
     public void createVerification(final CreateMissionVerificationCommand command) {
-        MissionMember missionMember = missionMemberRepository.getMissionMember(command.memberId(), command.missionId());
+        MissionMember missionMember = missionMemberRepository.getMissionMemberWithMemberAndMission(command.memberId(), command.missionId());
 
         missionVerificationValidator.validate(missionMember);
 
         String imageUrl = objectStorageClient.uploadFile(command.imageFile());
         missionMember.verify();
         missionVerificationRepository.save(new MissionVerification(missionMember.getMember(), missionMember.getMission(), imageUrl, missionMember.getVerificationCount()));
+
+        Mission mission = missionMember.getMission();
+        if (mission.isEndDate(LocalDate.now()) && isFirstPlace(command.missionId(), missionMember.getMember())) {
+            applicationEventPublisher.publishEvent(
+                    new CompleteMissionEvent(command.missionId())
+            );
+        }
+    }
+
+    private boolean isFirstPlace(final Long missionId, final Member member) {
+        List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(missionId);
+        int rank = MemberRanks.from(missionMembers).getRankByMember(member).rank();
+        return rank == 1;
     }
 
     @Transactional

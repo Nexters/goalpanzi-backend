@@ -7,4 +7,8 @@ public class TopicGenerator {
     public static String getTopic(Long missionId) {
         return TOPIC_PREFIX + missionId;
     }
+
+    public static String extractIdentifier(String topic) {
+        return topic.replace(TOPIC_PREFIX, "");
+    }
 }

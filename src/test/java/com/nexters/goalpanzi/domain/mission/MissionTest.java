@@ -120,7 +120,7 @@ class MissionTest {
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(30),
                 TimeOfDay.EVERYDAY,
-                List.of(DayOfWeek.FRIDAY),
+                WEEK,
                 BOARD_COUNT,
                 InvitationCode.generate()
         );
@@ -137,7 +137,7 @@ class MissionTest {
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(30),
                 timeOfDay,
-                List.of(DayOfWeek.FRIDAY),
+                WEEK,
                 BOARD_COUNT,
                 InvitationCode.generate()
         );
@@ -152,7 +152,7 @@ class MissionTest {
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(30),
                 TimeOfDay.MORNING,
-                List.of(DayOfWeek.FRIDAY),
+                WEEK,
                 BOARD_COUNT,
                 InvitationCode.generate()
         );
@@ -167,7 +167,7 @@ class MissionTest {
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(30),
                 TimeOfDay.AFTERNOON,
-                List.of(DayOfWeek.FRIDAY),
+                WEEK,
                 BOARD_COUNT,
                 InvitationCode.generate()
         );
@@ -182,7 +182,7 @@ class MissionTest {
                 LocalDateTime.now(),
                 LocalDateTime.now().plusDays(30),
                 TimeOfDay.EVERYDAY,
-                List.of(DayOfWeek.FRIDAY),
+                WEEK,
                 BOARD_COUNT,
                 InvitationCode.generate()
         );
@@ -198,7 +198,7 @@ class MissionTest {
                 now,
                 now.plusDays(30),
                 TimeOfDay.EVERYDAY,
-                List.of(DayOfWeek.FRIDAY),
+                WEEK,
                 BOARD_COUNT,
                 InvitationCode.generate()
         );
@@ -227,6 +227,27 @@ class MissionTest {
         assertAll(
                 () -> assertThat(mission.isVerificationWarningPushTime(uploadEndTime.minusHours(1))).isTrue(),
                 () -> assertThat(mission.isVerificationWarningPushTime(uploadEndTime.minusMinutes(30))).isTrue()
+        );
+    }
+
+    @Test
+    void 오늘_일자가_미션_마지막_날인지_검증한다() {
+        LocalDateTime startDate = LocalDateTime.now();
+        LocalDateTime endDate = startDate.plusDays(30);
+        Mission mission = Mission.create(
+                MEMBER_ID,
+                DESCRIPTION,
+                startDate,
+                endDate,
+                TimeOfDay.EVERYDAY,
+                List.of(DayOfWeek.FRIDAY),
+                BOARD_COUNT,
+                InvitationCode.generate()
+        );
+
+        assertAll(
+                () -> assertThat(mission.isEndDate(endDate.toLocalDate())).isTrue(),
+                () -> assertThat(mission.isEndDate(endDate.minusDays(1).toLocalDate())).isFalse()
         );
     }
 }

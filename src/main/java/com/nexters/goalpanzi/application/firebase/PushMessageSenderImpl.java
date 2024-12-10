@@ -79,4 +79,19 @@ public class PushMessageSenderImpl implements PushMessageSender {
     private Data makeData(final String title, final String body, final Long missionId) {
         return new Data(title, body, missionId);
     }
+
+    public void sendNotificationWithData(String title, String body, String topic) {
+        Notification notification = makeNotification(title, body);
+        Message message = Message.builder()
+                .setNotification(notification)
+                .putData("missionId", TopicGenerator.extractIdentifier(topic))
+                .setTopic(topic)
+                .build();
+
+        try {
+            FirebaseMessaging.getInstance().send(message);
+        } catch (FirebaseMessagingException e) {
+            throw new BaseException(ErrorCode.FAILED_TO_SEND_GROUP_MESSAGE, e);
+        }
+    }
 }
