@@ -62,9 +62,12 @@ public class MissionMemberService {
         missionValidator.validateMaxPersonnel(mission);
         missionMemberRepository.save(MissionMember.join(member, mission));
 
-        if (member.isPushActivated()) {
+        if (member.isPushActivated() && mission.isHostMember(memberId)) {
             eventPublisher.publishEvent(new JoinMissionEvent(mission.getId(), member.getDeviceToken(), member.getNickname()));
-        } else {
+        }
+
+        // TODO: 추후 필요없으면 삭제
+        if (!member.isPushActivated()) {
             cancelRetryPushMessage(member.getId());
         }
     }

@@ -217,6 +217,16 @@ public class Mission extends BaseEntity {
         return today.isEqual(missionEndDate.toLocalDate());
     }
 
+    /**
+     * <b>미션 호스트인지 검증</b>
+     *
+     * @param memberId
+     * @return 미션 호스트(생성한 사람) 여부
+     */
+    public boolean isHostMember(final Long memberId) {
+        return hostMemberId == memberId;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
