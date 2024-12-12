@@ -62,8 +62,12 @@ public class MissionMemberService {
         missionValidator.validateMaxPersonnel(mission);
         missionMemberRepository.save(MissionMember.join(member, mission));
 
-        if (member.isPushActivated() && mission.isHostMember(memberId)) {
-            eventPublisher.publishEvent(new JoinMissionEvent(mission.getId(), member.getDeviceToken(), member.getNickname()));
+        Long hostMemberId = mission.getHostMemberId();
+        Member hostMember = memberRepository.getMember(hostMemberId);
+        if (hostMember.isPushActivated() && !mission.isHostMember(memberId)) {
+            eventPublisher.publishEvent(
+                    new JoinMissionEvent(mission.getId(), hostMember.getDeviceToken(), member.getNickname())
+            );
         }
 
         // TODO: 추후 필요없으면 삭제
