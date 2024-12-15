@@ -17,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import static com.nexters.goalpanzi.acceptance.AcceptanceStep.*;
+import static com.nexters.goalpanzi.fixture.DeviceFixture.DEPRECATED_DEVICE_TOKEN;
+import static com.nexters.goalpanzi.fixture.DeviceFixture.DEVICE_TOKEN;
 import static com.nexters.goalpanzi.fixture.MemberFixture.*;
 import static com.nexters.goalpanzi.fixture.TokenFixture.BEARER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -78,7 +80,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
     void 디바이스_토큰을_갱신한다() {
         LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
 
-        UpdateDeviceTokenRequest request = new UpdateDeviceTokenRequest(DEVICE_TOKEN);
+        UpdateDeviceTokenRequest request = new UpdateDeviceTokenRequest(DEPRECATED_DEVICE_TOKEN, DEVICE_TOKEN);
         RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + login.accessToken())

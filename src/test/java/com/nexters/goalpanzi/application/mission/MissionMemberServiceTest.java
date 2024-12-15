@@ -28,6 +28,7 @@ import java.util.Optional;
 
 import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_CANCELLATION_WARNING;
 import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_READY;
+import static com.nexters.goalpanzi.fixture.DeviceFixture.DEVICE_TOKEN;
 import static com.nexters.goalpanzi.fixture.MemberFixture.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;

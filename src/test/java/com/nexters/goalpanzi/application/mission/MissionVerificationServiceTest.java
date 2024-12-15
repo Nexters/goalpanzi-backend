@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.nexters.goalpanzi.domain.firebase.PushMessage.*;
-import static com.nexters.goalpanzi.fixture.MemberFixture.DEVICE_TOKEN;
+import static com.nexters.goalpanzi.fixture.DeviceFixture.DEVICE_TOKEN;
 import static com.nexters.goalpanzi.fixture.MissionFixture.UPLOADED_IMAGE_URL;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;

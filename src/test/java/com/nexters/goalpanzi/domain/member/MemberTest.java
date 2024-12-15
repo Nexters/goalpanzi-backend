@@ -2,6 +2,7 @@ package com.nexters.goalpanzi.domain.member;
 
 import org.junit.jupiter.api.Test;
 
+import static com.nexters.goalpanzi.fixture.DeviceFixture.DEVICE_TOKEN;
 import static com.nexters.goalpanzi.fixture.MemberFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
