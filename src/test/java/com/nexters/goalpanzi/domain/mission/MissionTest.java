@@ -250,4 +250,24 @@ class MissionTest {
                 () -> assertThat(mission.isEndDate(endDate.minusDays(1).toLocalDate())).isFalse()
         );
     }
+
+    @Test
+    void 미션_호스트_여부를_검증한다() {
+        LocalDateTime now = LocalDateTime.now();
+        Mission mission = Mission.create(
+                MEMBER_ID,
+                DESCRIPTION,
+                now,
+                now.plusDays(30),
+                TimeOfDay.EVERYDAY,
+                List.of(DayOfWeek.FRIDAY),
+                BOARD_COUNT,
+                InvitationCode.generate()
+        );
+
+        assertAll(
+                () -> assertThat(mission.isHostMember(MEMBER_ID)).isTrue(),
+                () -> assertThat(mission.isHostMember(MEMBER_ID + 1)).isFalse()
+        );
+    }
 }

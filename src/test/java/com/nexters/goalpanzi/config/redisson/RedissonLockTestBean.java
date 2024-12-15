@@ -1,7 +1,9 @@
 package com.nexters.goalpanzi.config.redisson;
 
 import com.nexters.goalpanzi.common.annotation.RedissonLock;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional(readOnly = true)
 public class RedissonLockTestBean {
 
     @RedissonLock(waitTime = 1L)

@@ -45,3 +45,10 @@ cloud:
 
 firebase:
   enabled: false
+
+logging:
+  level:
+    org:
+      springframework:
+        transaction:
+          interceptor: TRACE

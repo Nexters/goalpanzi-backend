@@ -62,9 +62,9 @@ public class MissionMemberService {
         missionValidator.validateMaxPersonnel(mission);
         missionMemberRepository.save(MissionMember.join(member, mission));
 
-        if (member.isPushActivated()) {
-            eventPublisher.publishEvent(new JoinMissionEvent(mission.getId(), member.getDeviceToken(), member.getNickname()));
-        } else {
+        sendJoinPushMessage(member, mission);
+
+        if (!member.isPushActivated()) {
             cancelRetryPushMessage(member.getId());
         }
     }
@@ -79,6 +79,16 @@ public class MissionMemberService {
                 .ifPresent(missionMember -> {
                     throw new AlreadyExistsException(ErrorCode.ALREADY_EXISTS_MISSION_MEMBER);
                 });
+    }
+
+    private void sendJoinPushMessage(final Member member, final Mission mission) {
+        Member hostMember = memberRepository.getMember(mission.getHostMemberId());
+
+        if (hostMember.isPushActivated() && !mission.isHostMember(member.getId())) {
+            eventPublisher.publishEvent(
+                    new JoinMissionEvent(mission.getId(), hostMember.getDeviceToken(), member.getNickname())
+            );
+        }
     }
 
     public MissionsResponse findAllByMemberId(final Long memberId, final List<MissionStatus> filter) {

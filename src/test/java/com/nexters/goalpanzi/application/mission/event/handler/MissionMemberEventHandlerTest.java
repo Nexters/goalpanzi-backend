@@ -31,7 +31,7 @@ import static org.mockito.Mockito.verify;
 class MissionMemberEventHandlerTest {
 
     @Autowired
-    private ApplicationEventPublisher applicationEventPublisher;
+    private ApplicationEventPublisher eventPublisher;
 
     @Autowired
     private TransactionTemplate transactionTemplate;
@@ -50,7 +50,7 @@ class MissionMemberEventHandlerTest {
         UpdateDeviceTokenEvent event = new UpdateDeviceTokenEvent(1L, null, "deviceToken");
 
         transactionTemplate.execute(status -> {
-            applicationEventPublisher.publishEvent(event);
+            eventPublisher.publishEvent(event);
             return null;
         });
 
@@ -63,7 +63,7 @@ class MissionMemberEventHandlerTest {
         UpdateDeviceTokenEvent event = new UpdateDeviceTokenEvent(1L, "deprecatedDeviceToken", "deviceToken");
 
         transactionTemplate.execute(status -> {
-            applicationEventPublisher.publishEvent(event);
+            eventPublisher.publishEvent(event);
             return null;
         });
 
@@ -78,7 +78,7 @@ class MissionMemberEventHandlerTest {
         UpdatePushActivationStatusEvent event = new UpdatePushActivationStatusEvent(1L, "deviceToken", true);
 
         transactionTemplate.execute(status -> {
-            applicationEventPublisher.publishEvent(event);
+            eventPublisher.publishEvent(event);
             return null;
         });
 
@@ -91,7 +91,7 @@ class MissionMemberEventHandlerTest {
         UpdatePushActivationStatusEvent event = new UpdatePushActivationStatusEvent(1L, "deviceToken", false);
 
         transactionTemplate.execute(status -> {
-            applicationEventPublisher.publishEvent(event);
+            eventPublisher.publishEvent(event);
             return null;
         });
 
