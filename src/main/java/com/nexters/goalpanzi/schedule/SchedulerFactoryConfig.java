@@ -16,8 +16,8 @@ public class SchedulerFactoryConfig {
     @Bean(SCHEDULER_THREAD_POOL_EXECUTOR)
     public ThreadPoolTaskExecutor executor() {
         final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(1);
-        executor.setMaxPoolSize(1);
+        executor.setCorePoolSize(3);
+        executor.setMaxPoolSize(3);
         executor.setThreadNamePrefix("executor");
         executor.initialize();
         return executor;
