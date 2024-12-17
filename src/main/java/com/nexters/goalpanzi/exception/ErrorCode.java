@@ -59,6 +59,9 @@ public enum ErrorCode {
     FAILED_TO_SUBSCRIBE_TO_TOPIC("토픽을 구독하는 데 실패하였습니다."),
     FAILED_TO_UNSUBSCRIBE_FROM_TOPIC("토픽을 구독 취소하는 데 실패하였습니다."),
 
+    // DEVICE
+    NOT_FOUND_DEVICE("존재하지 않는 디바이스입니다."),
+
     // ETC
     FAILED_TO_GENERATE_HASH("해시값을 생성하는 데 실패하였습니다."),
     FAILED_TO_ACQUIRE_REDISSON_LOCK("분산락을 획득하는 데 실패하였습니다."),
