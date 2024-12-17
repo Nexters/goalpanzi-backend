@@ -1,5 +1,6 @@
 package com.nexters.goalpanzi.application.device;
 
+import com.nexters.goalpanzi.application.firebase.TopicGenerator;
 import com.nexters.goalpanzi.config.redis.RedisInitializer;
 import com.nexters.goalpanzi.domain.device.Device;
 import com.nexters.goalpanzi.domain.device.DeviceSubscription;

@@ -1,22 +1,18 @@
-package com.nexters.goalpanzi.application.mission.event.handler;
+package com.nexters.goalpanzi.application.device.event.handler;
 
+import com.nexters.goalpanzi.application.device.DeviceSubscriptionService;
 import com.nexters.goalpanzi.application.member.event.UpdateDeviceTokenEvent;
 import com.nexters.goalpanzi.application.member.event.UpdatePushActivationStatusEvent;
-import com.nexters.goalpanzi.application.mission.MissionMemberService;
-import com.nexters.goalpanzi.application.mission.MissionVerificationService;
 import com.nexters.goalpanzi.config.event.SyncEventConfig;
 import com.nexters.goalpanzi.config.redis.RedisInitializer;
-import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(
@@ -25,10 +21,7 @@ import static org.mockito.Mockito.verify;
 @ContextConfiguration(
         initializers = {RedisInitializer.class}
 )
-@MockBeans({
-        @MockBean(MissionVerificationService.class)
-})
-class MissionMemberEventHandlerTest {
+class DeviceSubscriptionEventHandlerTest {
 
     @Autowired
     private ApplicationEventPublisher eventPublisher;
@@ -37,13 +30,10 @@ class MissionMemberEventHandlerTest {
     private TransactionTemplate transactionTemplate;
 
     @Autowired
-    private MissionMemberEventHandler missionMemberEventHandler;
+    private DeviceSubscriptionEventHandler deviceSubscriptionEventHandler;
 
     @MockBean
-    private MissionMemberService missionMemberService;
-
-    @MockBean
-    private PushMessageSender pushMessageSender;
+    private DeviceSubscriptionService deviceSubscriptionService;
 
     @Test
     void 기존_디바이스_토큰이_null인_상황에서_디바이스_토큰을_갱신하면_토픽_구독만_진행한다() {
@@ -54,7 +44,7 @@ class MissionMemberEventHandlerTest {
             return null;
         });
 
-        verify(missionMemberService, times(1))
+        verify(deviceSubscriptionService)
                 .subscribeToMyMissions(event.memberId(), event.deviceId());
     }
 
@@ -67,9 +57,9 @@ class MissionMemberEventHandlerTest {
             return null;
         });
 
-        verify(missionMemberService, times(1))
+        verify(deviceSubscriptionService)
                 .unsubscribeFromMyMissions(event.memberId(), event.deviceId(), event.deprecatedDeviceToken());
-        verify(missionMemberService, times(1))
+        verify(deviceSubscriptionService)
                 .subscribeToMyMissions(event.memberId(), event.deviceId());
     }
 
@@ -82,7 +72,7 @@ class MissionMemberEventHandlerTest {
             return null;
         });
 
-        verify(missionMemberService, times(1))
+        verify(deviceSubscriptionService)
                 .subscribeToMyMissions(event.memberId(), event.deviceId());
     }
 
@@ -95,7 +85,7 @@ class MissionMemberEventHandlerTest {
             return null;
         });
 
-        verify(missionMemberService, times(1))
+        verify(deviceSubscriptionService)
                 .unsubscribeFromMyMissions(event.memberId(), event.deviceId(), event.deviceToken());
     }
 }
