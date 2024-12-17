@@ -1,6 +1,6 @@
-package com.nexters.goalpanzi.domain.firebase.repository;
+package com.nexters.goalpanzi.domain.device.repository;
 
-import com.nexters.goalpanzi.domain.firebase.Device;
+import com.nexters.goalpanzi.domain.device.Device;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;

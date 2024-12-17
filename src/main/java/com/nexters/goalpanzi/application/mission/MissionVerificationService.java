@@ -11,8 +11,8 @@ import com.nexters.goalpanzi.application.mission.event.CompleteMissionEvent;
 import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
 import com.nexters.goalpanzi.common.annotation.RedissonLock;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
-import com.nexters.goalpanzi.domain.firebase.Devices;
-import com.nexters.goalpanzi.domain.firebase.repository.DeviceRepository;
+import com.nexters.goalpanzi.domain.device.Devices;
+import com.nexters.goalpanzi.domain.device.repository.DeviceRepository;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.*;
@@ -186,7 +186,7 @@ public class MissionVerificationService {
         Devices devices = new Devices(
                 deviceRepository.findAllByMemberId(memberId)
         );
-        
+
         devices.getActivatedDeviceTokens()
                 .forEach(deviceToken ->
                         pushMessageSender.sendIndividualData(

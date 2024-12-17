@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.domain.firebase;
+package com.nexters.goalpanzi.domain.device;
 
 import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.member.Member;

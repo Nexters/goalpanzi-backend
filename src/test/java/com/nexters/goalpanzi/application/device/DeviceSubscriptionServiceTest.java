@@ -1,10 +1,10 @@
-package com.nexters.goalpanzi.application.firebase;
+package com.nexters.goalpanzi.application.device;
 
 import com.nexters.goalpanzi.config.redis.RedisInitializer;
-import com.nexters.goalpanzi.domain.firebase.Device;
-import com.nexters.goalpanzi.domain.firebase.DeviceSubscription;
-import com.nexters.goalpanzi.domain.firebase.repository.DeviceRepository;
-import com.nexters.goalpanzi.domain.firebase.repository.DeviceSubscriptionRepository;
+import com.nexters.goalpanzi.domain.device.Device;
+import com.nexters.goalpanzi.domain.device.DeviceSubscription;
+import com.nexters.goalpanzi.domain.device.repository.DeviceRepository;
+import com.nexters.goalpanzi.domain.device.repository.DeviceSubscriptionRepository;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.infrastructure.firebase.TopicSubscriber;
 import org.junit.jupiter.api.Test;

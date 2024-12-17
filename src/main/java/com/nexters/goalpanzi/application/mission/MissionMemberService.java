@@ -6,11 +6,11 @@ import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailRespo
 import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
 import com.nexters.goalpanzi.application.mission.event.*;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
-import com.nexters.goalpanzi.domain.firebase.Device;
-import com.nexters.goalpanzi.domain.firebase.DeviceSubscription;
-import com.nexters.goalpanzi.domain.firebase.Devices;
-import com.nexters.goalpanzi.domain.firebase.repository.DeviceRepository;
-import com.nexters.goalpanzi.domain.firebase.repository.DeviceSubscriptionRepository;
+import com.nexters.goalpanzi.domain.device.Device;
+import com.nexters.goalpanzi.domain.device.DeviceSubscription;
+import com.nexters.goalpanzi.domain.device.Devices;
+import com.nexters.goalpanzi.domain.device.repository.DeviceRepository;
+import com.nexters.goalpanzi.domain.device.repository.DeviceSubscriptionRepository;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.*;

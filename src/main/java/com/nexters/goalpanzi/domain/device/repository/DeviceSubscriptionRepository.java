@@ -1,6 +1,6 @@
-package com.nexters.goalpanzi.domain.firebase.repository;
+package com.nexters.goalpanzi.domain.device.repository;
 
-import com.nexters.goalpanzi.domain.firebase.DeviceSubscription;
+import com.nexters.goalpanzi.domain.device.DeviceSubscription;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

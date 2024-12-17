@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.application.firebase.event.handler;
 
-import com.nexters.goalpanzi.application.firebase.DeviceSubscriptionService;
+import com.nexters.goalpanzi.application.device.DeviceSubscriptionService;
 import com.nexters.goalpanzi.application.firebase.TopicGenerator;
 import com.nexters.goalpanzi.application.mission.event.CompleteMissionEvent;
 import com.nexters.goalpanzi.application.mission.event.JoinMissionEvent;

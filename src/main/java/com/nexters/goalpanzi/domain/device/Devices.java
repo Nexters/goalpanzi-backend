@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.domain.firebase;
+package com.nexters.goalpanzi.domain.device;
 
 import lombok.RequiredArgsConstructor;
 

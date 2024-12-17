@@ -1,7 +1,7 @@
-package com.nexters.goalpanzi.domain.firebase.repository;
+package com.nexters.goalpanzi.domain.device.repository;
 
-import com.nexters.goalpanzi.domain.firebase.Device;
-import com.nexters.goalpanzi.domain.firebase.DeviceSubscription;
+import com.nexters.goalpanzi.domain.device.Device;
+import com.nexters.goalpanzi.domain.device.DeviceSubscription;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.SocialType;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
@@ -93,7 +93,7 @@ class DeviceSubscriptionRepositoryTest {
         deviceSubscriptionRepository.save(new DeviceSubscription(device, mission));
 
         deviceSubscriptionRepository.deleteAllByMissionId(mission.getId());
-        
+
         List<DeviceSubscription> subscriptions = deviceSubscriptionRepository.findAllWithDeviceAndMissionByMissionId(mission.getId());
         assertThat(subscriptions.size()).isEqualTo(0);
     }
