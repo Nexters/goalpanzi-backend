@@ -8,6 +8,8 @@ import com.nexters.goalpanzi.application.member.event.DeleteMemberEvent;
 import com.nexters.goalpanzi.application.member.event.UpdateDeviceTokenEvent;
 import com.nexters.goalpanzi.application.member.event.UpdatePushActivationStatusEvent;
 import com.nexters.goalpanzi.domain.auth.repository.RefreshTokenRepository;
+import com.nexters.goalpanzi.domain.firebase.Device;
+import com.nexters.goalpanzi.domain.firebase.repository.DeviceRepository;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.exception.AlreadyExistsException;
@@ -23,6 +25,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final DeviceRepository deviceRepository;
+
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
@@ -58,23 +62,43 @@ public class MemberService {
 
     @Transactional
     public void updateDeviceToken(final UpdateDeviceTokenCommand command) {
-        Member member = memberRepository.getMember(command.memberId());
-        String deprecatedDeviceToken = member.getDeviceToken();
+        boolean isStoredDevice = deviceRepository.existsByDeviceIdentifier(command.deviceIdentifier());
+        if (!isStoredDevice) {
+            createDevice(command.memberId(), command.deviceIdentifier(), command.deviceToken());
+        } else {
+            updateDevice(command.memberId(), command.deviceIdentifier(), command.deviceToken());
+        }
+    }
 
-        member.updateDeviceToken(command.deviceToken());
-        member.updatePushActivationStatus(true);
+    private void createDevice(final Long memberId, final String deviceIdentifier, final String deviceToken) {
+        Member member = memberRepository.getMember(memberId);
+        Device device = deviceRepository.save(new Device(member, deviceIdentifier, deviceToken));
+
         eventPublisher.publishEvent(
-                new UpdateDeviceTokenEvent(command.memberId(), deprecatedDeviceToken, command.deviceToken())
+                new UpdateDeviceTokenEvent(memberId, device.getId(), null)
+        );
+    }
+
+    private void updateDevice(final Long memberId, final String deviceIdentifier, final String deviceToken) {
+        Device device = deviceRepository.getDevice(memberId, deviceIdentifier);
+
+        String deprecatedToken = device.getDeviceToken();
+        device.updateDeviceToken(deviceToken);
+        device.updatePushActivationStatus(true);
+
+        eventPublisher.publishEvent(
+                new UpdateDeviceTokenEvent(memberId, device.getId(), deprecatedToken)
         );
     }
 
     @Transactional
     public void updatePushActivationStatus(final UpdatePushActivationStatusCommand command) {
-        Member member = memberRepository.getMember(command.memberId());
+        Device device = deviceRepository.getDevice(command.memberId(), command.deviceIdentifier());
 
-        member.updatePushActivationStatus(command.pushActivationStatus());
+        device.updatePushActivationStatus(command.pushActivationStatus());
+
         eventPublisher.publishEvent(
-                new UpdatePushActivationStatusEvent(command.memberId(), member.getDeviceToken(), command.pushActivationStatus())
+                new UpdatePushActivationStatusEvent(command.memberId(), device.getId(), command.pushActivationStatus(), device.getDeviceToken())
         );
     }
 }
