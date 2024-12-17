@@ -1,8 +1,11 @@
 package com.nexters.goalpanzi.application.firebase.event.handler;
 
+import com.nexters.goalpanzi.application.firebase.DeviceSubscriptionService;
 import com.nexters.goalpanzi.application.firebase.TopicGenerator;
 import com.nexters.goalpanzi.application.mission.event.CompleteMissionEvent;
 import com.nexters.goalpanzi.application.mission.event.JoinMissionEvent;
+import com.nexters.goalpanzi.application.mission.event.SubscribeToMissionEvent;
+import com.nexters.goalpanzi.application.mission.event.UnsubscribeFromMissionEvent;
 import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +20,9 @@ import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_JOINED;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class PushNotificationEventHandler {
+public class PushMessageEventHandler {
+
+    private final DeviceSubscriptionService deviceSubscriptionService;
 
     private final PushMessageSender pushMessageSender;
 
@@ -44,5 +49,19 @@ public class PushNotificationEventHandler {
                 event.missionId()
         );
         log.info("Handled CompleteMissionEvent for missionId: {}", event.missionId());
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    void handleSubscribeMissionEvent(final SubscribeToMissionEvent event) {
+        deviceSubscriptionService.subscribeToMission(event.memberId(), event.mission());
+        log.info("Handled SubscribeMissionEvent for memberId: {} and missionId: {}", event.memberId(), event.mission().getId());
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    void handleUnsubscribeFromMissionEvent(final UnsubscribeFromMissionEvent event) {
+        deviceSubscriptionService.unsubscribeFromMission(event.missionId());
+        log.info("Handled UnsubscribeMissionEvent from missionId: {}", event.missionId());
     }
 }
