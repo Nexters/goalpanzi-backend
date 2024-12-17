@@ -40,9 +40,16 @@ public class DeviceSubscriptionService {
     private final ApplicationEventPublisher eventPublisher;
     private final TopicSubscriber topicSubscriber;
 
-    private static List<MissionStatus> SUBSCRIBABLE_MISSION_STATUS
+    private static final List<MissionStatus> SUBSCRIBABLE_MISSION_STATUS
             = List.of(CREATED, IN_PROGRESS, PENDING_COMPLETION);
 
+    /**
+     * <b>새로운 미션 참여 시 미션 구독 시작</b><br>
+     * 멤버의 디바이스 중 푸시가 활성화된 디바이스를 대상으로 미션 구독
+     *
+     * @param memberId 멤버 아이디
+     * @param mission  새롭게 참여한 미션
+     */
     @Transactional
     public void subscribeToMission(final Long memberId, final Mission mission) {
         Devices devices = new Devices(
@@ -58,6 +65,12 @@ public class DeviceSubscriptionService {
         );
     }
 
+    /**
+     * <b>미션 취소/종료 시 미션 구독 취소</b><br>
+     * 해당 미션을 구독한 디바이스를 대상으로 구독 취소
+     *
+     * @param missionId 취소/종료된 미션
+     */
     @Transactional
     public void unsubscribeFromMission(final Long missionId) {
         List<String> deviceTokens = findTopicSubscribers(missionId);
@@ -74,6 +87,13 @@ public class DeviceSubscriptionService {
                 .toList();
     }
 
+    /**
+     * <b>디바이스 토큰을 갱신하거나 푸시 알림 활성화 시 새로운 디바이스 토큰으로 내 미션 구독 시작</b><br>
+     * + UpdateMissionRetryPushMessageEvent를 통해 예약된 메시지의 디바이스 토큰 갱신
+     *
+     * @param memberId 멤버 아이디
+     * @param deviceId 디바이스 아이디
+     */
     @Transactional
     public void subscribeToMyMissions(final Long memberId, final Long deviceId) {
         Device device = deviceRepository.getDevice(deviceId);
@@ -96,12 +116,38 @@ public class DeviceSubscriptionService {
         );
     }
 
+    // FIXME: 멤버 아이디로 찾으면 안 될 것 같음. 로그인할 때 디바이스 고유 식별자를 받을 수 있나?
     @Transactional
-    public void unsubscribeFromMyMissions(final Long memberId, final Long deviceId, final String deprecatedDeviceToken) {
+    public void unsubscribeFromMyMissions(final Long memberId) {
+        Devices devices = new Devices(
+                deviceRepository.findAllByMemberId(memberId)
+        );
+        List<String> topics = devices.getActivatedDevices().stream()
+                .flatMap(device -> findMySubscribedTopics(device.getId()).stream())
+                .toList();
+
+        topics.forEach(topic ->
+                topicSubscriber.unsubscribeFromTopic(devices.getActivatedDeviceTokens(), topic)
+        );
+        eventPublisher.publishEvent(
+                new CancelMissionRetryPushMessageEvent(memberId)
+        );
+    }
+
+    /**
+     * <b>디바이스 토큰을 갱신하거나 푸시 비활성화 시 기존 디바이스 토큰으로 구독한 미션 구독 취소</b><br>
+     * + CancelMissionRetryPushMessageEvent를 통해 예약된 메시지 취소
+     *
+     * @param memberId    멤버 아이디
+     * @param deviceId    디바이스 아이디
+     * @param deviceToken 기존 디바이스 토큰
+     */
+    @Transactional
+    public void unsubscribeFromMyMissions(final Long memberId, final Long deviceId, final String deviceToken) {
         List<String> topics = findMySubscribedTopics(deviceId);
 
         topics.forEach(topic ->
-                topicSubscriber.unsubscribeFromTopic(List.of(deprecatedDeviceToken), topic)
+                topicSubscriber.unsubscribeFromTopic(List.of(deviceToken), topic)
         );
         eventPublisher.publishEvent(
                 new CancelMissionRetryPushMessageEvent(memberId)
@@ -136,6 +182,13 @@ public class DeviceSubscriptionService {
         return filter.contains(TopicGenerator.getTopic(missionId));
     }
 
+    /**
+     * <b>취소/완료 상태의 미션을 찾아 이벤트 게시</b>
+     * <ol>
+     *     <li>취소/완료 상태 : UnsubscribeFromMissionEvent를 게시하여 미션 구독 취소</li>
+     *     <li>완료 상태 : ReserveMissionRetryPushMessageEvent를 게시하여 메시지 예약</li>
+     * </ol>
+     */
     @Transactional
     public void unsubscribeFromUselessMissions() {
         List<Mission> missions = missionRepository.getInProgressMissions();

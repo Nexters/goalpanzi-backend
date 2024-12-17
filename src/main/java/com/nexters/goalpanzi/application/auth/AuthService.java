@@ -5,6 +5,7 @@ import com.nexters.goalpanzi.application.auth.dto.request.GoogleLoginCommand;
 import com.nexters.goalpanzi.application.auth.dto.request.ReissueTokenCommand;
 import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
 import com.nexters.goalpanzi.application.auth.dto.response.TokenResponse;
+import com.nexters.goalpanzi.application.auth.event.LoginEvent;
 import com.nexters.goalpanzi.application.auth.google.GoogleIdentityToken;
 import com.nexters.goalpanzi.common.auth.jwt.Jwt;
 import com.nexters.goalpanzi.common.auth.jwt.JwtProvider;
@@ -16,6 +17,7 @@ import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +29,9 @@ public class AuthService {
     private final SocialUserProviderFactory socialUserProviderFactory;
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+
     private final JwtProvider jwtProvider;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public LoginResponse appleOAuthLogin(final AppleLoginCommand command) {
@@ -55,6 +59,9 @@ public class AuthService {
         Jwt jwt = jwtProvider.generateTokens(member.getId().toString());
         refreshTokenRepository.save(member.getId().toString(), jwt.refreshToken(), jwt.refreshExpiresIn());
 
+        eventPublisher.publishEvent(
+                new LoginEvent(member.getId())
+        );
         return LoginResponse.of(member, jwt);
     }
 

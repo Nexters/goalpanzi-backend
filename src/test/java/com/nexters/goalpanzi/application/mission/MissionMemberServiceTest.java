@@ -81,7 +81,7 @@ class MissionMemberServiceTest {
     }
 
     @Test
-    void 호스트가_아닌_멤버가_미션에_참여했을_때_JoinMissionEvent를_발행한다() {
+    void 호스트가_아닌_멤버가_미션에_참여했을_때_JoinMissionEvent를_게시한다() {
         InvitationCode INVITATION_CODE = InvitationCode.generate();
         Long HOST_ID = MEMBER_ID + 1;
 
@@ -116,7 +116,7 @@ class MissionMemberServiceTest {
     }
 
     @Test
-    void 호스트가_아닌_멤버가_미션에_참여했더라도_호스트가_알림을_비활성화했다면_JoinMissionEvent를_발행하지_않는다() {
+    void 호스트가_아닌_멤버가_미션에_참여했더라도_호스트가_알림을_비활성화했다면_JoinMissionEvent를_게시하지_않는다() {
         InvitationCode INVITATION_CODE = InvitationCode.generate();
         Long HOST_ID = MEMBER_ID + 1;
 
@@ -150,7 +150,7 @@ class MissionMemberServiceTest {
     }
 
     @Test
-    void 호스트가_미션에_참여했을_때_JoinMissionEvent를_발행하지_않는다() {
+    void 호스트가_미션에_참여했을_때_JoinMissionEvent를_게시하지_않는다() {
         InvitationCode INVITATION_CODE = InvitationCode.generate();
 
         Member mockMember = mock(Member.class);
