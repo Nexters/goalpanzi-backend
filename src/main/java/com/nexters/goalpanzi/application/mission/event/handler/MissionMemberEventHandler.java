@@ -67,9 +67,9 @@ public class MissionMemberEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     void handleUpdateDeviceTokenEvent(final UpdateDeviceTokenEvent event) {
         if (event.deprecatedDeviceToken() != null) {
-            missionMemberService.unsubscribeFromMyMissions(event.memberId(), event.deprecatedDeviceToken());
+            missionMemberService.unsubscribeFromMyMissions(event.memberId(), event.deviceId(), event.deprecatedDeviceToken());
         }
-        missionMemberService.subscribeToMyMissions(event.memberId(), event.deviceToken());
+        missionMemberService.subscribeToMyMissions(event.memberId(), event.deviceId());
         log.info("Handled UpdateDeviceTokenEvent for memberId: {}", event.memberId());
     }
 
@@ -77,9 +77,9 @@ public class MissionMemberEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     void handleUpdatePushActivationStatusEvent(final UpdatePushActivationStatusEvent event) {
         if (event.isPushActivated()) {
-            missionMemberService.subscribeToMyMissions(event.memberId(), event.deviceToken());
+            missionMemberService.subscribeToMyMissions(event.memberId(), event.deviceId());
         } else {
-            missionMemberService.unsubscribeFromMyMissions(event.memberId(), event.deviceToken());
+            missionMemberService.unsubscribeFromMyMissions(event.memberId(), event.deviceId(), event.deviceToken());
         }
         log.info("Handled UpdatePushActivationStatusEvent for memberId: {}", event.memberId());
     }

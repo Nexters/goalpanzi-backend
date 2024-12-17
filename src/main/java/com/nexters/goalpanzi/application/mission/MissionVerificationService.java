@@ -11,7 +11,8 @@ import com.nexters.goalpanzi.application.mission.event.CompleteMissionEvent;
 import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
 import com.nexters.goalpanzi.common.annotation.RedissonLock;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
-import com.nexters.goalpanzi.domain.firebase.PushMessage;
+import com.nexters.goalpanzi.domain.firebase.Devices;
+import com.nexters.goalpanzi.domain.firebase.repository.DeviceRepository;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.*;
@@ -45,6 +46,7 @@ public class MissionVerificationService {
     private final MissionMemberRepository missionMemberRepository;
     private final MissionVerificationViewRepository missionVerificationViewRepository;
     private final MemberRepository memberRepository;
+    private final DeviceRepository deviceRepository;
 
     private final ObjectStorageClient objectStorageClient;
     private final PushMessageSender pushMessageSender;
@@ -131,29 +133,29 @@ public class MissionVerificationService {
                 int verificationCount = verifications.size();
 
                 if (verificationCount == 0) {
-                    sendNoOneVerifiedPushMessage(MISSION_NO_ONE_VERIFIED, mission.getId());
+                    sendNoOneVerifiedPushMessage(mission.getId());
                 } else {
-                    sendVerifiedPushMessage(MISSION_VERIFIED, mission.getId(), verificationCount);
+                    sendVerifiedPushMessage(mission.getId(), verificationCount);
                 }
             }
         });
     }
 
-    private void sendVerifiedPushMessage(final PushMessage message, final Long missionId, final int verificationCount) {
+    private void sendVerifiedPushMessage(final Long missionId, final int verificationCount) {
         String topic = TopicGenerator.getTopic(missionId);
         pushMessageSender.sendGroupData(
-                message.getTitle(verificationCount),
-                message.getBody(),
+                MISSION_VERIFIED.getTitle(verificationCount),
+                MISSION_VERIFIED.getBody(),
                 topic,
                 missionId
         );
     }
 
-    private void sendNoOneVerifiedPushMessage(final PushMessage message, final Long missionId) {
+    private void sendNoOneVerifiedPushMessage(final Long missionId) {
         String topic = TopicGenerator.getTopic(missionId);
         pushMessageSender.sendGroupData(
-                message.getTitle(),
-                message.getBody(),
+                MISSION_NO_ONE_VERIFIED.getTitle(),
+                MISSION_NO_ONE_VERIFIED.getBody(),
                 topic,
                 missionId
         );
@@ -172,16 +174,27 @@ public class MissionVerificationService {
                 missionMembers.forEach(missionMember -> {
                     Member member = missionMember.getMember();
                     Optional<MissionVerification> verification = missionVerificationRepository.findByMemberIdAndMissionIdAndDate(member.getId(), mission.getId(), today);
-                    if (verification.isEmpty() && member.isPushActivated()) {
-                        pushMessageSender.sendIndividualData(
-                                MISSION_VERIFICATION_WARNING.getTitle(),
-                                MISSION_VERIFICATION_WARNING.getBody(),
-                                member.getDeviceToken(),
-                                mission.getId()
-                        );
+                    if (verification.isEmpty()) {
+                        sendVerificationWarningMessageForMissionMember(member.getId(), mission.getId());
                     }
                 });
             }
         });
+    }
+
+    private void sendVerificationWarningMessageForMissionMember(final Long memberId, final Long missionId) {
+        Devices devices = new Devices(
+                deviceRepository.findAllByMemberId(memberId)
+        );
+        
+        devices.getActivatedDeviceTokens()
+                .forEach(deviceToken ->
+                        pushMessageSender.sendIndividualData(
+                                MISSION_VERIFICATION_WARNING.getTitle(),
+                                MISSION_VERIFICATION_WARNING.getBody(),
+                                deviceToken,
+                                missionId
+                        )
+                );
     }
 }
