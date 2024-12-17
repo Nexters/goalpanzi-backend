@@ -5,14 +5,24 @@ import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface DeviceRepository extends JpaRepository<Device, Long> {
 
-    Optional<Device> findByMemberIdAndDeviceToken(final Long memberId, final String deviceToken);
+    Optional<Device> findByMemberIdAndDeviceIdentifier(final Long memberId, final String deviceIdentifier);
 
-    default Device getDevice(final Long memberId, final String deviceToken) {
-        return findByMemberIdAndDeviceToken(memberId, deviceToken)
+    List<Device> findAllByMemberId(final Long memberId);
+
+    boolean existsByDeviceIdentifier(final String deviceIdentifier);
+
+    default Device getDevice(final Long deviceId) {
+        return findById(deviceId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_DEVICE));
+    }
+
+    default Device getDevice(final Long memberId, final String deviceIdentifier) {
+        return findByMemberIdAndDeviceIdentifier(memberId, deviceIdentifier)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_DEVICE));
     }
 }

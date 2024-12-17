@@ -36,12 +36,6 @@ public class Member extends BaseEntity {
     @Column(name = "character_type")
     private CharacterType characterType;
 
-    @Column(name = "device_token")
-    private String deviceToken;
-
-    @Column(name = "push_activation_status", nullable = false)
-    private Boolean pushActivationStatus = false;
-
     private Member(final String socialId, final String email, final SocialType socialType) {
         this.socialId = socialId;
         this.email = email;
@@ -60,24 +54,12 @@ public class Member extends BaseEntity {
         return (characterType != null) && (nickname != null);
     }
 
-    public boolean isPushActivated() {
-        return pushActivationStatus && deviceToken != null;
-    }
-
     public void updateNickname(final String nickname) {
         this.nickname = nickname;
     }
 
     public void updateCharacterType(final CharacterType characterType) {
         this.characterType = characterType;
-    }
-
-    public void updateDeviceToken(final String deviceToken) {
-        this.deviceToken = deviceToken;
-    }
-
-    public void updatePushActivationStatus(final Boolean pushActivationStatus) {
-        this.pushActivationStatus = pushActivationStatus;
     }
 
     @Override
