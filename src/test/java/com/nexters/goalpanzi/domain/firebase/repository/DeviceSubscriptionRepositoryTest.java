@@ -42,16 +42,14 @@ class DeviceSubscriptionRepositoryTest {
 
     private Member member;
 
+    private Mission mission;
+
     @BeforeEach
     void setUp() {
         member = memberRepository.save(
                 Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.GOOGLE)
         );
-    }
-
-    @Test
-    void 특정_디바이스의_구독_현황을_미션과_디바이스와_함께_조회한다() {
-        Mission mission = missionRepository.save(
+        mission = missionRepository.save(
                 Mission.create(
                         member.getId(),
                         DESCRIPTION,
@@ -63,6 +61,10 @@ class DeviceSubscriptionRepositoryTest {
                         InvitationCode.generate()
                 )
         );
+    }
+
+    @Test
+    void 특정_디바이스의_구독_현황을_미션과_디바이스와_함께_조회한다() {
         Device device = deviceRepository.save(new Device(member, DEVICE_IDENTIFIER, DEVICE_TOKEN));
         deviceSubscriptionRepository.save(new DeviceSubscription(device, mission));
 
@@ -75,18 +77,6 @@ class DeviceSubscriptionRepositoryTest {
 
     @Test
     void 특정_미션과_관련된_디바이스_구독_현황을_디바이스와_미션과_함께_조회한다() {
-        Mission mission = missionRepository.save(
-                Mission.create(
-                        member.getId(),
-                        DESCRIPTION,
-                        LocalDateTime.now().plusDays(1),
-                        LocalDateTime.now().plusDays(31),
-                        TimeOfDay.EVERYDAY,
-                        WEEK,
-                        BOARD_COUNT,
-                        InvitationCode.generate()
-                )
-        );
         Device device = deviceRepository.save(new Device(member, DEVICE_IDENTIFIER, DEVICE_TOKEN));
         deviceSubscriptionRepository.save(new DeviceSubscription(device, mission));
 
@@ -95,5 +85,16 @@ class DeviceSubscriptionRepositoryTest {
                 () -> assertThat(subscriptions.getFirst().getDevice()).isEqualTo(device),
                 () -> assertThat(subscriptions.getFirst().getMission()).isEqualTo(mission)
         );
+    }
+
+    @Test
+    void 특정_미션과_관련된_디바이스_구독_현황을_삭제한다() {
+        Device device = deviceRepository.save(new Device(member, DEVICE_IDENTIFIER, DEVICE_TOKEN));
+        deviceSubscriptionRepository.save(new DeviceSubscription(device, mission));
+
+        deviceSubscriptionRepository.deleteAllByMissionId(mission.getId());
+        
+        List<DeviceSubscription> subscriptions = deviceSubscriptionRepository.findAllWithDeviceAndMissionByMissionId(mission.getId());
+        assertThat(subscriptions.size()).isEqualTo(0);
     }
 }
