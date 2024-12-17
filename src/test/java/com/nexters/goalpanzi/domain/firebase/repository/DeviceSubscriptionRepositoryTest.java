@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.nexters.goalpanzi.fixture.DeviceFixture.DEVICE_IDENTIFIER;
 import static com.nexters.goalpanzi.fixture.DeviceFixture.DEVICE_TOKEN;
 import static com.nexters.goalpanzi.fixture.MemberFixture.EMAIL_HOST;
 import static com.nexters.goalpanzi.fixture.MemberFixture.SOCIAL_ID;
@@ -62,7 +63,7 @@ class DeviceSubscriptionRepositoryTest {
                         InvitationCode.generate()
                 )
         );
-        Device device = deviceRepository.save(new Device(member, DEVICE_TOKEN));
+        Device device = deviceRepository.save(new Device(member, DEVICE_IDENTIFIER, DEVICE_TOKEN));
         deviceSubscriptionRepository.save(new DeviceSubscription(device, mission));
 
         List<DeviceSubscription> subscriptions = deviceSubscriptionRepository.findAllWithMissionAndDeviceByDeviceId(device.getId());
@@ -86,7 +87,7 @@ class DeviceSubscriptionRepositoryTest {
                         InvitationCode.generate()
                 )
         );
-        Device device = deviceRepository.save(new Device(member, DEVICE_TOKEN));
+        Device device = deviceRepository.save(new Device(member, DEVICE_IDENTIFIER, DEVICE_TOKEN));
         deviceSubscriptionRepository.save(new DeviceSubscription(device, mission));
 
         List<DeviceSubscription> subscriptions = deviceSubscriptionRepository.findAllWithDeviceAndMissionByMissionId(mission.getId());

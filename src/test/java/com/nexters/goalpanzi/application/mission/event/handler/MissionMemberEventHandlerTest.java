@@ -47,7 +47,7 @@ class MissionMemberEventHandlerTest {
 
     @Test
     void 기존_디바이스_토큰이_null인_상황에서_디바이스_토큰을_갱신하면_토픽_구독만_진행한다() {
-        UpdateDeviceTokenEvent event = new UpdateDeviceTokenEvent(1L, null, "deviceToken");
+        UpdateDeviceTokenEvent event = new UpdateDeviceTokenEvent(1L, 1L, null);
 
         transactionTemplate.execute(status -> {
             eventPublisher.publishEvent(event);
@@ -55,12 +55,12 @@ class MissionMemberEventHandlerTest {
         });
 
         verify(missionMemberService, times(1))
-                .subscribeToMyMissions(event.memberId(), event.deviceToken());
+                .subscribeToMyMissions(event.memberId(), event.deviceId());
     }
 
     @Test
     void 기존_디바이스_토큰이_null이_아닌_상황에서_디바이스_토큰을_갱신하면_기존_디바이스_토큰이_구독한_토픽을_구독_취소하고_새로운_디바이스_토큰으로_토픽을_구독한다() {
-        UpdateDeviceTokenEvent event = new UpdateDeviceTokenEvent(1L, "deprecatedDeviceToken", "deviceToken");
+        UpdateDeviceTokenEvent event = new UpdateDeviceTokenEvent(1L, 1L, "deprecatedDeviceToken");
 
         transactionTemplate.execute(status -> {
             eventPublisher.publishEvent(event);
@@ -68,14 +68,14 @@ class MissionMemberEventHandlerTest {
         });
 
         verify(missionMemberService, times(1))
-                .unsubscribeFromMyMissions(event.memberId(), event.deprecatedDeviceToken());
+                .unsubscribeFromMyMissions(event.memberId(), event.deviceId(), event.deprecatedDeviceToken());
         verify(missionMemberService, times(1))
-                .subscribeToMyMissions(event.memberId(), event.deviceToken());
+                .subscribeToMyMissions(event.memberId(), event.deviceId());
     }
 
     @Test
     void 푸시_알림을_활성화하는_경우_토픽을_구독한다() {
-        UpdatePushActivationStatusEvent event = new UpdatePushActivationStatusEvent(1L, "deviceToken", true);
+        UpdatePushActivationStatusEvent event = new UpdatePushActivationStatusEvent(1L, 1L, true, "deviceToken");
 
         transactionTemplate.execute(status -> {
             eventPublisher.publishEvent(event);
@@ -83,12 +83,12 @@ class MissionMemberEventHandlerTest {
         });
 
         verify(missionMemberService, times(1))
-                .subscribeToMyMissions(event.memberId(), event.deviceToken());
+                .subscribeToMyMissions(event.memberId(), event.deviceId());
     }
 
     @Test
     void 푸시_알림을_비활성화하는_경우_토픽을_구독_취소한다() {
-        UpdatePushActivationStatusEvent event = new UpdatePushActivationStatusEvent(1L, "deviceToken", false);
+        UpdatePushActivationStatusEvent event = new UpdatePushActivationStatusEvent(1L, 1L, false, "deviceToken");
 
         transactionTemplate.execute(status -> {
             eventPublisher.publishEvent(event);
@@ -96,6 +96,6 @@ class MissionMemberEventHandlerTest {
         });
 
         verify(missionMemberService, times(1))
-                .unsubscribeFromMyMissions(event.memberId(), event.deviceToken());
+                .unsubscribeFromMyMissions(event.memberId(), event.deviceId(), event.deviceToken());
     }
 }

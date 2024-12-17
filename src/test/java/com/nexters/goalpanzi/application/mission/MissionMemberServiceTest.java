@@ -3,6 +3,8 @@ package com.nexters.goalpanzi.application.mission;
 import com.nexters.goalpanzi.application.firebase.TopicGenerator;
 import com.nexters.goalpanzi.application.mission.event.JoinMissionEvent;
 import com.nexters.goalpanzi.config.redis.RedisInitializer;
+import com.nexters.goalpanzi.domain.firebase.Device;
+import com.nexters.goalpanzi.domain.firebase.repository.DeviceRepository;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.InvitationCode;
@@ -58,6 +60,9 @@ class MissionMemberServiceTest {
     private MemberRepository memberRepository;
 
     @MockBean
+    private DeviceRepository deviceRepository;
+
+    @MockBean
     private ApplicationEventPublisher eventPublisher;
 
     @MockBean
@@ -86,16 +91,19 @@ class MissionMemberServiceTest {
 
         Member mockHostMember = mock(Member.class);
         when(mockHostMember.getId()).thenReturn(HOST_ID);
-        when(mockHostMember.getDeviceToken()).thenReturn(DEVICE_TOKEN);
-        when(mockHostMember.isPushActivated()).thenReturn(true);
+
+        Device mockDevice = mock(Device.class);
+        when(mockDevice.getDeviceToken()).thenReturn(DEVICE_TOKEN);
+        when(mockDevice.getPushActivationStatus()).thenReturn(true);
 
         Mission mockMission = mock(Mission.class);
         when(mockMission.getId()).thenReturn(MISSION_ID);
         when(mockMission.getHostMemberId()).thenReturn(HOST_ID);
         when(mockMission.isHostMember(MEMBER_ID)).thenReturn(false);
 
-        when(memberRepository.getMember(mockMember.getId())).thenReturn(mockMember);
-        when(memberRepository.getMember(mockHostMember.getId())).thenReturn(mockHostMember);
+        when(memberRepository.getMember(MEMBER_ID)).thenReturn(mockMember);
+        when(memberRepository.getMember(HOST_ID)).thenReturn(mockHostMember);
+        when(deviceRepository.findAllByMemberId(HOST_ID)).thenReturn(List.of(mockDevice));
 
         when(missionRepository.findByInvitationCode(INVITATION_CODE)).thenReturn(Optional.of(mockMission));
         when(missionMemberRepository.findByMemberIdAndMissionId(MEMBER_ID, MISSION_ID)).thenReturn(Optional.empty());
@@ -108,28 +116,65 @@ class MissionMemberServiceTest {
     }
 
     @Test
-    void 호스트가_미션에_참여했을_때_JoinMissionEvent를_발행하지_않는다() {
+    void 호스트가_아닌_멤버가_미션에_참여했더라도_호스트가_알림을_비활성화했다면_JoinMissionEvent를_발행하지_않는다() {
         InvitationCode INVITATION_CODE = InvitationCode.generate();
+        Long HOST_ID = MEMBER_ID + 1;
 
         Member mockMember = mock(Member.class);
         when(mockMember.getId()).thenReturn(MEMBER_ID);
-        when(mockMember.getNickname()).thenReturn(NICKNAME_HOST);
-        when(mockMember.getDeviceToken()).thenReturn(DEVICE_TOKEN);
-        when(mockMember.isPushActivated()).thenReturn(true);
+        when(mockMember.getNickname()).thenReturn(NICKNAME_MEMBER_A);
+
+        Member mockHostMember = mock(Member.class);
+        when(mockHostMember.getId()).thenReturn(HOST_ID);
+
+        Device mockDevice = mock(Device.class);
+        when(mockDevice.getDeviceToken()).thenReturn(DEVICE_TOKEN);
+        when(mockDevice.getPushActivationStatus()).thenReturn(false);
 
         Mission mockMission = mock(Mission.class);
         when(mockMission.getId()).thenReturn(MISSION_ID);
-        when(mockMission.getHostMemberId()).thenReturn(MEMBER_ID);
-        when(mockMission.isHostMember(MEMBER_ID)).thenReturn(true);
+        when(mockMission.getHostMemberId()).thenReturn(HOST_ID);
+        when(mockMission.isHostMember(MEMBER_ID)).thenReturn(false);
 
-        when(memberRepository.getMember(mockMember.getId())).thenReturn(mockMember);
+        when(memberRepository.getMember(MEMBER_ID)).thenReturn(mockMember);
+        when(memberRepository.getMember(HOST_ID)).thenReturn(mockHostMember);
+        when(deviceRepository.findAllByMemberId(HOST_ID)).thenReturn(List.of(mockDevice));
 
         when(missionRepository.findByInvitationCode(INVITATION_CODE)).thenReturn(Optional.of(mockMission));
         when(missionMemberRepository.findByMemberIdAndMissionId(MEMBER_ID, MISSION_ID)).thenReturn(Optional.empty());
 
         missionMemberService.joinMission(MEMBER_ID, INVITATION_CODE);
 
-        verifyNoInteractions(eventPublisher);
+        verify(eventPublisher, times(0))
+                .publishEvent(any(JoinMissionEvent.class));
+    }
+
+    @Test
+    void 호스트가_미션에_참여했을_때_JoinMissionEvent를_발행하지_않는다() {
+        InvitationCode INVITATION_CODE = InvitationCode.generate();
+
+        Member mockMember = mock(Member.class);
+        when(mockMember.getId()).thenReturn(MEMBER_ID);
+        when(mockMember.getNickname()).thenReturn(NICKNAME_HOST);
+
+        Device mockDevice = mock(Device.class);
+        when(mockDevice.getDeviceToken()).thenReturn(DEVICE_TOKEN);
+        when(mockDevice.getPushActivationStatus()).thenReturn(true);
+
+        Mission mockMission = mock(Mission.class);
+        when(mockMission.getId()).thenReturn(MISSION_ID);
+        when(mockMission.getHostMemberId()).thenReturn(MEMBER_ID);
+        when(mockMission.isHostMember(MEMBER_ID)).thenReturn(true);
+
+        when(memberRepository.getMember(MEMBER_ID)).thenReturn(mockMember);
+
+        when(missionRepository.findByInvitationCode(INVITATION_CODE)).thenReturn(Optional.of(mockMission));
+        when(missionMemberRepository.findByMemberIdAndMissionId(MEMBER_ID, MISSION_ID)).thenReturn(Optional.empty());
+
+        missionMemberService.joinMission(MEMBER_ID, INVITATION_CODE);
+
+        verify(eventPublisher, times(0))
+                .publishEvent(any(JoinMissionEvent.class));
     }
 
     @Test

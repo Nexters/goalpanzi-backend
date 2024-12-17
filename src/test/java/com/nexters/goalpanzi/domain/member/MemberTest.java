@@ -2,7 +2,6 @@ package com.nexters.goalpanzi.domain.member;
 
 import org.junit.jupiter.api.Test;
 
-import static com.nexters.goalpanzi.fixture.DeviceFixture.DEVICE_TOKEN;
 import static com.nexters.goalpanzi.fixture.MemberFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,30 +38,5 @@ class MemberTest {
         member.updateNickname(NICKNAME_HOST);
 
         assertThat(member.isProfileSet()).isFalse();
-    }
-
-    @Test
-    void 디바이스_토큰을_갱신한다() {
-        Member member = Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.APPLE);
-        member.updateDeviceToken(DEVICE_TOKEN);
-
-        assertThat(member.getDeviceToken()).isEqualTo(DEVICE_TOKEN);
-    }
-
-    @Test
-    void 푸시_알림_활성화_여부를_수정한다() {
-        Member member = Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.APPLE);
-        member.updateDeviceToken(DEVICE_TOKEN);
-        member.updatePushActivationStatus(true);
-
-        assertThat(member.isPushActivated()).isTrue();
-    }
-
-    @Test
-    void 푸시_알림을_활성화해도_디바이스_토큰이_null인_경우_비활성화_상태로_판단한다() {
-        Member member = Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.APPLE);
-        member.updatePushActivationStatus(true);
-
-        assertThat(member.isPushActivated()).isFalse();
     }
 }

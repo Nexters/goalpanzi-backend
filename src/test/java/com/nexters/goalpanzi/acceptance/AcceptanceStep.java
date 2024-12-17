@@ -20,7 +20,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.nexters.goalpanzi.fixture.DeviceFixture.DEPRECATED_DEVICE_TOKEN;
 import static com.nexters.goalpanzi.fixture.DeviceFixture.DEVICE_TOKEN;
 import static com.nexters.goalpanzi.fixture.MissionFixture.DESCRIPTION;
 import static com.nexters.goalpanzi.fixture.TokenFixture.BEARER;
@@ -146,8 +145,8 @@ public class AcceptanceStep {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 디바이스_토큰_갱신(String accessToken) {
-        UpdateDeviceTokenRequest request = new UpdateDeviceTokenRequest(DEPRECATED_DEVICE_TOKEN, DEVICE_TOKEN);
+    public static ExtractableResponse<Response> 디바이스_토큰_갱신(String deviceIdentifier, String accessToken) {
+        UpdateDeviceTokenRequest request = new UpdateDeviceTokenRequest(deviceIdentifier, DEVICE_TOKEN);
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)

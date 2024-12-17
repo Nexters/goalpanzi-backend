@@ -3,6 +3,8 @@ package com.nexters.goalpanzi.acceptance;
 import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
 import com.nexters.goalpanzi.application.member.dto.response.ProfileResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
+import com.nexters.goalpanzi.domain.firebase.Device;
+import com.nexters.goalpanzi.domain.firebase.repository.DeviceRepository;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.presentation.auth.dto.GoogleLoginRequest;
@@ -17,7 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import static com.nexters.goalpanzi.acceptance.AcceptanceStep.*;
-import static com.nexters.goalpanzi.fixture.DeviceFixture.DEPRECATED_DEVICE_TOKEN;
+import static com.nexters.goalpanzi.fixture.DeviceFixture.DEVICE_IDENTIFIER;
 import static com.nexters.goalpanzi.fixture.DeviceFixture.DEVICE_TOKEN;
 import static com.nexters.goalpanzi.fixture.MemberFixture.*;
 import static com.nexters.goalpanzi.fixture.TokenFixture.BEARER;
@@ -28,6 +30,9 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private DeviceRepository deviceRepository;
 
     @Test
     void 프로필을_설정한다() {
@@ -80,7 +85,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
     void 디바이스_토큰을_갱신한다() {
         LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
 
-        UpdateDeviceTokenRequest request = new UpdateDeviceTokenRequest(DEPRECATED_DEVICE_TOKEN, DEVICE_TOKEN);
+        UpdateDeviceTokenRequest request = new UpdateDeviceTokenRequest(DEVICE_IDENTIFIER, DEVICE_TOKEN);
         RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + login.accessToken())
@@ -89,16 +94,16 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value());
 
-        Member member = memberRepository.getMember(login.memberId());
-        assertThat(member.getDeviceToken()).isEqualTo(DEVICE_TOKEN);
+        Device device = deviceRepository.getDevice(login.memberId(), request.deviceIdentifier());
+        assertThat(device.getDeviceToken()).isEqualTo(DEVICE_TOKEN);
     }
 
     @Test
     void 푸시_알림_활성화_여부를_수정한다() {
         LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
-        디바이스_토큰_갱신(login.accessToken());
+        디바이스_토큰_갱신(DEVICE_IDENTIFIER, login.accessToken());
 
-        UpdatePushActivationStatusRequest request = new UpdatePushActivationStatusRequest(true);
+        UpdatePushActivationStatusRequest request = new UpdatePushActivationStatusRequest(DEVICE_IDENTIFIER, true);
         RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + login.accessToken())
@@ -107,7 +112,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value());
 
-        Member member = memberRepository.getMember(login.memberId());
-        assertThat(member.isPushActivated()).isTrue();
+        Device device = deviceRepository.getDevice(login.memberId(), request.deviceIdentifier());
+        assertThat(device.getPushActivationStatus()).isTrue();
     }
 }

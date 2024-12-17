@@ -3,6 +3,8 @@ package com.nexters.goalpanzi.application.mission;
 import com.nexters.goalpanzi.application.firebase.TopicGenerator;
 import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
 import com.nexters.goalpanzi.config.redis.RedisInitializer;
+import com.nexters.goalpanzi.domain.firebase.Device;
+import com.nexters.goalpanzi.domain.firebase.repository.DeviceRepository;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.Mission;
@@ -54,6 +56,9 @@ class MissionVerificationServiceTest {
     private MissionRepository missionRepository;
 
     @MockBean
+    private DeviceRepository deviceRepository;
+
+    @MockBean
     private MissionMemberRepository missionMemberRepository;
 
     @MockBean
@@ -64,6 +69,10 @@ class MissionVerificationServiceTest {
     @Test
     void 미션_인증_푸시_시간이고_친구_중_한_명이라도_미션을_인증한_경우_MISSION_VERIFIED_푸시_알림을_보낸다() {
         Mission mockMission = mock(Mission.class);
+        when(mockMission.getId()).thenReturn(MISSION_ID);
+        when(mockMission.isMissionDay()).thenReturn(true);
+        when(mockMission.isVerificationStatusPushTime(anyInt())).thenReturn(true);
+
         MissionVerification missionVerification = new MissionVerification(
                 mock(Member.class),
                 mockMission,
@@ -71,10 +80,6 @@ class MissionVerificationServiceTest {
                 1
         );
         List<MissionVerification> verifications = List.of(missionVerification);
-
-        when(mockMission.getId()).thenReturn(MISSION_ID);
-        when(mockMission.isMissionDay()).thenReturn(true);
-        when(mockMission.isVerificationStatusPushTime(anyInt())).thenReturn(true);
 
         when(missionRepository.getInProgressMissions()).thenReturn(List.of(mockMission));
         when(missionVerificationRepository.findAllByMissionIdAndDate(MISSION_ID, LocalDate.now())).thenReturn(verifications);
@@ -92,7 +97,6 @@ class MissionVerificationServiceTest {
     @Test
     void 미션_인증_푸시_시간이고_아무도_미션을_인증하지_않은_경우_MISSION_NO_ONE_VERIFIED_푸시_알림을_보낸다() {
         Mission mockMission = mock(Mission.class);
-
         when(mockMission.getId()).thenReturn(MISSION_ID);
         when(mockMission.isMissionDay()).thenReturn(true);
         when(mockMission.isVerificationStatusPushTime(anyInt())).thenReturn(true);
@@ -113,24 +117,29 @@ class MissionVerificationServiceTest {
     @Test
     void 미션을_인증하지_않았고_인증_마감_경고_시간인_경우_MISSION_VERIFICATION_WARNING_푸시_알림을_보낸다() {
         Long MEMBER_ID = 2L;
-        Mission mockMission = mock(Mission.class);
-        MissionMember mockMissionMember = mock(MissionMember.class);
-        Member mockMember = mock(Member.class);
-        List<MissionMember> missionMembers = List.of(mockMissionMember);
 
+        Mission mockMission = mock(Mission.class);
         when(mockMission.getId()).thenReturn(MISSION_ID);
         when(mockMission.isMissionDay()).thenReturn(true);
         when(mockMission.isVerificationWarningPushTime(any(LocalTime.class))).thenReturn(true);
 
+        Member mockMember = mock(Member.class);
+        when(mockMember.getId()).thenReturn(MEMBER_ID);
+
+        Device mockDevice = mock(Device.class);
+        when(mockDevice.getDeviceToken()).thenReturn(DEVICE_TOKEN);
+        when(mockDevice.getPushActivationStatus()).thenReturn(true);
+
+        MissionMember mockMissionMember = mock(MissionMember.class);
         when(mockMissionMember.getMember()).thenReturn(mockMember);
 
-        when(mockMember.getId()).thenReturn(MEMBER_ID);
-        when(mockMember.isPushActivated()).thenReturn(true);
-        when(mockMember.getDeviceToken()).thenReturn(DEVICE_TOKEN);
+        List<MissionMember> missionMembers = List.of(mockMissionMember);
 
         when(missionRepository.getInProgressMissions()).thenReturn(List.of(mockMission));
         when(missionMemberRepository.findAllByMissionId(MISSION_ID)).thenReturn(missionMembers);
         when(missionVerificationRepository.findByMemberIdAndMissionIdAndDate(MEMBER_ID, MISSION_ID, LocalDate.now())).thenReturn(Optional.empty());
+
+        when(deviceRepository.findAllByMemberId(MEMBER_ID)).thenReturn(List.of(mockDevice));
 
         missionVerificationService.sendVerificationWarningPushMessage();
 
