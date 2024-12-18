@@ -94,19 +94,4 @@ public class PushMessageSenderImpl implements PushMessageSender {
             throw new BaseException(ErrorCode.FAILED_TO_SEND_GROUP_MESSAGE, e);
         }
     }
-
-    // TODO: 확인 후 삭제 필요
-    public void sendTest(String token) {
-        Message message = Message.builder()
-                .setNotification(null)
-                .putData("hello", "world")
-                .setToken(token)
-                .build();
-
-        try {
-            FirebaseMessaging.getInstance().send(message);
-        } catch (FirebaseMessagingException e) {
-            throw new BaseException(ErrorCode.FAILED_TO_SEND_INDIVIDUAL_MESSAGE, e);
-        }
-    }
 }

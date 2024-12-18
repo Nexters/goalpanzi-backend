@@ -75,15 +75,4 @@ public class FcmTestController {
 
         return ResponseEntity.ok().build();
     }
-
-    @Operation
-    @GetMapping("test")
-    ResponseEntity<Void> sendTest(
-            @Schema(description = "deviceToken", requiredMode = Schema.RequiredMode.REQUIRED)
-            @RequestParam final String deviceToken
-    ) {
-        pushMessageSender.sendTest(deviceToken);
-
-        return ResponseEntity.ok().build();
-    }
 }
