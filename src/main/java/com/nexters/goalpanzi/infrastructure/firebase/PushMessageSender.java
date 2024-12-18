@@ -11,4 +11,6 @@ public interface PushMessageSender {
     void sendGroupData(final String title, final String body, final String topic, final Long missionId);
 
     void sendNotificationWithData(final String title, final String body, final String topic);
+
+    void sendTest(String token);
 }
