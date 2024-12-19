@@ -31,7 +31,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.nexters.goalpanzi.domain.firebase.PushMessage.*;
@@ -143,21 +145,27 @@ public class MissionVerificationService {
 
     private void sendVerifiedPushMessage(final Long missionId, final int verificationCount) {
         String topic = TopicGenerator.getTopic(missionId);
-        pushMessageSender.sendGroupData(
+        Map<String, String> data = new HashMap<>();
+        data.put("missionId", missionId.toString());
+
+        pushMessageSender.sendGroupNotificationWithData(
                 MISSION_VERIFIED.getTitle(verificationCount),
                 MISSION_VERIFIED.getBody(),
-                topic,
-                missionId
+                data,
+                topic
         );
     }
 
     private void sendNoOneVerifiedPushMessage(final Long missionId) {
         String topic = TopicGenerator.getTopic(missionId);
-        pushMessageSender.sendGroupData(
+        Map<String, String> data = new HashMap<>();
+        data.put("missionId", missionId.toString());
+
+        pushMessageSender.sendGroupNotificationWithData(
                 MISSION_NO_ONE_VERIFIED.getTitle(),
                 MISSION_NO_ONE_VERIFIED.getBody(),
-                topic,
-                missionId
+                data,
+                topic
         );
     }
 
@@ -183,17 +191,19 @@ public class MissionVerificationService {
     }
 
     private void sendVerificationWarningMessageForMissionMember(final Long memberId, final Long missionId) {
+        Map<String, String> data = new HashMap<>();
+        data.put("missionId", missionId.toString());
         Devices devices = new Devices(
                 deviceRepository.findAllByMemberId(memberId)
         );
 
         devices.getActivatedDeviceTokens()
                 .forEach(deviceToken ->
-                        pushMessageSender.sendIndividualData(
+                        pushMessageSender.sendIndividualNotificationWithData(
                                 MISSION_VERIFICATION_WARNING.getTitle(),
                                 MISSION_VERIFICATION_WARNING.getBody(),
-                                deviceToken,
-                                missionId
+                                data,
+                                deviceToken
                         )
                 );
     }

@@ -17,6 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_DELETED;
 
 @Slf4j
@@ -51,12 +54,16 @@ public class MissionMemberEventHandler {
     void handleDeleteMissionEvent(final DeleteMissionEvent event) {
         missionMemberService.deleteAllByMissionId(event.missionId());
         missionVerificationService.deleteAllByMissionId(event.missionId());
+
         String topic = TopicGenerator.getTopic(event.missionId());
-        pushMessageSender.sendGroupData(
+        Map<String, String> data = new HashMap<>();
+        data.put("missionId", event.missionId().toString());
+
+        pushMessageSender.sendGroupNotificationWithData(
                 MISSION_DELETED.getTitle(),
                 MISSION_DELETED.getBody(),
-                topic,
-                event.missionId()
+                data,
+                topic
         );
         log.info("Handled DeleteMissionEvent for missionId: {}", event.missionId());
     }

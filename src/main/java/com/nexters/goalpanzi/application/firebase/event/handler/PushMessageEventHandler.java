@@ -14,6 +14,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_COMPLETED;
 import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_JOINED;
 
@@ -29,11 +32,14 @@ public class PushMessageEventHandler {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     void handleJoinMissionEvent(final JoinMissionEvent event) {
-        pushMessageSender.sendIndividualData(
+        Map<String, String> data = new HashMap<>();
+        data.put("missionId", event.missionId().toString());
+
+        pushMessageSender.sendIndividualNotificationWithData(
                 MISSION_JOINED.getTitle(),
                 MISSION_JOINED.getBody(event.nickname()),
-                event.deviceToken(),
-                event.missionId()
+                data,
+                event.deviceToken()
         );
         log.info("Handled JoinMissionEvent for missionId: {}", event.missionId());
     }
@@ -42,11 +48,14 @@ public class PushMessageEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     void handleCompleteMissionEvent(final CompleteMissionEvent event) {
         String topic = TopicGenerator.getTopic(event.missionId());
-        pushMessageSender.sendGroupData(
+        Map<String, String> data = new HashMap<>();
+        data.put("missionId", event.missionId().toString());
+
+        pushMessageSender.sendGroupNotificationWithData(
                 MISSION_COMPLETED.getTitle(),
                 MISSION_COMPLETED.getBody(),
-                topic,
-                event.missionId()
+                data,
+                topic
         );
         log.info("Handled CompleteMissionEvent for missionId: {}", event.missionId());
     }

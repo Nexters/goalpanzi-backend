@@ -4,11 +4,12 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
-import com.nexters.goalpanzi.application.firebase.dto.response.Data;
 import com.nexters.goalpanzi.exception.BaseException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 @Component
 public class PushMessageSenderImpl implements PushMessageSender {
@@ -41,17 +42,9 @@ public class PushMessageSenderImpl implements PushMessageSender {
         }
     }
 
-    private Notification makeNotification(final String title, final String body) {
-        return Notification.builder()
-                .setTitle(title)
-                .setBody(body)
-                .build();
-    }
-
-    public void sendIndividualData(final String title, final String body, final String token, final Long missionId) {
-        Data data = makeData(title, body, missionId);
+    public void sendIndividualData(Map<String, String> data, final String token) {
         Message message = Message.builder()
-                .putAllData(data.toMap())
+                .putAllData(data)
                 .setToken(token)
                 .build();
 
@@ -62,10 +55,9 @@ public class PushMessageSenderImpl implements PushMessageSender {
         }
     }
 
-    public void sendGroupData(final String title, final String body, final String topic, final Long missionId) {
-        Data data = makeData(title, body, missionId);
+    public void sendGroupData(Map<String, String> data, final String topic) {
         Message message = Message.builder()
-                .putAllData(data.toMap())
+                .putAllData(data)
                 .setTopic(topic)
                 .build();
 
@@ -76,15 +68,26 @@ public class PushMessageSenderImpl implements PushMessageSender {
         }
     }
 
-    private Data makeData(final String title, final String body, final Long missionId) {
-        return new Data(title, body, missionId);
-    }
-
-    public void sendNotificationWithData(String title, String body, String topic) {
+    public void sendIndividualNotificationWithData(String title, String body, Map<String, String> data, String token) {
         Notification notification = makeNotification(title, body);
         Message message = Message.builder()
                 .setNotification(notification)
-                .putData("missionId", TopicGenerator.extractIdentifier(topic))
+                .putAllData(data)
+                .setToken(token)
+                .build();
+
+        try {
+            FirebaseMessaging.getInstance().send(message);
+        } catch (FirebaseMessagingException e) {
+            throw new BaseException(ErrorCode.FAILED_TO_SEND_INDIVIDUAL_MESSAGE, e);
+        }
+    }
+
+    public void sendGroupNotificationWithData(String title, String body, Map<String, String> data, String topic) {
+        Notification notification = makeNotification(title, body);
+        Message message = Message.builder()
+                .setNotification(notification)
+                .putAllData(data)
                 .setTopic(topic)
                 .build();
 
@@ -93,5 +96,12 @@ public class PushMessageSenderImpl implements PushMessageSender {
         } catch (FirebaseMessagingException e) {
             throw new BaseException(ErrorCode.FAILED_TO_SEND_GROUP_MESSAGE, e);
         }
+    }
+
+    private Notification makeNotification(final String title, final String body) {
+        return Notification.builder()
+                .setTitle(title)
+                .setBody(body)
+                .build();
     }
 }

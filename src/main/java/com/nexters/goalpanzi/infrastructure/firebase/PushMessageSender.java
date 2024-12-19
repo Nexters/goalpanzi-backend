@@ -1,14 +1,18 @@
 package com.nexters.goalpanzi.infrastructure.firebase;
 
+import java.util.Map;
+
 public interface PushMessageSender {
 
     void sendIndividualNotification(final String title, final String body, final String token);
 
     void sendGroupNotification(final String title, final String body, final String topic);
 
-    void sendIndividualData(final String title, final String body, final String token, final Long missionId);
+    void sendIndividualData(final Map<String, String> data, final String token);
 
-    void sendGroupData(final String title, final String body, final String topic, final Long missionId);
+    void sendGroupData(final Map<String, String> data, final String topic);
 
-    void sendNotificationWithData(final String title, final String body, final String topic);
+    void sendIndividualNotificationWithData(final String title, final String body, final Map<String, String> data, final String token);
+
+    void sendGroupNotificationWithData(final String title, final String body, final Map<String, String> data, final String topic);
 }

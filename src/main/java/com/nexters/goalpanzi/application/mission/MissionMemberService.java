@@ -25,7 +25,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_CANCELLATION_WARNING;
 import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_READY;
@@ -161,11 +163,14 @@ public class MissionMemberService {
         missions.forEach(mission -> {
             if (mission.isReadyTime(now) && missionValidator.hasEnoughMember(mission.getId())) {
                 String topic = TopicGenerator.getTopic(mission.getId());
-                pushMessageSender.sendGroupData(
+                Map<String, String> data = new HashMap<>();
+                data.put("missionId", mission.getId().toString());
+
+                pushMessageSender.sendGroupNotificationWithData(
                         MISSION_READY.getTitle(),
                         MISSION_READY.getBody(),
-                        topic,
-                        mission.getId()
+                        data,
+                        topic
                 );
             }
         });
@@ -178,11 +183,14 @@ public class MissionMemberService {
         missions.forEach(mission -> {
             if (mission.isReadyTime(now) && !missionValidator.hasEnoughMember(mission.getId())) {
                 String topic = TopicGenerator.getTopic(mission.getId());
-                pushMessageSender.sendGroupData(
+                Map<String, String> data = new HashMap<>();
+                data.put("missionId", mission.getId().toString());
+
+                pushMessageSender.sendGroupNotificationWithData(
                         MISSION_CANCELLATION_WARNING.getTitle(),
                         MISSION_CANCELLATION_WARNING.getBody(),
-                        topic,
-                        mission.getId()
+                        data,
+                        topic
                 );
             }
         });

@@ -1,6 +1,5 @@
 package com.nexters.goalpanzi.presentation.fcmtest;
 
-import com.nexters.goalpanzi.application.firebase.TopicGenerator;
 import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
 import com.nexters.goalpanzi.infrastructure.firebase.TopicSubscriber;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Tag(name = "푸시 알림 테스트")
 @RequiredArgsConstructor
@@ -49,28 +50,33 @@ public class FcmTestController {
     }
 
     @Operation
-    @GetMapping("data")
+    @GetMapping("individual-data")
     ResponseEntity<Void> sendData(
             @Schema(description = "deviceToken", requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam final String deviceToken
     ) {
-        pushMessageSender.sendIndividualData("Data 타입 테스트", "Data 타입 전송 테스트입니다.", deviceToken, 1L);
+        Map<String, String> data = new HashMap<>();
+        data.put("title", "Data 타입 테스트");
+        data.put("body", deviceToken);
+        data.put("missionId", "1L");
+        pushMessageSender.sendIndividualData(data, deviceToken);
 
         return ResponseEntity.ok().build();
     }
 
     @Operation
-    @GetMapping("notification-with-data")
-    ResponseEntity<Void> sendNotificationWithData(
+    @GetMapping("individual-notification-with-data")
+    ResponseEntity<Void> sendIndividualNotificationWithData(
             @Schema(description = "deviceToken", requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam final String deviceToken
     ) {
-        String topic = TopicGenerator.getTopic(1L);
-        topicSubscriber.subscribeToTopic(List.of(deviceToken), topic);
-        pushMessageSender.sendNotificationWithData(
+        Map<String, String> data = new HashMap<>();
+        data.put("missionId", "1L");
+        pushMessageSender.sendIndividualNotificationWithData(
                 "혼합 메시지 테스트",
-                "notification { title: string, body: string }, data { missionId: string }",
-                topic
+                "혼합 메시지의 바디입니다.",
+                data,
+                deviceToken
         );
 
         return ResponseEntity.ok().build();
