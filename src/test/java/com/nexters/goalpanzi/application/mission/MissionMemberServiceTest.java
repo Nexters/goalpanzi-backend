@@ -25,7 +25,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_CANCELLATION_WARNING;
@@ -189,11 +191,14 @@ class MissionMemberServiceTest {
 
         missionMemberService.sendReadyPushMessage();
 
-        verify(pushMessageSender).sendGroupData(
+        Map<String, String> data = new HashMap<>();
+        data.put("missionId", MISSION_ID.toString());
+
+        verify(pushMessageSender).sendGroupNotificationWithData(
                 MISSION_READY.getTitle(),
                 MISSION_READY.getBody(),
-                TopicGenerator.getTopic(MISSION_ID),
-                MISSION_ID
+                data,
+                TopicGenerator.getTopic(MISSION_ID)
         );
     }
 
@@ -209,11 +214,14 @@ class MissionMemberServiceTest {
 
         missionMemberService.sendCancellationWarningPushMessage();
 
-        verify(pushMessageSender).sendGroupData(
+        Map<String, String> data = new HashMap<>();
+        data.put("missionId", MISSION_ID.toString());
+
+        verify(pushMessageSender).sendGroupNotificationWithData(
                 MISSION_CANCELLATION_WARNING.getTitle(),
                 MISSION_CANCELLATION_WARNING.getBody(),
-                TopicGenerator.getTopic(MISSION_ID),
-                MISSION_ID
+                data,
+                TopicGenerator.getTopic(MISSION_ID)
         );
     }
 }

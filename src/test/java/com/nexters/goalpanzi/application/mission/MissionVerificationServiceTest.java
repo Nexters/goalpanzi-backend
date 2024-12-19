@@ -24,7 +24,9 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.nexters.goalpanzi.domain.firebase.PushMessage.*;
@@ -86,11 +88,14 @@ class MissionVerificationServiceTest {
 
         missionVerificationService.sendVerificationPushMessage();
 
-        verify(pushMessageSender).sendGroupData(
+        Map<String, String> data = new HashMap<>();
+        data.put("missionId", MISSION_ID.toString());
+
+        verify(pushMessageSender).sendGroupNotificationWithData(
                 MISSION_VERIFIED.getTitle(verifications.size()),
                 MISSION_VERIFIED.getBody(),
-                TopicGenerator.getTopic(MISSION_ID),
-                MISSION_ID
+                data,
+                TopicGenerator.getTopic(MISSION_ID)
         );
     }
 
@@ -106,11 +111,14 @@ class MissionVerificationServiceTest {
 
         missionVerificationService.sendVerificationPushMessage();
 
-        verify(pushMessageSender).sendGroupData(
+        Map<String, String> data = new HashMap<>();
+        data.put("missionId", MISSION_ID.toString());
+
+        verify(pushMessageSender).sendGroupNotificationWithData(
                 MISSION_NO_ONE_VERIFIED.getTitle(),
                 MISSION_NO_ONE_VERIFIED.getBody(),
-                TopicGenerator.getTopic(MISSION_ID),
-                MISSION_ID
+                data,
+                TopicGenerator.getTopic(MISSION_ID)
         );
     }
 
@@ -143,11 +151,14 @@ class MissionVerificationServiceTest {
 
         missionVerificationService.sendVerificationWarningPushMessage();
 
-        verify(pushMessageSender).sendIndividualData(
+        Map<String, String> data = new HashMap<>();
+        data.put("missionId", MISSION_ID.toString());
+
+        verify(pushMessageSender).sendIndividualNotificationWithData(
                 MISSION_VERIFICATION_WARNING.getTitle(),
                 MISSION_VERIFICATION_WARNING.getBody(),
-                DEVICE_TOKEN,
-                MISSION_ID
+                data,
+                DEVICE_TOKEN
         );
     }
 }
