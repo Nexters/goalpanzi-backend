@@ -14,7 +14,7 @@ import java.util.Map;
 @Component
 public class PushMessageSenderImpl implements PushMessageSender {
 
-    public void sendIndividualNotification(final String title, final String body, final String token) {
+    public void sendIndividualNotification(String title, String body, String token) {
         Notification notification = makeNotification(title, body);
         Message message = Message.builder()
                 .setNotification(notification)
@@ -28,7 +28,7 @@ public class PushMessageSenderImpl implements PushMessageSender {
         }
     }
 
-    public void sendGroupNotification(final String title, final String body, final String topic) {
+    public void sendGroupNotification(String title, String body, String topic) {
         Notification notification = makeNotification(title, body);
         Message message = Message.builder()
                 .setNotification(notification)
@@ -42,7 +42,7 @@ public class PushMessageSenderImpl implements PushMessageSender {
         }
     }
 
-    public void sendIndividualData(Map<String, String> data, final String token) {
+    public void sendIndividualData(Map<String, String> data, String token) {
         Message message = Message.builder()
                 .putAllData(data)
                 .setToken(token)
@@ -55,7 +55,7 @@ public class PushMessageSenderImpl implements PushMessageSender {
         }
     }
 
-    public void sendGroupData(Map<String, String> data, final String topic) {
+    public void sendGroupData(Map<String, String> data, String topic) {
         Message message = Message.builder()
                 .putAllData(data)
                 .setTopic(topic)

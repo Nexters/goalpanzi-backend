@@ -27,13 +27,19 @@ public class Device extends BaseEntity {
     @Column(name = "device_token", nullable = false)
     private String deviceToken;
 
-    @Column(name = "push_activation_status", nullable = false)
-    private Boolean pushActivationStatus = true;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "os_type", nullable = false)
+    private OsType osType;
 
-    public Device(final Member member, final String deviceIdentifier, final String deviceToken) {
+    @Column(name = "push_activation_status", nullable = false)
+    private Boolean pushActivationStatus;
+
+    public Device(final Member member, final String deviceIdentifier, final String deviceToken, final OsType osType) {
         this.member = member;
         this.deviceIdentifier = deviceIdentifier;
         this.deviceToken = deviceToken;
+        this.osType = osType;
+        this.pushActivationStatus = true;
     }
 
     public void updateDeviceToken(final String deviceToken) {

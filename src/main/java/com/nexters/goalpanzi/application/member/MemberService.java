@@ -9,6 +9,7 @@ import com.nexters.goalpanzi.application.member.event.UpdateDeviceTokenEvent;
 import com.nexters.goalpanzi.application.member.event.UpdatePushActivationStatusEvent;
 import com.nexters.goalpanzi.domain.auth.repository.RefreshTokenRepository;
 import com.nexters.goalpanzi.domain.device.Device;
+import com.nexters.goalpanzi.domain.device.OsType;
 import com.nexters.goalpanzi.domain.device.repository.DeviceRepository;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
@@ -62,17 +63,17 @@ public class MemberService {
 
     @Transactional
     public void updateDeviceToken(final UpdateDeviceTokenCommand command) {
-        boolean isStoredDevice = deviceRepository.existsByDeviceIdentifier(command.deviceIdentifier());
-        if (!isStoredDevice) {
-            createDevice(command.memberId(), command.deviceIdentifier(), command.deviceToken());
+        if (command.deviceIdentifier().isBlank()
+                || !deviceRepository.existsByDeviceIdentifier(command.deviceIdentifier())) {
+            createDevice(command.memberId(), command.deviceIdentifier(), command.deviceToken(), command.osType());
         } else {
             updateDevice(command.memberId(), command.deviceIdentifier(), command.deviceToken());
         }
     }
 
-    private void createDevice(final Long memberId, final String deviceIdentifier, final String deviceToken) {
+    private void createDevice(final Long memberId, final String deviceIdentifier, final String deviceToken, final OsType osType) {
         Member member = memberRepository.getMember(memberId);
-        Device device = deviceRepository.save(new Device(member, deviceIdentifier, deviceToken));
+        Device device = deviceRepository.save(new Device(member, deviceIdentifier, deviceToken, osType));
 
         eventPublisher.publishEvent(
                 new UpdateDeviceTokenEvent(memberId, device.getId(), null)

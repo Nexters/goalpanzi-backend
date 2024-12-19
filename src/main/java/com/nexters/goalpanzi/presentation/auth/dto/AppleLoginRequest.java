@@ -6,10 +6,17 @@ import jakarta.validation.constraints.NotEmpty;
 
 public record AppleLoginRequest(
         @Schema(description = "애플 ID 토큰", requiredMode = Schema.RequiredMode.REQUIRED)
-        @NotEmpty String identityToken
+        @NotEmpty String identityToken,
+        // TODO: 추후 NotEmpty 변경
+        @Schema(description = "디바이스 식별자", requiredMode = Schema.RequiredMode.REQUIRED)
+        String deviceIdentifier
 ) {
 
     public AppleLoginCommand toServiceDto() {
-        return new AppleLoginCommand(identityToken);
+        // TODO: 추후 삭제
+        if (deviceIdentifier == null) {
+            return new AppleLoginCommand(identityToken, "");
+        }
+        return new AppleLoginCommand(identityToken, deviceIdentifier);
     }
 }

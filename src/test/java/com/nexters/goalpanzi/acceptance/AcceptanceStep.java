@@ -1,5 +1,6 @@
 package com.nexters.goalpanzi.acceptance;
 
+import com.nexters.goalpanzi.domain.device.OsType;
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.TimeOfDay;
 import com.nexters.goalpanzi.presentation.auth.dto.GoogleLoginRequest;
@@ -146,7 +147,7 @@ public class AcceptanceStep {
     }
 
     public static ExtractableResponse<Response> 디바이스_토큰_갱신(String deviceIdentifier, String accessToken) {
-        UpdateDeviceTokenRequest request = new UpdateDeviceTokenRequest(deviceIdentifier, DEVICE_TOKEN);
+        UpdateDeviceTokenRequest request = new UpdateDeviceTokenRequest(deviceIdentifier, DEVICE_TOKEN, OsType.AOS);
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)

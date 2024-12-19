@@ -6,10 +6,12 @@ import jakarta.validation.constraints.NotEmpty;
 
 public record GoogleLoginRequest(
         @Schema(description = "구글 이메일", requiredMode = Schema.RequiredMode.REQUIRED)
-        @NotEmpty String email
+        @NotEmpty String email,
+        @Schema(description = "디바이스 식별자", requiredMode = Schema.RequiredMode.REQUIRED)
+        @NotEmpty String deviceIdentifier
 ) {
 
     public GoogleLoginCommand toServiceDto() {
-        return new GoogleLoginCommand(email);
+        return new GoogleLoginCommand(email, deviceIdentifier);
     }
 }

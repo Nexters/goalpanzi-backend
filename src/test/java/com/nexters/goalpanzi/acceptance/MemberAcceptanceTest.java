@@ -4,6 +4,7 @@ import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
 import com.nexters.goalpanzi.application.member.dto.response.ProfileResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.domain.device.Device;
+import com.nexters.goalpanzi.domain.device.OsType;
 import com.nexters.goalpanzi.domain.device.repository.DeviceRepository;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
@@ -36,7 +37,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 프로필을_설정한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST, DEVICE_IDENTIFIER)).as(LoginResponse.class);
         프로필_설정(new UpdateProfileRequest(NICKNAME_HOST, CHARACTER_HOST), login.accessToken());
 
         Member actual = memberRepository.getMember(login.memberId());
@@ -48,7 +49,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 프로필을_조회한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST, DEVICE_IDENTIFIER)).as(LoginResponse.class);
         프로필_설정(new UpdateProfileRequest(NICKNAME_HOST, CHARACTER_HOST), login.accessToken());
 
         ProfileResponse actual = RestAssured.given().log().all()
@@ -68,7 +69,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 회원이_탈퇴한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST, DEVICE_IDENTIFIER)).as(LoginResponse.class);
         MissionDetailResponse mission = 미션_생성(login.accessToken()).as(MissionDetailResponse.class);
 
         RestAssured.given().log().all()
@@ -83,9 +84,9 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 디바이스_토큰을_갱신한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST, DEVICE_IDENTIFIER)).as(LoginResponse.class);
 
-        UpdateDeviceTokenRequest request = new UpdateDeviceTokenRequest(DEVICE_IDENTIFIER, DEVICE_TOKEN);
+        UpdateDeviceTokenRequest request = new UpdateDeviceTokenRequest(DEVICE_IDENTIFIER, DEVICE_TOKEN, OsType.AOS);
         RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + login.accessToken())
@@ -100,7 +101,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Test
     void 푸시_알림_활성화_여부를_수정한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST)).as(LoginResponse.class);
+        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST, DEVICE_IDENTIFIER)).as(LoginResponse.class);
         디바이스_토큰_갱신(DEVICE_IDENTIFIER, login.accessToken());
 
         UpdatePushActivationStatusRequest request = new UpdatePushActivationStatusRequest(DEVICE_IDENTIFIER, true);

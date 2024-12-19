@@ -2,6 +2,7 @@ package com.nexters.goalpanzi.domain.device.repository;
 
 import com.nexters.goalpanzi.domain.device.Device;
 import com.nexters.goalpanzi.domain.device.DeviceSubscription;
+import com.nexters.goalpanzi.domain.device.OsType;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.SocialType;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
@@ -65,7 +66,7 @@ class DeviceSubscriptionRepositoryTest {
 
     @Test
     void 특정_디바이스의_구독_현황을_미션과_디바이스와_함께_조회한다() {
-        Device device = deviceRepository.save(new Device(member, DEVICE_IDENTIFIER, DEVICE_TOKEN));
+        Device device = deviceRepository.save(new Device(member, DEVICE_IDENTIFIER, DEVICE_TOKEN, OsType.AOS));
         deviceSubscriptionRepository.save(new DeviceSubscription(device, mission));
 
         List<DeviceSubscription> subscriptions = deviceSubscriptionRepository.findAllWithMissionAndDeviceByDeviceId(device.getId());
@@ -77,7 +78,7 @@ class DeviceSubscriptionRepositoryTest {
 
     @Test
     void 특정_미션과_관련된_디바이스_구독_현황을_디바이스와_미션과_함께_조회한다() {
-        Device device = deviceRepository.save(new Device(member, DEVICE_IDENTIFIER, DEVICE_TOKEN));
+        Device device = deviceRepository.save(new Device(member, DEVICE_IDENTIFIER, DEVICE_TOKEN, OsType.AOS));
         deviceSubscriptionRepository.save(new DeviceSubscription(device, mission));
 
         List<DeviceSubscription> subscriptions = deviceSubscriptionRepository.findAllWithDeviceAndMissionByMissionId(mission.getId());
@@ -89,7 +90,7 @@ class DeviceSubscriptionRepositoryTest {
 
     @Test
     void 특정_미션과_관련된_디바이스_구독_현황을_삭제한다() {
-        Device device = deviceRepository.save(new Device(member, DEVICE_IDENTIFIER, DEVICE_TOKEN));
+        Device device = deviceRepository.save(new Device(member, DEVICE_IDENTIFIER, DEVICE_TOKEN, OsType.AOS));
         deviceSubscriptionRepository.save(new DeviceSubscription(device, mission));
 
         deviceSubscriptionRepository.deleteAllByMissionId(mission.getId());

@@ -14,6 +14,8 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
 
     List<Device> findAllByMemberId(final Long memberId);
 
+    List<Device> findAllByDeviceIdentifier(final String deviceIdentifier);
+
     boolean existsByDeviceIdentifier(final String deviceIdentifier);
 
     default Device getDevice(final Long deviceId) {

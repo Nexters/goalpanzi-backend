@@ -116,11 +116,17 @@ public class DeviceSubscriptionService {
         );
     }
 
-    // FIXME: 멤버 아이디로 찾으면 안 될 것 같음. 로그인할 때 디바이스 고유 식별자를 받을 수 있나?
+    /**
+     * <b>로그인 시 기존 디바이스가 구독한 미션 구독 취소</b>
+     * + CancelMissionRetryPushMessageEvent를 통해 예약된 메시지 취소
+     *
+     * @param memberId         멤버 아이디
+     * @param deviceIdentifier 디바이스 식별자
+     */
     @Transactional
-    public void unsubscribeFromMyMissions(final Long memberId) {
+    public void unsubscribeFromMyMissions(final Long memberId, final String deviceIdentifier) {
         Devices devices = new Devices(
-                deviceRepository.findAllByMemberId(memberId)
+                deviceRepository.findAllByDeviceIdentifier(deviceIdentifier)
         );
         List<String> topics = devices.getActivatedDevices().stream()
                 .flatMap(device -> findMySubscribedTopics(device.getId()).stream())
@@ -183,11 +189,9 @@ public class DeviceSubscriptionService {
     }
 
     /**
-     * <b>취소/완료 상태의 미션을 찾아 이벤트 게시</b>
-     * <ol>
-     *     <li>취소/완료 상태 : UnsubscribeFromMissionEvent를 게시하여 미션 구독 취소</li>
-     *     <li>완료 상태 : ReserveMissionRetryPushMessageEvent를 게시하여 메시지 예약</li>
-     * </ol>
+     * <b>취소/완료 상태의 미션을 찾아 이벤트 게시</b><br>
+     * - 취소/완료 상태 : UnsubscribeFromMissionEvent를 게시하여 미션 구독 취소<br>
+     * - 완료 상태 : ReserveMissionRetryPushMessageEvent를 게시하여 메시지 예약
      */
     @Transactional
     public void unsubscribeFromUselessMissions() {
