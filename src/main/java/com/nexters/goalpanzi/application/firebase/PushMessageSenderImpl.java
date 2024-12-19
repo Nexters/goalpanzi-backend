@@ -21,11 +21,7 @@ public class PushMessageSenderImpl implements PushMessageSender {
                 .setToken(token)
                 .build();
 
-        try {
-            FirebaseMessaging.getInstance().send(message);
-        } catch (FirebaseMessagingException e) {
-            throw new BaseException(ErrorCode.FAILED_TO_SEND_INDIVIDUAL_MESSAGE, e);
-        }
+        sendMessage(message, ErrorCode.FAILED_TO_SEND_INDIVIDUAL_MESSAGE);
     }
 
     public void sendGroupNotification(String title, String body, String topic) {
@@ -35,11 +31,7 @@ public class PushMessageSenderImpl implements PushMessageSender {
                 .setTopic(topic)
                 .build();
 
-        try {
-            FirebaseMessaging.getInstance().send(message);
-        } catch (FirebaseMessagingException e) {
-            throw new BaseException(ErrorCode.FAILED_TO_SEND_GROUP_MESSAGE, e);
-        }
+        sendMessage(message, ErrorCode.FAILED_TO_SEND_GROUP_MESSAGE);
     }
 
     public void sendIndividualData(Map<String, String> data, String token) {
@@ -48,11 +40,7 @@ public class PushMessageSenderImpl implements PushMessageSender {
                 .setToken(token)
                 .build();
 
-        try {
-            FirebaseMessaging.getInstance().send(message);
-        } catch (FirebaseMessagingException e) {
-            throw new BaseException(ErrorCode.FAILED_TO_SEND_INDIVIDUAL_MESSAGE, e);
-        }
+        sendMessage(message, ErrorCode.FAILED_TO_SEND_INDIVIDUAL_MESSAGE);
     }
 
     public void sendGroupData(Map<String, String> data, String topic) {
@@ -61,11 +49,7 @@ public class PushMessageSenderImpl implements PushMessageSender {
                 .setTopic(topic)
                 .build();
 
-        try {
-            FirebaseMessaging.getInstance().send(message);
-        } catch (FirebaseMessagingException e) {
-            throw new BaseException(ErrorCode.FAILED_TO_SEND_GROUP_MESSAGE, e);
-        }
+        sendMessage(message, ErrorCode.FAILED_TO_SEND_GROUP_MESSAGE);
     }
 
     public void sendIndividualNotificationWithData(String title, String body, Map<String, String> data, String token) {
@@ -76,11 +60,7 @@ public class PushMessageSenderImpl implements PushMessageSender {
                 .setToken(token)
                 .build();
 
-        try {
-            FirebaseMessaging.getInstance().send(message);
-        } catch (FirebaseMessagingException e) {
-            throw new BaseException(ErrorCode.FAILED_TO_SEND_INDIVIDUAL_MESSAGE, e);
-        }
+        sendMessage(message, ErrorCode.FAILED_TO_SEND_INDIVIDUAL_MESSAGE);
     }
 
     public void sendGroupNotificationWithData(String title, String body, Map<String, String> data, String topic) {
@@ -91,11 +71,7 @@ public class PushMessageSenderImpl implements PushMessageSender {
                 .setTopic(topic)
                 .build();
 
-        try {
-            FirebaseMessaging.getInstance().send(message);
-        } catch (FirebaseMessagingException e) {
-            throw new BaseException(ErrorCode.FAILED_TO_SEND_GROUP_MESSAGE, e);
-        }
+        sendMessage(message, ErrorCode.FAILED_TO_SEND_GROUP_MESSAGE);
     }
 
     private Notification makeNotification(final String title, final String body) {
@@ -103,5 +79,13 @@ public class PushMessageSenderImpl implements PushMessageSender {
                 .setTitle(title)
                 .setBody(body)
                 .build();
+    }
+
+    private void sendMessage(final Message message, final ErrorCode errorCode) {
+        try {
+            FirebaseMessaging.getInstance().send(message);
+        } catch (FirebaseMessagingException e) {
+            throw new BaseException(errorCode, e);
+        }
     }
 }
