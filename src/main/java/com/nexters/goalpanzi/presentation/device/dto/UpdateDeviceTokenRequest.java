@@ -1,6 +1,6 @@
-package com.nexters.goalpanzi.presentation.member.dto;
+package com.nexters.goalpanzi.presentation.device.dto;
 
-import com.nexters.goalpanzi.application.member.dto.request.UpdateDeviceTokenCommand;
+import com.nexters.goalpanzi.application.device.dto.request.UpdateDeviceTokenCommand;
 import com.nexters.goalpanzi.domain.device.OsType;
 import io.swagger.v3.oas.annotations.media.Schema;
 

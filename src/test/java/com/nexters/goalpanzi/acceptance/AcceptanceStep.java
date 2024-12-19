@@ -4,7 +4,7 @@ import com.nexters.goalpanzi.domain.device.OsType;
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.TimeOfDay;
 import com.nexters.goalpanzi.presentation.auth.dto.GoogleLoginRequest;
-import com.nexters.goalpanzi.presentation.member.dto.UpdateDeviceTokenRequest;
+import com.nexters.goalpanzi.presentation.device.dto.UpdateDeviceTokenRequest;
 import com.nexters.goalpanzi.presentation.member.dto.UpdateProfileRequest;
 import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionRequest;
 import com.nexters.goalpanzi.presentation.mission.dto.JoinMissionRequest;
@@ -152,7 +152,7 @@ public class AcceptanceStep {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
                 .body(request)
-                .when().patch("/api/member/device-token")
+                .when().patch("/api/device/device-token")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();

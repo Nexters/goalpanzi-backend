@@ -1,8 +1,8 @@
 package com.nexters.goalpanzi.application.device.event.handler;
 
 import com.nexters.goalpanzi.application.device.DeviceSubscriptionService;
-import com.nexters.goalpanzi.application.member.event.UpdateDeviceTokenEvent;
-import com.nexters.goalpanzi.application.member.event.UpdatePushActivationStatusEvent;
+import com.nexters.goalpanzi.application.device.event.UpdateDeviceTokenEvent;
+import com.nexters.goalpanzi.application.device.event.UpdatePushActivationStatusEvent;
 import com.nexters.goalpanzi.config.event.SyncEventConfig;
 import com.nexters.goalpanzi.config.redis.RedisInitializer;
 import org.junit.jupiter.api.Test;

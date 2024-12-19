@@ -2,8 +2,8 @@ package com.nexters.goalpanzi.application.device.event.handler;
 
 import com.nexters.goalpanzi.application.auth.event.LoginEvent;
 import com.nexters.goalpanzi.application.device.DeviceSubscriptionService;
-import com.nexters.goalpanzi.application.member.event.UpdateDeviceTokenEvent;
-import com.nexters.goalpanzi.application.member.event.UpdatePushActivationStatusEvent;
+import com.nexters.goalpanzi.application.device.event.UpdateDeviceTokenEvent;
+import com.nexters.goalpanzi.application.device.event.UpdatePushActivationStatusEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;

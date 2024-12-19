@@ -3,15 +3,10 @@ package com.nexters.goalpanzi.acceptance;
 import com.nexters.goalpanzi.application.auth.dto.response.LoginResponse;
 import com.nexters.goalpanzi.application.member.dto.response.ProfileResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
-import com.nexters.goalpanzi.domain.device.Device;
-import com.nexters.goalpanzi.domain.device.OsType;
-import com.nexters.goalpanzi.domain.device.repository.DeviceRepository;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.presentation.auth.dto.GoogleLoginRequest;
-import com.nexters.goalpanzi.presentation.member.dto.UpdateDeviceTokenRequest;
 import com.nexters.goalpanzi.presentation.member.dto.UpdateProfileRequest;
-import com.nexters.goalpanzi.presentation.member.dto.UpdatePushActivationStatusRequest;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +16,6 @@ import org.springframework.http.MediaType;
 
 import static com.nexters.goalpanzi.acceptance.AcceptanceStep.*;
 import static com.nexters.goalpanzi.fixture.DeviceFixture.DEVICE_IDENTIFIER;
-import static com.nexters.goalpanzi.fixture.DeviceFixture.DEVICE_TOKEN;
 import static com.nexters.goalpanzi.fixture.MemberFixture.*;
 import static com.nexters.goalpanzi.fixture.TokenFixture.BEARER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,9 +25,6 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     private MemberRepository memberRepository;
-
-    @Autowired
-    private DeviceRepository deviceRepository;
 
     @Test
     void 프로필을_설정한다() {
@@ -80,40 +71,5 @@ public class MemberAcceptanceTest extends AcceptanceTest {
                 .statusCode(HttpStatus.NO_CONTENT.value());
 
         assertThat(memberRepository.findByIdAndDeletedAtIsNull(login.memberId())).isEmpty();
-    }
-
-    @Test
-    void 디바이스_토큰을_갱신한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST, DEVICE_IDENTIFIER)).as(LoginResponse.class);
-
-        UpdateDeviceTokenRequest request = new UpdateDeviceTokenRequest(DEVICE_IDENTIFIER, DEVICE_TOKEN, OsType.AOS);
-        RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, BEARER + login.accessToken())
-                .body(request)
-                .when().patch("/api/member/device-token")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value());
-
-        Device device = deviceRepository.getDevice(login.memberId(), request.deviceIdentifier());
-        assertThat(device.getDeviceToken()).isEqualTo(DEVICE_TOKEN);
-    }
-
-    @Test
-    void 푸시_알림_활성화_여부를_수정한다() {
-        LoginResponse login = 구글_로그인(new GoogleLoginRequest(EMAIL_HOST, DEVICE_IDENTIFIER)).as(LoginResponse.class);
-        디바이스_토큰_갱신(DEVICE_IDENTIFIER, login.accessToken());
-
-        UpdatePushActivationStatusRequest request = new UpdatePushActivationStatusRequest(DEVICE_IDENTIFIER, true);
-        RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, BEARER + login.accessToken())
-                .body(request)
-                .when().patch("/api/member/push-activation-status")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value());
-
-        Device device = deviceRepository.getDevice(login.memberId(), request.deviceIdentifier());
-        assertThat(device.getPushActivationStatus()).isTrue();
     }
 }
