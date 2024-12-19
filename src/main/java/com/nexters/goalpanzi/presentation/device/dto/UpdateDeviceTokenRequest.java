@@ -4,6 +4,7 @@ import com.nexters.goalpanzi.application.device.dto.request.UpdateDeviceTokenCom
 import com.nexters.goalpanzi.domain.device.OsType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 public record UpdateDeviceTokenRequest(
         @Schema(description = "디바이스 식별자", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -11,7 +12,7 @@ public record UpdateDeviceTokenRequest(
         @Schema(description = "device token", requiredMode = Schema.RequiredMode.REQUIRED)
         @NotEmpty String deviceToken,
         @Schema(description = "디바이스 운영체제", requiredMode = Schema.RequiredMode.REQUIRED)
-        @NotEmpty OsType osType
+        @NotNull OsType osType
 ) {
 
     public UpdateDeviceTokenCommand toServiceDto(final Long memberId) {
