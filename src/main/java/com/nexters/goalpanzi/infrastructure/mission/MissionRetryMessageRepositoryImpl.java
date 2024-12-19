@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Repository
@@ -19,56 +20,73 @@ public class MissionRetryMessageRepositoryImpl implements MissionRetryMessageRep
 
     public void save(String memberId, String deviceToken, long ttl) {
         LocalDate pushDate = computePushDate();
-        String key = makeKey(pushDate, memberId);
+        String key = makeKey(pushDate, memberId, deviceToken);
         redisTemplate.opsForValue().set(key, deviceToken, Duration.ofMillis(ttl));
     }
 
-    public String find(String memberId) {
-        String pattern = makeAnyDatePattern(memberId);
-        Set<String> keys = redisTemplate.keys(pattern);
-        if (keys.isEmpty()) {
-            return null;
-        }
-        String key = String.valueOf(keys.iterator().next());
+    public String find(String key) {
         return redisTemplate.opsForValue().get(key);
     }
 
-    public Boolean delete(String memberId) {
-        String pattern = makeAnyDatePattern(memberId);
-        Set<String> keys = redisTemplate.keys(pattern);
-        if (keys.isEmpty()) {
-            return true;
-        }
-        String key = String.valueOf(keys.iterator().next());
+    public List<String> findAllByMemberId(String memberId) {
+        String pattern = makeAnyDateAndDeviceTokenPattern(memberId);
+        return redisTemplate.opsForValue()
+                .multiGet(redisTemplate.keys(pattern));
+    }
+
+    public List<String> findAllByDeviceToken(String deviceToken) {
+        String pattern = makeAnyDateAndMemberPattern(deviceToken);
+        return redisTemplate.opsForValue()
+                .multiGet(redisTemplate.keys(pattern));
+    }
+
+    public Boolean delete(String key) {
         return redisTemplate.delete(key);
     }
 
+    public Long deleteAllByMemberId(String memberId) {
+        String pattern = makeAnyDateAndDeviceTokenPattern(memberId);
+        return redisTemplate
+                .delete(redisTemplate.keys(pattern));
+    }
+
+    public Long deleteAllByDeviceToken(String deviceToken) {
+        String pattern = makeAnyDateAndMemberPattern(deviceToken);
+        return redisTemplate
+                .delete(redisTemplate.keys(pattern));
+    }
+
     public void update(String memberId, String deviceToken) {
-        String pattern = makeAnyDatePattern(memberId);
+        String pattern = makeAnyDateAndDeviceTokenPattern(memberId);
         Set<String> keys = redisTemplate.keys(pattern);
         if (keys.isEmpty()) {
             return;
         }
         String key = String.valueOf(keys.iterator().next());
         Long ttl = redisTemplate.getExpire(key);
-        redisTemplate.opsForValue().set(key, deviceToken, Duration.ofMillis(ttl));
+        delete(key);
+        save(memberId, deviceToken, ttl);
     }
 
     public Set<String> keys(LocalDate pushDate) {
-        String pattern = makeAnyMemberPattern(pushDate);
+        String pattern = makeAnyMemberAndDeviceTokenPattern(pushDate);
         return redisTemplate.keys(pattern);
     }
 
-    private String makeKey(LocalDate pushDate, String memberId) {
-        return MISSION_RETRY_MESSAGE_PREFIX + pushDate + ":" + memberId;
+    private String makeKey(LocalDate pushDate, String memberId, String deviceToken) {
+        return MISSION_RETRY_MESSAGE_PREFIX + pushDate + ":" + memberId + ":" + deviceToken;
     }
 
-    private String makeAnyDatePattern(String memberId) {
-        return MISSION_RETRY_MESSAGE_PREFIX + "*:" + memberId;
+    private String makeAnyDateAndDeviceTokenPattern(String memberId) {
+        return MISSION_RETRY_MESSAGE_PREFIX + "*:" + memberId + ":*";
     }
 
-    private String makeAnyMemberPattern(LocalDate pushDate) {
-        return MISSION_RETRY_MESSAGE_PREFIX + pushDate + ":*";
+    private String makeAnyMemberAndDeviceTokenPattern(LocalDate pushDate) {
+        return MISSION_RETRY_MESSAGE_PREFIX + pushDate + ":*:*";
+    }
+
+    private String makeAnyDateAndMemberPattern(String deviceToken) {
+        return MISSION_RETRY_MESSAGE_PREFIX + "*:*:" + deviceToken;
     }
 
     private LocalDate computePushDate() {

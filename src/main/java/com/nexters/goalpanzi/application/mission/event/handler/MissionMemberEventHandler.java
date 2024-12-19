@@ -2,12 +2,10 @@ package com.nexters.goalpanzi.application.mission.event.handler;
 
 import com.nexters.goalpanzi.application.firebase.TopicGenerator;
 import com.nexters.goalpanzi.application.member.event.DeleteMemberEvent;
-import com.nexters.goalpanzi.application.member.event.UpdateDeviceTokenEvent;
-import com.nexters.goalpanzi.application.member.event.UpdatePushActivationStatusEvent;
 import com.nexters.goalpanzi.application.mission.MissionMemberService;
+import com.nexters.goalpanzi.application.mission.MissionRetryPushMessageService;
 import com.nexters.goalpanzi.application.mission.MissionVerificationService;
-import com.nexters.goalpanzi.application.mission.event.CreateMissionEvent;
-import com.nexters.goalpanzi.application.mission.event.DeleteMissionEvent;
+import com.nexters.goalpanzi.application.mission.event.*;
 import com.nexters.goalpanzi.domain.mission.InvitationCode;
 import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_DELETED;
 
 @Slf4j
@@ -28,6 +29,7 @@ public class MissionMemberEventHandler {
 
     private final MissionMemberService missionMemberService;
     private final MissionVerificationService missionVerificationService;
+    private final MissionRetryPushMessageService missionRetryPushMessageService;
 
     private final PushMessageSender pushMessageSender;
 
@@ -52,35 +54,38 @@ public class MissionMemberEventHandler {
     void handleDeleteMissionEvent(final DeleteMissionEvent event) {
         missionMemberService.deleteAllByMissionId(event.missionId());
         missionVerificationService.deleteAllByMissionId(event.missionId());
+
         String topic = TopicGenerator.getTopic(event.missionId());
-        pushMessageSender.sendGroupData(
+        Map<String, String> data = new HashMap<>();
+        data.put("missionId", event.missionId().toString());
+
+        pushMessageSender.sendGroupNotificationWithData(
                 MISSION_DELETED.getTitle(),
                 MISSION_DELETED.getBody(),
-                topic,
-                event.missionId()
+                data,
+                topic
         );
         log.info("Handled DeleteMissionEvent for missionId: {}", event.missionId());
     }
 
     @Async
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    void handleUpdateDeviceTokenEvent(final UpdateDeviceTokenEvent event) {
-        if (event.deprecatedDeviceToken() != null) {
-            missionMemberService.unsubscribeFromMyMissions(event.memberId(), event.deprecatedDeviceToken());
-        }
-        missionMemberService.subscribeToMyMissions(event.memberId(), event.deviceToken());
-        log.info("Handled UpdateDeviceTokenEvent for memberId: {}", event.memberId());
+    void handleReserveMissionRetryPushMessageEvent(final ReserveMissionRetryPushMessageEvent event) {
+        missionRetryPushMessageService.reserveRetryPushMessage(event.memberId(), event.deviceToken());
+        log.info("Handled ReserveMissionRetryPushMessageEvent for memberId: {}", event.memberId());
     }
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    void handleUpdatePushActivationStatusEvent(final UpdatePushActivationStatusEvent event) {
-        if (event.isPushActivated()) {
-            missionMemberService.subscribeToMyMissions(event.memberId(), event.deviceToken());
-        } else {
-            missionMemberService.unsubscribeFromMyMissions(event.memberId(), event.deviceToken());
-        }
-        log.info("Handled UpdatePushActivationStatusEvent for memberId: {}", event.memberId());
+    void handleCancelMissionRetryPushMessageEvent(final CancelMissionRetryPushMessageEvent event) {
+        missionRetryPushMessageService.cancelRetryPushMessage(event.memberId());
+        log.info("Handled CancelMissionRetryPushMessageEvent for memberId: {}", event.memberId());
+    }
+
+    @Async
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    void handleUpdateMissionRetryPushMessageEvent(final UpdateMissionRetryPushMessageEvent event) {
+        missionRetryPushMessageService.updateRetryPushMessage(event.memberId(), event.deviceToken());
+        log.info("Handled UpdateMissionRetryPushMessageEvent for memberId: {}", event.memberId());
     }
 }

@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.schedule;
 
-import com.nexters.goalpanzi.application.mission.MissionMemberService;
+import com.nexters.goalpanzi.application.mission.MissionRetryPushMessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MissionRetryPushJob extends AbstractJob<CronTrigger> implements CustomAutomationJob {
 
-    private final MissionMemberService missionMemberService;
+    private final MissionRetryPushMessageService missionRetryPushMessageService;
 
     @Override
     protected ScheduleBuilder<CronTrigger> getScheduleBuilder() {
@@ -23,6 +23,6 @@ public class MissionRetryPushJob extends AbstractJob<CronTrigger> implements Cus
 
     @Override
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-        missionMemberService.sendRetryPushMessage();
+        missionRetryPushMessageService.sendRetryPushMessage();
     }
 }

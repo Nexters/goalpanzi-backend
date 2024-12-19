@@ -4,34 +4,33 @@ import com.nexters.goalpanzi.application.firebase.TopicGenerator;
 import com.nexters.goalpanzi.application.mission.dto.response.MemberRankResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
+import com.nexters.goalpanzi.application.mission.event.CancelMissionRetryPushMessageEvent;
 import com.nexters.goalpanzi.application.mission.event.JoinMissionEvent;
+import com.nexters.goalpanzi.application.mission.event.SubscribeToMissionEvent;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
+import com.nexters.goalpanzi.domain.device.Devices;
+import com.nexters.goalpanzi.domain.device.repository.DeviceRepository;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.*;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
-import com.nexters.goalpanzi.domain.mission.repository.MissionRetryMessageRepository;
 import com.nexters.goalpanzi.exception.AlreadyExistsException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
 import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
-import com.nexters.goalpanzi.infrastructure.firebase.TopicSubscriber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.redis.core.TimeoutUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import java.util.Map;
 
-import static com.nexters.goalpanzi.domain.firebase.PushMessage.*;
-import static com.nexters.goalpanzi.domain.mission.MissionStatus.*;
+import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_CANCELLATION_WARNING;
+import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_READY;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -43,11 +42,10 @@ public class MissionMemberService {
     private final MissionMemberRepository missionMemberRepository;
     private final MissionRepository missionRepository;
     private final MemberRepository memberRepository;
-    private final MissionRetryMessageRepository missionRetryMessageRepository;
+    private final DeviceRepository deviceRepository;
 
     private final ApplicationEventPublisher eventPublisher;
     private final PushMessageSender pushMessageSender;
-    private final TopicSubscriber topicSubscriber;
 
     public MissionDetailResponse getJoinableMission(final InvitationCode invitationCode) {
         missionValidator.validateJoinableMission(invitationCode);
@@ -64,9 +62,12 @@ public class MissionMemberService {
 
         sendJoinPushMessage(member, mission);
 
-        if (!member.isPushActivated()) {
-            cancelRetryPushMessage(member.getId());
-        }
+        eventPublisher.publishEvent(
+                new CancelMissionRetryPushMessageEvent(memberId)
+        );
+        eventPublisher.publishEvent(
+                new SubscribeToMissionEvent(memberId, mission)
+        );
     }
 
     private Mission getMissionByCode(final InvitationCode invitationCode) {
@@ -82,13 +83,20 @@ public class MissionMemberService {
     }
 
     private void sendJoinPushMessage(final Member member, final Mission mission) {
-        Member hostMember = memberRepository.getMember(mission.getHostMemberId());
-
-        if (hostMember.isPushActivated() && !mission.isHostMember(member.getId())) {
-            eventPublisher.publishEvent(
-                    new JoinMissionEvent(mission.getId(), hostMember.getDeviceToken(), member.getNickname())
-            );
+        if (mission.isHostMember(member.getId())) {
+            return;
         }
+        Member host = memberRepository.getMember(mission.getHostMemberId());
+        Devices devices = new Devices(
+                deviceRepository.findAllByMemberId(host.getId())
+        );
+
+        devices.getActivatedDeviceTokens()
+                .forEach(deviceToken ->
+                        eventPublisher.publishEvent(
+                                new JoinMissionEvent(mission.getId(), deviceToken, member.getNickname())
+                        )
+                );
     }
 
     public MissionsResponse findAllByMemberId(final Long memberId, final List<MissionStatus> filter) {
@@ -136,13 +144,9 @@ public class MissionMemberService {
         missions.forEach(mission -> {
             List<MissionMember> missionMembers = missionMemberRepository.findAllWithMemberByMissionId(mission.getId());
             int memberCount = missionMembers.size();
-            missionMembers.forEach(missionMember -> {
-                missionMember.updateMissionStatus(mission, memberCount);
-                Member member = missionMember.getMember();
-                if (missionMember.isCompleted() && member.isPushActivated()) {
-                    reserveRetryPushMessage(member.getId(), member.getDeviceToken());
-                }
-            });
+            missionMembers.forEach(missionMember ->
+                    missionMember.updateMissionStatus(mission, memberCount)
+            );
         });
     }
 
@@ -159,11 +163,14 @@ public class MissionMemberService {
         missions.forEach(mission -> {
             if (mission.isReadyTime(now) && missionValidator.hasEnoughMember(mission.getId())) {
                 String topic = TopicGenerator.getTopic(mission.getId());
-                pushMessageSender.sendGroupData(
+                Map<String, String> data = new HashMap<>();
+                data.put("missionId", mission.getId().toString());
+
+                pushMessageSender.sendGroupNotificationWithData(
                         MISSION_READY.getTitle(),
                         MISSION_READY.getBody(),
-                        topic,
-                        mission.getId()
+                        data,
+                        topic
                 );
             }
         });
@@ -176,71 +183,16 @@ public class MissionMemberService {
         missions.forEach(mission -> {
             if (mission.isReadyTime(now) && !missionValidator.hasEnoughMember(mission.getId())) {
                 String topic = TopicGenerator.getTopic(mission.getId());
-                pushMessageSender.sendGroupData(
+                Map<String, String> data = new HashMap<>();
+                data.put("missionId", mission.getId().toString());
+
+                pushMessageSender.sendGroupNotificationWithData(
                         MISSION_CANCELLATION_WARNING.getTitle(),
                         MISSION_CANCELLATION_WARNING.getBody(),
-                        topic,
-                        mission.getId()
+                        data,
+                        topic
                 );
             }
         });
-    }
-
-    @Transactional
-    public void sendRetryPushMessage() {
-        Set<String> keys = missionRetryMessageRepository.keys(LocalDate.now());
-        keys.forEach(key -> {
-            String deviceToken = missionRetryMessageRepository.find(key);
-            if (deviceToken != null) {
-                pushMessageSender.sendIndividualNotification(
-                        MISSION_RETRY.getTitle(),
-                        MISSION_RETRY.getBody(),
-                        deviceToken
-                );
-            }
-        });
-    }
-
-    @Transactional
-    public void subscribeToMyMissions(final Long memberId, final String deviceToken) {
-        List<String> topics = findMySubscribableTopic(memberId);
-        topics.forEach(topic ->
-                topicSubscriber.subscribeToTopic(List.of(deviceToken), topic)
-        );
-        updateRetryPushMessage(memberId, deviceToken);
-    }
-
-    @Transactional
-    public void unsubscribeFromMyMissions(final Long memberId, final String deviceToken) {
-        List<String> topics = findMySubscribableTopic(memberId);
-        topics.forEach(topic ->
-                topicSubscriber.unsubscribeFromTopic(List.of(deviceToken), topic)
-        );
-        cancelRetryPushMessage(memberId);
-    }
-
-    private List<String> findMySubscribableTopic(final Long memberId) {
-        List<MissionStatus> filter = List.of(CREATED, IN_PROGRESS, PENDING_COMPLETION);
-        List<MissionMember> missionMembers = missionMemberRepository.findAllWithMissionByMemberId(memberId);
-        List<MissionMember> filteredMissionMembers = missionMembers.stream()
-                .filter(it -> isMissionStatusMatching(filter, it))
-                .toList();
-
-        return filteredMissionMembers.stream()
-                .map(missionMember -> TopicGenerator.getTopic(missionMember.getMission().getId()))
-                .collect(Collectors.toList());
-    }
-
-    private void reserveRetryPushMessage(final Long memberId, final String deviceToken) {
-        long ttl = TimeoutUtils.toMillis(8, TimeUnit.DAYS);
-        missionRetryMessageRepository.save(memberId.toString(), deviceToken, ttl);
-    }
-
-    private void cancelRetryPushMessage(final Long memberId) {
-        missionRetryMessageRepository.delete(memberId.toString());
-    }
-
-    private void updateRetryPushMessage(final Long memberId, final String deviceToken) {
-        missionRetryMessageRepository.update(memberId.toString(), deviceToken);
     }
 }

@@ -1,9 +1,10 @@
 package com.nexters.goalpanzi.acceptance;
 
+import com.nexters.goalpanzi.domain.device.OsType;
 import com.nexters.goalpanzi.domain.mission.DayOfWeek;
 import com.nexters.goalpanzi.domain.mission.TimeOfDay;
 import com.nexters.goalpanzi.presentation.auth.dto.GoogleLoginRequest;
-import com.nexters.goalpanzi.presentation.member.dto.UpdateDeviceTokenRequest;
+import com.nexters.goalpanzi.presentation.device.dto.UpdateDeviceTokenRequest;
 import com.nexters.goalpanzi.presentation.member.dto.UpdateProfileRequest;
 import com.nexters.goalpanzi.presentation.mission.dto.CreateMissionRequest;
 import com.nexters.goalpanzi.presentation.mission.dto.JoinMissionRequest;
@@ -20,7 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.nexters.goalpanzi.fixture.MemberFixture.DEVICE_TOKEN;
+import static com.nexters.goalpanzi.fixture.DeviceFixture.DEVICE_TOKEN;
 import static com.nexters.goalpanzi.fixture.MissionFixture.DESCRIPTION;
 import static com.nexters.goalpanzi.fixture.TokenFixture.BEARER;
 
@@ -145,13 +146,13 @@ public class AcceptanceStep {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 디바이스_토큰_갱신(String accessToken) {
-        UpdateDeviceTokenRequest request = new UpdateDeviceTokenRequest(DEVICE_TOKEN);
+    public static ExtractableResponse<Response> 디바이스_토큰_갱신(String deviceIdentifier, String accessToken) {
+        UpdateDeviceTokenRequest request = new UpdateDeviceTokenRequest(deviceIdentifier, DEVICE_TOKEN, OsType.AOS);
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
                 .body(request)
-                .when().patch("/api/member/device-token")
+                .when().patch("/api/device/device-token")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();

@@ -1,6 +1,7 @@
 package com.nexters.goalpanzi.domain.mission.repository;
 
 import com.nexters.goalpanzi.domain.mission.MissionMember;
+import com.nexters.goalpanzi.domain.mission.MissionStatus;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
 import org.springframework.data.domain.Sort;
@@ -45,7 +46,7 @@ public interface MissionMemberRepository extends JpaRepository<MissionMember, Lo
 
     default long getDaysAfterMissionCompletion(final Long memberId) {
         Optional<MissionMember> missionMember = findTop1ByMemberIdOrderByUpdatedAtDesc(memberId);
-        if (missionMember.isEmpty() || !missionMember.get().isCompleted()) {
+        if (missionMember.isEmpty() || missionMember.get().getMissionStatus().equals(MissionStatus.COMPLETED)) {
             return 0L;
         }
         Duration duration = Duration.between(LocalDateTime.now(), missionMember.get().getUpdatedAt());

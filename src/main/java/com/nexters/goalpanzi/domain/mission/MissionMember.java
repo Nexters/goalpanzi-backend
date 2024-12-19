@@ -74,10 +74,6 @@ public class MissionMember extends BaseEntity {
         this.missionStatus = MissionStatus.COMPLETED;
     }
 
-    public boolean isCompleted() {
-        return missionStatus.equals(MissionStatus.COMPLETED);
-    }
-
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
