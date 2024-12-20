@@ -145,7 +145,7 @@ public class DeviceSubscriptionService {
      * <b>로그인 시 기존 디바이스가 구독한 미션 구독 취소</b>
      * + CancelMissionRetryPushMessageEvent를 통해 예약된 메시지 취소
      *
-     * @param memberId         멤버 아이디
+     * @param memberId         (현재 로그인한) 멤버 아이디
      * @param deviceIdentifier 디바이스 식별자
      */
     @Transactional
@@ -161,10 +161,10 @@ public class DeviceSubscriptionService {
                 topicSubscriber.unsubscribeFromTopic(devices.getActivatedDeviceTokens(), topic)
         );
 
-        devices.getDifferentMemberIdsSharingSameDevice(memberId)
+        devices.getFilteredMemberIds(memberId)
                 .forEach(it ->
                         eventPublisher.publishEvent(
-                                new CancelMissionRetryPushMessageEvent(memberId)
+                                new CancelMissionRetryPushMessageEvent(it)
                         )
                 );
     }
