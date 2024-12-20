@@ -26,12 +26,15 @@ public class DeviceService {
 
     @Transactional
     public void updateDeviceToken(final UpdateDeviceTokenCommand command) {
-        if (command.deviceIdentifier().isBlank() // TODO: 추후 앞의 조건 삭제
-                || !deviceRepository.existsByDeviceIdentifier(command.deviceIdentifier())) {
-            createDevice(command.memberId(), command.deviceIdentifier(), command.deviceToken(), command.osType());
-        } else {
+        if (existsMemberDevice(command.memberId(), command.deviceIdentifier())) {
             updateDevice(command.memberId(), command.deviceIdentifier(), command.deviceToken());
+        } else {
+            createDevice(command.memberId(), command.deviceIdentifier(), command.deviceToken(), command.osType());
         }
+    }
+
+    private boolean existsMemberDevice(final Long memberId, final String deviceIdentifier) {
+        return !deviceIdentifier.isBlank() && deviceRepository.existsByMemberIdAndDeviceIdentifier(memberId, deviceIdentifier);
     }
 
     private void createDevice(final Long memberId, final String deviceIdentifier, final String deviceToken, final OsType osType) {

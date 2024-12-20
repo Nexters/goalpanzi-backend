@@ -18,7 +18,7 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     @Query("SELECT d FROM Device d JOIN FETCH d.member WHERE d.deviceIdentifier = :deviceIdentifier")
     List<Device> findAllWithMemberByDeviceIdentifier(final String deviceIdentifier);
 
-    boolean existsByDeviceIdentifier(final String deviceIdentifier);
+    boolean existsByMemberIdAndDeviceIdentifier(final Long memberId, final String deviceIdentifier);
 
     default Device getDevice(final Long deviceId) {
         return findById(deviceId)
