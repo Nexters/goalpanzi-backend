@@ -18,10 +18,14 @@ public interface MissionVerificationRepository extends JpaRepository<MissionVeri
 
     Optional<MissionVerification> findByMemberIdAndMissionIdAndBoardNumber(final Long memberId, final Long missionId, final Integer boardNumber);
 
-    @Query("SELECT mv FROM MissionVerification mv WHERE mv.mission.id = :missionId AND DATE(mv.createdAt) = :date")
+    @Query("SELECT mv FROM MissionVerification mv"
+            + " JOIN FETCH mv.mission ms"
+            + " WHERE ms.id = :missionId AND DATE(mv.createdAt) = :date")
     List<MissionVerification> findAllByMissionIdAndDate(final Long missionId, final LocalDate date);
 
-    @Query("SELECT mv FROM MissionVerification mv WHERE mv.member.id = :memberId AND mv.mission.id = :missionId AND DATE(mv.createdAt) = :date")
+    @Query("SELECT mv FROM MissionVerification mv"
+            + " JOIN FETCH mv.member mb JOIN FETCH mv.mission ms"
+            + " WHERE mb.id = :memberId AND ms.id = :missionId AND DATE(mv.createdAt) = :date")
     Optional<MissionVerification> findByMemberIdAndMissionIdAndDate(Long memberId, Long missionId, LocalDate date);
 
     default MissionVerification getMyVerification(final Long memberId, final Long missionId, final Integer boardNumber) {
