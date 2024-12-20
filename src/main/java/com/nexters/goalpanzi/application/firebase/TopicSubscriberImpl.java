@@ -13,6 +13,10 @@ import java.util.List;
 public class TopicSubscriberImpl implements TopicSubscriber {
 
     public void subscribeToTopic(final List<String> registrationTokens, final String topic) {
+        if (registrationTokens.isEmpty()) {
+            return;
+        }
+        
         try {
             FirebaseMessaging.getInstance().subscribeToTopic(registrationTokens, topic);
         } catch (FirebaseMessagingException e) {
@@ -21,6 +25,10 @@ public class TopicSubscriberImpl implements TopicSubscriber {
     }
 
     public void unsubscribeFromTopic(final List<String> registrationTokens, final String topic) {
+        if (registrationTokens.isEmpty()) {
+            return;
+        }
+
         try {
             FirebaseMessaging.getInstance().unsubscribeFromTopic(registrationTokens, topic);
         } catch (FirebaseMessagingException e) {

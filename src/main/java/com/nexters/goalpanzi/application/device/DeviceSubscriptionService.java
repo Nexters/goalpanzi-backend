@@ -88,6 +88,31 @@ public class DeviceSubscriptionService {
     }
 
     /**
+     * <b>로그인 시 내 미션 구독 시작</b>
+     *
+     * @param memberId         멤버 아이디
+     * @param deviceIdentifier 디바이스 식별자
+     */
+    @Transactional
+    public void subscribeToMyMissions(final Long memberId, final String deviceIdentifier) {
+        Device device = deviceRepository.getDevice(memberId, deviceIdentifier);
+        List<String> topics = findMySubscribedTopics(device.getId());
+        List<Mission> missions = missionRepository.findAllById(
+                findMySubscribableMission(memberId, topics)
+        );
+
+        topics.forEach(topic ->
+                topicSubscriber.subscribeToTopic(List.of(device.getDeviceToken()), topic)
+        );
+        missions.forEach(mission -> {
+            deviceSubscriptionRepository.save(new DeviceSubscription(device, mission));
+
+            String topic = TopicGenerator.getTopic(mission.getId());
+            topicSubscriber.subscribeToTopic(List.of(device.getDeviceToken()), topic);
+        });
+    }
+
+    /**
      * <b>디바이스 토큰을 갱신하거나 푸시 알림 활성화 시 새로운 디바이스 토큰으로 내 미션 구독 시작</b><br>
      * + UpdateMissionRetryPushMessageEvent를 통해 예약된 메시지의 디바이스 토큰 갱신
      *
@@ -120,13 +145,13 @@ public class DeviceSubscriptionService {
      * <b>로그인 시 기존 디바이스가 구독한 미션 구독 취소</b>
      * + CancelMissionRetryPushMessageEvent를 통해 예약된 메시지 취소
      *
-     * @param memberId         멤버 아이디
+     * @param memberId         (현재 로그인한) 멤버 아이디
      * @param deviceIdentifier 디바이스 식별자
      */
     @Transactional
     public void unsubscribeFromMyMissions(final Long memberId, final String deviceIdentifier) {
         Devices devices = new Devices(
-                deviceRepository.findAllByDeviceIdentifier(deviceIdentifier)
+                deviceRepository.findAllWithMemberByDeviceIdentifier(deviceIdentifier)
         );
         List<String> topics = devices.getActivatedDevices().stream()
                 .flatMap(device -> findMySubscribedTopics(device.getId()).stream())
@@ -135,9 +160,13 @@ public class DeviceSubscriptionService {
         topics.forEach(topic ->
                 topicSubscriber.unsubscribeFromTopic(devices.getActivatedDeviceTokens(), topic)
         );
-        eventPublisher.publishEvent(
-                new CancelMissionRetryPushMessageEvent(memberId)
-        );
+
+        devices.getFilteredMemberIds(memberId)
+                .forEach(it ->
+                        eventPublisher.publishEvent(
+                                new CancelMissionRetryPushMessageEvent(it)
+                        )
+                );
     }
 
     /**
@@ -172,7 +201,7 @@ public class DeviceSubscriptionService {
         List<MissionMember> missionMembers = missionMemberRepository.findAllWithMissionByMemberId(memberId);
         List<MissionMember> filteredMissionMembers = missionMembers.stream()
                 .filter(this::isSubscribableMission)
-                .filter(it -> isAlreadySubscribedMission(topicFilter, it.getMission().getId()))
+                .filter(it -> !isAlreadySubscribedMission(topicFilter, it.getMission().getId()))
                 .toList();
 
         return filteredMissionMembers.stream()

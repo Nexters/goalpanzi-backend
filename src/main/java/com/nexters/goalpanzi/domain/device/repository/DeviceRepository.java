@@ -4,6 +4,7 @@ import com.nexters.goalpanzi.domain.device.Device;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,7 +15,8 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
 
     List<Device> findAllByMemberId(final Long memberId);
 
-    List<Device> findAllByDeviceIdentifier(final String deviceIdentifier);
+    @Query("SELECT d FROM Device d JOIN FETCH d.member WHERE d.deviceIdentifier = :deviceIdentifier")
+    List<Device> findAllWithMemberByDeviceIdentifier(final String deviceIdentifier);
 
     boolean existsByDeviceIdentifier(final String deviceIdentifier);
 

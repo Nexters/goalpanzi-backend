@@ -48,6 +48,7 @@ public class DeviceSubscriptionEventHandler {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     void handleLoginEvent(final LoginEvent event) {
         deviceSubscriptionService.unsubscribeFromMyMissions(event.memberId(), event.deviceIdentifier());
+        deviceSubscriptionService.subscribeToMyMissions(event.memberId(), event.deviceIdentifier());
         log.info("Handled LoginEvent for memberId: {}", event.memberId());
     }
 
