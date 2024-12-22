@@ -20,6 +20,7 @@ import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
 import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,7 @@ import java.util.Map;
 import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_CANCELLATION_WARNING;
 import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_READY;
 
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
@@ -82,7 +84,12 @@ public class MissionMemberService {
                 });
     }
 
+    // FIXME: 호스트에게 알림 가는 데 확인 필요
     private void sendJoinPushMessage(final Member member, final Mission mission) {
+        // TODO: 오류 확인 후 삭제
+        log.info("Host member: " + mission.getHostMemberId());
+        log.info("Join member: " + member.getId());
+
         if (mission.isHostMember(member.getId())) {
             return;
         }

@@ -98,4 +98,23 @@ class DeviceSubscriptionRepositoryTest {
         List<DeviceSubscription> subscriptions = deviceSubscriptionRepository.findAllWithDeviceAndMissionByMissionId(mission.getId());
         assertThat(subscriptions.size()).isEqualTo(0);
     }
+
+    @Test
+    void 특정_디바이스들이_구독한_특정_미션_구독_현황을_디바이스와_함께_조회한다() {
+        Device device1 = deviceRepository.save(new Device(member, "deviceIdentifier1", "deviceToken2", OsType.AOS));
+        Device device2 = deviceRepository.save(new Device(member, "deviceIdentifier2", "deviceToken2", OsType.AOS));
+
+        deviceSubscriptionRepository.save(new DeviceSubscription(device1, mission));
+        deviceSubscriptionRepository.save(new DeviceSubscription(device2, mission));
+
+        List<DeviceSubscription> subscriptions = deviceSubscriptionRepository.findAllWithDeviceByMissionIdAndDeviceIds(
+                mission.getId(),
+                List.of(device1.getId(), device2.getId())
+        );
+        assertAll(
+                () -> assertThat(subscriptions.size()).isEqualTo(2),
+                () -> assertThat(subscriptions.stream().map(DeviceSubscription::getDevice))
+                        .containsExactlyInAnyOrder(device1, device2)
+        );
+    }
 }

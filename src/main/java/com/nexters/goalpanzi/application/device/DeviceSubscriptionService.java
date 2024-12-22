@@ -69,7 +69,7 @@ public class DeviceSubscriptionService {
      * <b>미션 취소/종료 시 미션 구독 취소</b><br>
      * 해당 미션을 구독한 디바이스를 대상으로 구독 취소
      *
-     * @param missionId 취소/종료된 미션
+     * @param missionId 취소/종료된 미션 아이디
      */
     @Transactional
     public void unsubscribeFromMission(final Long missionId) {
@@ -77,6 +77,27 @@ public class DeviceSubscriptionService {
 
         deviceSubscriptionRepository.deleteAllByMissionId(missionId);
         topicSubscriber.unsubscribeFromTopic(deviceTokens, TopicGenerator.getTopic(missionId));
+    }
+
+    /**
+     * <b>미션 삭제 시 호스트의 미션 구독 취소</b><br>
+     * 삭제 푸시 알림을 보내기 전, 호스트는 구독을 취소하여 푸시 알림이 가지 않도록 처리
+     *
+     * @param memberId  호스트 멤버 아이디
+     * @param missionId 호스트가 삭제한 미션 아이디
+     */
+    @Transactional
+    public void unsubscribeFromDeletedMissionForHost(final Long memberId, final Long missionId) {
+        String topic = TopicGenerator.getTopic(missionId);
+        Devices devices = new Devices(
+                deviceRepository.findAllByMemberId(memberId)
+        );
+
+        deviceSubscriptionRepository.findAllWithDeviceByMissionIdAndDeviceIds(missionId, devices.getActivatedDeviceIds())
+                .forEach(it -> {
+                    topicSubscriber.unsubscribeFromTopic(List.of(it.getDevice().getDeviceToken()), topic);
+                    deviceSubscriptionRepository.deleteById(it.getId());
+                });
     }
 
     private List<String> findTopicSubscribers(final Long missionId) {
