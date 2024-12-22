@@ -5,4 +5,8 @@ public record UpdateDeviceTokenEvent(
         Long deviceId,
         String deprecatedDeviceToken
 ) {
+
+    public boolean isTokenDeprecated() {
+        return deprecatedDeviceToken != null;
+    }
 }
