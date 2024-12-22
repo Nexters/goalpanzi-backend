@@ -95,7 +95,12 @@ public class DeviceSubscriptionService {
      */
     @Transactional
     public void subscribeToMyMissions(final Long memberId, final String deviceIdentifier) {
-        Device device = deviceRepository.getDevice(memberId, deviceIdentifier);
+        Device device = deviceRepository.findByMemberIdAndDeviceIdentifier(memberId, deviceIdentifier)
+                .orElse(null);
+        if (device == null) {
+            return;
+        }
+
         List<String> topics = findMySubscribedTopics(device.getId());
         List<Mission> missions = missionRepository.findAllById(
                 findMySubscribableMission(memberId, topics)
