@@ -20,6 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.nexters.goalpanzi.domain.mission.MissionStatus.CREATED;
 import static com.nexters.goalpanzi.fixture.DeviceFixture.DEVICE_IDENTIFIER;
@@ -132,7 +133,7 @@ class DeviceSubscriptionServiceTest {
         DeviceSubscription mockDeviceSubscription = mock(DeviceSubscription.class);
         when(mockDeviceSubscription.getMission()).thenReturn(mockSubscribedMission);
 
-        when(deviceRepository.getDevice(MEMBER_ID, DEVICE_IDENTIFIER)).thenReturn(mockDevice);
+        when(deviceRepository.findByMemberIdAndDeviceIdentifier(MEMBER_ID, DEVICE_IDENTIFIER)).thenReturn(Optional.of(mockDevice));
         when(deviceSubscriptionRepository.findAllWithMissionAndDeviceByDeviceId(DEVICE_ID))
                 .thenReturn(List.of(mockDeviceSubscription));
 
