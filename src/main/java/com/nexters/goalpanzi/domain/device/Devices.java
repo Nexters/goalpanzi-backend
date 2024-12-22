@@ -15,6 +15,12 @@ public class Devices {
                 .toList();
     }
 
+    public List<Long> getActivatedDeviceIds() {
+        return getActivatedDevices().stream()
+                .map(Device::getId)
+                .toList();
+    }
+
     public List<String> getActivatedDeviceTokens() {
         return getActivatedDevices().stream()
                 .map(Device::getDeviceToken)

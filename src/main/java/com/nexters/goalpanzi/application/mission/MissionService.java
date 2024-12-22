@@ -76,7 +76,9 @@ public class MissionService {
         Mission mission = missionRepository.getMission(missionId);
         validateAuthority(memberId, mission);
         mission.delete();
-        eventPublisher.publishEvent(new DeleteMissionEvent(mission.getId()));
+        eventPublisher.publishEvent(
+                new DeleteMissionEvent(memberId, mission.getId())
+        );
     }
 
     private void validateAuthority(final Long memberId, final Mission mission) {

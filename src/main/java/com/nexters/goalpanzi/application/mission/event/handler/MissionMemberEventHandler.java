@@ -1,5 +1,6 @@
 package com.nexters.goalpanzi.application.mission.event.handler;
 
+import com.nexters.goalpanzi.application.device.DeviceSubscriptionService;
 import com.nexters.goalpanzi.application.firebase.TopicGenerator;
 import com.nexters.goalpanzi.application.member.event.DeleteMemberEvent;
 import com.nexters.goalpanzi.application.mission.MissionMemberService;
@@ -30,6 +31,7 @@ public class MissionMemberEventHandler {
     private final MissionMemberService missionMemberService;
     private final MissionVerificationService missionVerificationService;
     private final MissionRetryPushMessageService missionRetryPushMessageService;
+    private final DeviceSubscriptionService deviceSubscriptionService;
 
     private final PushMessageSender pushMessageSender;
 
@@ -59,6 +61,7 @@ public class MissionMemberEventHandler {
         Map<String, String> data = new HashMap<>();
         data.put("missionId", event.missionId().toString());
 
+        deviceSubscriptionService.unsubscribeFromDeletedMissionForHost(event.memberId(), event.missionId());
         pushMessageSender.sendGroupNotificationWithData(
                 MISSION_DELETED.getTitle(),
                 MISSION_DELETED.getBody(),

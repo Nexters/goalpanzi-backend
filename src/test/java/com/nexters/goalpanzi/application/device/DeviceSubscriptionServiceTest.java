@@ -112,6 +112,26 @@ class DeviceSubscriptionServiceTest {
     }
 
     @Test
+    void 미션_호스트는_삭제한_미션에_대해_구독을_해지한다() {
+        Device mockDevice = mock(Device.class);
+        when(mockDevice.getId()).thenReturn(DEVICE_ID);
+        when(mockDevice.getDeviceToken()).thenReturn(DEVICE_TOKEN);
+        when(mockDevice.getPushActivationStatus()).thenReturn(true);
+
+        DeviceSubscription mockDeviceSubscription = mock(DeviceSubscription.class);
+        when(mockDeviceSubscription.getDevice()).thenReturn(mockDevice);
+
+        when(deviceRepository.findAllByMemberId(MEMBER_ID)).thenReturn(List.of(mockDevice));
+        when(deviceSubscriptionRepository.findAllWithDeviceByMissionIdAndDeviceIds(MISSION_ID, List.of(mockDevice.getId())))
+                .thenReturn(List.of(mockDeviceSubscription));
+
+        deviceSubscriptionService.unsubscribeFromDeletedMissionForHost(MEMBER_ID, MISSION_ID);
+
+        verify(topicSubscriber)
+                .unsubscribeFromTopic(List.of(DEVICE_TOKEN), TopicGenerator.getTopic(MISSION_ID));
+    }
+
+    @Test
     void 구독했거나_구독_가능한_미션을_찾아_구독을_시작한다() {
         Long SUBSCRIBED_MISSION_ID = 1L;
         Long UNSUBSCRIBED_MISSION_ID = 2L;
