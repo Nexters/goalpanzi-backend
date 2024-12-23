@@ -1,16 +1,15 @@
 package com.nexters.goalpanzi.application.firebase;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.Notification;
+import com.google.firebase.messaging.*;
 import com.nexters.goalpanzi.exception.BaseException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+@Slf4j
 @Component
 public class PushMessageSenderImpl implements PushMessageSender {
 
@@ -85,7 +84,11 @@ public class PushMessageSenderImpl implements PushMessageSender {
         try {
             FirebaseMessaging.getInstance().send(message);
         } catch (FirebaseMessagingException e) {
-            throw new BaseException(errorCode, e);
+            if (e.getMessagingErrorCode().equals(MessagingErrorCode.UNREGISTERED)) {
+                log.error(e.getMessage());
+            } else {
+                throw new BaseException(errorCode, e);
+            }
         }
     }
 }
