@@ -85,7 +85,7 @@ public class PushMessageSenderImpl implements PushMessageSender {
             FirebaseMessaging.getInstance().send(message);
         } catch (FirebaseMessagingException e) {
             if (e.getMessagingErrorCode().equals(MessagingErrorCode.UNREGISTERED)) {
-                log.error(e.getMessage());
+                log.info("더 이상 사용되지 않는 토큰입니다.");
             } else {
                 throw new BaseException(errorCode, e);
             }
