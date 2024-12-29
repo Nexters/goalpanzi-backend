@@ -220,11 +220,11 @@ public class Mission extends BaseEntity {
     /**
      * <b>미션 호스트인지 검증</b>
      *
-     * @param memberId
+     * @param memberId 멤버 아이디
      * @return 미션 호스트(생성한 사람) 여부
      */
     public boolean isHostMember(final Long memberId) {
-        return hostMemberId == memberId;
+        return hostMemberId.equals(memberId);
     }
 
     @Override
