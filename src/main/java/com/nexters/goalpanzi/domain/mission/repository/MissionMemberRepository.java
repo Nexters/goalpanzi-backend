@@ -4,6 +4,7 @@ import com.nexters.goalpanzi.domain.mission.MissionMember;
 import com.nexters.goalpanzi.domain.mission.MissionStatus;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -33,6 +34,14 @@ public interface MissionMemberRepository extends JpaRepository<MissionMember, Lo
     List<MissionMember> findAllWithMemberByMissionId(final Long missionId);
 
     Optional<MissionMember> findTop1ByMemberIdOrderByUpdatedAtDesc(final Long memberId);
+
+    List<MissionMember> findByMemberIdAndMissionStatus(
+            final Long memberId,
+            final MissionStatus status,
+            final Pageable pageable
+    );
+
+    Long countByMemberIdAndMissionStatus(final Long memberId, final MissionStatus status);
 
     default MissionMember getMissionMember(final Long memberId, final Long missionId) {
         return findByMemberIdAndMissionId(memberId, missionId)

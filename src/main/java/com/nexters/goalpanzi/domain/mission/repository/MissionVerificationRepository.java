@@ -28,6 +28,8 @@ public interface MissionVerificationRepository extends JpaRepository<MissionVeri
             + " WHERE mb.id = :memberId AND ms.id = :missionId AND DATE(mv.createdAt) = :date")
     Optional<MissionVerification> findByMemberIdAndMissionIdAndDate(Long memberId, Long missionId, LocalDate date);
 
+    List<MissionVerification> findByMemberIdAndMissionIdIn(final Long memberId, final List<Long> missionIds);
+
     default MissionVerification getMyVerification(final Long memberId, final Long missionId, final Integer boardNumber) {
         return findByMemberIdAndMissionIdAndBoardNumber(memberId, missionId, boardNumber)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_VERIFICATION));
