@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,32 +33,24 @@ public class MyRecordService {
             final Long memberId,
             final PageRequest pageRequest
     ) {
-
+        // 완료한 미션 참여 멤버 목록 조회
         List<MissionMember> completedMissionMembers = getCompletedMissionMembers(memberId, pageRequest);
-        List<Long> completedMissionIds = completedMissionMembers.stream()
-                .map(MissionMember::getId)
-                .collect(Collectors.toList());
-
-        List<Mission> missions = missionRepository.findAllById(completedMissionIds);
-
-        Map<Long, List<MissionVerification>> missionVerificationMap = getMissionVerificationMap(memberId, completedMissionIds);
         Map<Long, List<MissionMember>> missionMemberMap = completedMissionMembers.stream()
                 .collect(Collectors.groupingBy(missionMember -> missionMember.getMission().getId()));
+
+        // 완료한 미션 목록 조회
+        List<Long> completedMissionIds = getCompletedMissionIds(completedMissionMembers);
+        List<Mission> missions = missionRepository.findAllById(completedMissionIds);
+
+        // 미션 별 인증 목록 조회
+        Map<Long, List<MissionVerification>> missionVerificationMap = getMissionVerificationMap(memberId, completedMissionIds);
+
+        // 완료한 미션 총 개수 조회
         var totalCount = missionMemberRepository.countByMemberIdAndMissionStatus(memberId, MissionStatus.COMPLETED);
 
         var myRecordList = missions.stream()
-                .map(mission -> {
-                    MissionVerifications missionVerifications = new MissionVerifications(missionVerificationMap.get(mission.getId()));
-                    List<MissionMember> missionMembers = missionMemberMap.get(mission.getId());
-                    MemberRanks memberRanks = MemberRanks.from(missionMembers);
-                    return MyRecordResponse.MyRecord.of(
-                            mission,
-                            missionVerifications.getRandomImageUrl(),
-                            missionVerifications.size(),
-                            missionMembers.size(),
-                            memberRanks.getRankByMemberId(memberId).rank()
-                    );
-                })
+                .map(mission -> MyRecordResponse.MyRecord.of(memberId, mission, missionVerificationMap, missionMemberMap))
+                .sorted(Comparator.comparing(MyRecordResponse.MyRecord::missionEndDate).reversed())
                 .toList();
 
         return new MyRecordResponse.MyRecordWrapper(
@@ -65,6 +58,12 @@ public class MyRecordService {
                 myRecordList
         );
 
+    }
+
+    private List<Long> getCompletedMissionIds(final List<MissionMember> completedMissionMembers) {
+        return completedMissionMembers.stream()
+                .map(MissionMember::getId)
+                .collect(Collectors.toList());
     }
 
     private Map<Long, List<MissionVerification>> getMissionVerificationMap(

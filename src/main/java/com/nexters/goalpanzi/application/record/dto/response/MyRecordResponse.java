@@ -1,6 +1,10 @@
 package com.nexters.goalpanzi.application.record.dto.response;
 
+import com.nexters.goalpanzi.domain.mission.MemberRanks;
 import com.nexters.goalpanzi.domain.mission.Mission;
+import com.nexters.goalpanzi.domain.mission.MissionMember;
+import com.nexters.goalpanzi.domain.mission.MissionVerification;
+import com.nexters.goalpanzi.domain.mission.MissionVerifications;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -8,6 +12,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MyRecordResponse {
@@ -60,6 +65,25 @@ public class MyRecordResponse {
                     .randomImageUrl(randomImageUrl)
                     .rank(rank)
                     .build();
+        }
+
+
+        public static MyRecord of(
+                final Long memberId,
+                final Mission mission,
+                final Map<Long, List<MissionVerification>> missionVerificationMap,
+                final Map<Long, List<MissionMember>> missionMemberMap
+        ) {
+            MissionVerifications missionVerifications = new MissionVerifications(missionVerificationMap.get(mission.getId()));
+            List<MissionMember> missionMembers = missionMemberMap.get(mission.getId());
+            MemberRanks memberRanks = MemberRanks.from(missionMembers);
+            return MyRecordResponse.MyRecord.of(
+                    mission,
+                    missionVerifications.getRandomImageUrl(),
+                    missionVerifications.size(),
+                    missionMembers.size(),
+                    memberRanks.getRankByMemberId(memberId).rank()
+            );
         }
     }
 }
