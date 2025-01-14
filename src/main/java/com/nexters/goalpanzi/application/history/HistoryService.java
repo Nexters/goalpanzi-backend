@@ -31,19 +31,19 @@ public class HistoryService {
             final Long memberId,
             final PageRequest pageRequest
     ) {
-        // 완료한 미션 참여 멤버 목록 조회
+        // 1. 완료한 미션 참여 멤버 목록 조회
         List<MissionMember> completedMissionMembers = getCompletedMissionMembers(memberId, pageRequest);
         Map<Long, List<MissionMember>> missionMemberMap = completedMissionMembers.stream()
                 .collect(Collectors.groupingBy(missionMember -> missionMember.getMission().getId()));
 
-        // 완료한 미션 목록 조회
+        // 2. 완료한 미션 목록 조회
         List<Long> completedMissionIds = getCompletedMissionIds(completedMissionMembers);
         List<Mission> missions = missionRepository.findAllById(completedMissionIds);
 
-        // 미션 별 인증 목록 조회
+        // 3. 미션 별 인증 목록 조회
         Map<Long, List<MissionVerification>> missionVerificationMap = getMissionVerificationMap(memberId, completedMissionIds);
 
-        // 완료한 미션 총 개수 조회
+        // 4. 완료한 미션 총 개수 조회
         var totalCount = missionMemberRepository.countByMemberIdAndMissionStatus(memberId, MissionStatus.COMPLETED);
 
         var histories = missions.stream()

@@ -1,13 +1,11 @@
 package com.nexters.goalpanzi.domain.mission;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Random;
 
 @RequiredArgsConstructor
-@Getter
 public class MissionVerifications {
 
     private static final Random RANDOM = new Random();
@@ -22,7 +20,7 @@ public class MissionVerifications {
         return missionVerifications.get(randomIndex).getImageUrl();
     }
 
-    public Integer size() {
+    public int size() {
         return missionVerifications.size();
     }
 }
