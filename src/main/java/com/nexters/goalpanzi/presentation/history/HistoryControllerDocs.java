@@ -8,10 +8,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "내 기록 (아카이빙)")
+@Tag(name = "내 기록 (히스토리)")
 public interface HistoryControllerDocs {
 
-    @Operation(summary = "내 완료 미션 목록 조회")
+    @Operation(summary = "내 완료 미션 기록 조회")
     ResponseEntity<HistoryResponse.CompletedMissionWrapper> getMyMissionHistories(
             @Parameter(in = ParameterIn.HEADER, hidden = true)
             final Long memberId,
