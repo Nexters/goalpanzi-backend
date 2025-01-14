@@ -1,7 +1,7 @@
-package com.nexters.goalpanzi.presentation.record;
+package com.nexters.goalpanzi.presentation.history;
 
-import com.nexters.goalpanzi.application.record.MyRecordService;
-import com.nexters.goalpanzi.application.record.dto.response.MyRecordResponse;
+import com.nexters.goalpanzi.application.history.HistoryService;
+import com.nexters.goalpanzi.application.history.dto.response.HistoryResponse;
 import com.nexters.goalpanzi.common.argumentresolver.LoginMemberId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -12,18 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class MyRecordController implements MyRecordControllerDocs {
+public class HistoryController implements HistoryControllerDocs {
 
-    private final MyRecordService myRecordService;
+    private final HistoryService historyService;
 
     @Override
-    @GetMapping("/api/missions/records")
-    public ResponseEntity<MyRecordResponse.MyRecordWrapper> getMyMissionRecords(
+    @GetMapping("/api/missions/history")
+    public ResponseEntity<HistoryResponse.CompletedMissionWrapper> getMyMissionHistories(
             @LoginMemberId final Long memberId,
             @RequestParam final Integer page,
             @RequestParam final Integer pageSize
     ) {
-        var result = myRecordService.getMyRecordList(memberId, PageRequest.of(page, pageSize));
+        var result = historyService.getMissionHistories(memberId, PageRequest.of(page, pageSize));
 
         return ResponseEntity.ok(result);
     }

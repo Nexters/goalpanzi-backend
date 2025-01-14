@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.application.record.dto.response;
+package com.nexters.goalpanzi.application.history.dto.response;
 
 import com.nexters.goalpanzi.domain.mission.MemberRanks;
 import com.nexters.goalpanzi.domain.mission.Mission;
@@ -15,18 +15,18 @@ import java.util.List;
 import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MyRecordResponse {
+public class HistoryResponse {
 
-    public record MyRecordWrapper(
+    public record CompletedMissionWrapper(
             @Schema(description = "총 개수", requiredMode = Schema.RequiredMode.REQUIRED)
             Long totalCount,
-            @Schema(description = "내 완료 미션 목록", requiredMode = Schema.RequiredMode.REQUIRED)
-            List<MyRecord> resultList
+            @Schema(description = "내 미션 히스토리 목록", requiredMode = Schema.RequiredMode.REQUIRED)
+            List<CompletedMission> resultList
     ) {
     }
 
     @Builder
-    public record MyRecord(
+    public record CompletedMission(
             @Schema(description = "미션 ID", requiredMode = Schema.RequiredMode.REQUIRED)
             Long missionId,
             @Schema(description = "미션 이름 (목표 행동)", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -47,14 +47,14 @@ public class MyRecordResponse {
             Integer memberCount
     ) {
 
-        public static MyRecord of(
+        public static CompletedMission of(
                 final Mission mission,
                 final String randomImageUrl,
                 final Integer myVerificationCount,
                 final Integer memberCount,
                 final Integer rank
         ) {
-            return MyRecord.builder()
+            return CompletedMission.builder()
                     .missionId(mission.getId())
                     .description(mission.getDescription())
                     .missionStartDate(mission.getMissionStartDate())
@@ -68,7 +68,7 @@ public class MyRecordResponse {
         }
 
 
-        public static MyRecord of(
+        public static CompletedMission of(
                 final Long memberId,
                 final Mission mission,
                 final Map<Long, List<MissionVerification>> missionVerificationMap,
@@ -77,7 +77,7 @@ public class MyRecordResponse {
             MissionVerifications missionVerifications = new MissionVerifications(missionVerificationMap.get(mission.getId()));
             List<MissionMember> missionMembers = missionMemberMap.get(mission.getId());
             MemberRanks memberRanks = MemberRanks.from(missionMembers);
-            return MyRecordResponse.MyRecord.of(
+            return CompletedMission.of(
                     mission,
                     missionVerifications.getRandomImageUrl(),
                     missionVerifications.size(),

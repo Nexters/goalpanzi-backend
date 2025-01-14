@@ -1,12 +1,10 @@
-package com.nexters.goalpanzi.application.record;
+package com.nexters.goalpanzi.application.history;
 
-import com.nexters.goalpanzi.application.record.dto.response.MyRecordResponse;
-import com.nexters.goalpanzi.domain.mission.MemberRanks;
+import com.nexters.goalpanzi.application.history.dto.response.HistoryResponse;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.MissionMember;
 import com.nexters.goalpanzi.domain.mission.MissionStatus;
 import com.nexters.goalpanzi.domain.mission.MissionVerification;
-import com.nexters.goalpanzi.domain.mission.MissionVerifications;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationRepository;
@@ -23,13 +21,13 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
-public class MyRecordService {
+public class HistoryService {
 
     private final MissionRepository missionRepository;
     private final MissionMemberRepository missionMemberRepository;
     private final MissionVerificationRepository missionVerificationRepository;
 
-    public MyRecordResponse.MyRecordWrapper getMyRecordList(
+    public HistoryResponse.CompletedMissionWrapper getMissionHistories(
             final Long memberId,
             final PageRequest pageRequest
     ) {
@@ -48,14 +46,14 @@ public class MyRecordService {
         // 완료한 미션 총 개수 조회
         var totalCount = missionMemberRepository.countByMemberIdAndMissionStatus(memberId, MissionStatus.COMPLETED);
 
-        var myRecordList = missions.stream()
-                .map(mission -> MyRecordResponse.MyRecord.of(memberId, mission, missionVerificationMap, missionMemberMap))
-                .sorted(Comparator.comparing(MyRecordResponse.MyRecord::missionEndDate).reversed())
+        var histories = missions.stream()
+                .map(mission -> HistoryResponse.CompletedMission.of(memberId, mission, missionVerificationMap, missionMemberMap))
+                .sorted(Comparator.comparing(HistoryResponse.CompletedMission::missionEndDate).reversed())
                 .toList();
 
-        return new MyRecordResponse.MyRecordWrapper(
+        return new HistoryResponse.CompletedMissionWrapper(
                 totalCount,
-                myRecordList
+                histories
         );
 
     }
