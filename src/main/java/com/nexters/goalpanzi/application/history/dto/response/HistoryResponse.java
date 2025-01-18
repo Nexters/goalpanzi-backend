@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HistoryResponse {
@@ -71,16 +70,16 @@ public class HistoryResponse {
         public static CompletedMission of(
                 final Long memberId,
                 final Mission mission,
-                final Map<Long, List<MissionVerification>> missionVerificationMap,
-                final Map<Long, List<MissionMember>> missionMemberMap
+                final List<MissionVerification> missionVerifications,
+                final List<MissionMember> missionMembers
         ) {
-            MissionVerifications missionVerifications = new MissionVerifications(missionVerificationMap.get(mission.getId()));
-            List<MissionMember> missionMembers = missionMemberMap.get(mission.getId());
+            MissionVerifications verifications = new MissionVerifications(missionVerifications);
             MemberRanks memberRanks = MemberRanks.from(missionMembers);
+
             return CompletedMission.of(
                     mission,
-                    missionVerifications.getRandomImageUrl(),
-                    missionVerifications.size(),
+                    verifications.getRandomImageUrl(),
+                    verifications.count(),
                     missionMembers.size(),
                     memberRanks.getRankByMemberId(memberId).rank()
             );

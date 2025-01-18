@@ -20,8 +20,8 @@ public class HistoryController implements HistoryControllerDocs {
     @GetMapping("/api/missions/history")
     public ResponseEntity<HistoryResponse.CompletedMissionWrapper> getMyMissionHistories(
             @LoginMemberId final Long memberId,
-            @RequestParam final Integer page,
-            @RequestParam final Integer pageSize
+            @RequestParam(defaultValue = "0") final Integer page,
+            @RequestParam(defaultValue = "30") final Integer pageSize
     ) {
         var result = historyService.getMissionHistories(memberId, PageRequest.of(page, pageSize));
 

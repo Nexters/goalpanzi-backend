@@ -17,7 +17,7 @@ public interface HistoryControllerDocs {
             final Long memberId,
             @Schema(description = "페이지 번호 (default:0)")
             final Integer page,
-            @Schema(description = "페이지 사이즈 (default:10)")
+            @Schema(description = "페이지 사이즈 (default:30)")
             final Integer pageSize
     );
 }

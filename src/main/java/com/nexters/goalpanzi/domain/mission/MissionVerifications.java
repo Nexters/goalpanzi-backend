@@ -20,7 +20,7 @@ public class MissionVerifications {
         return missionVerifications.get(randomIndex).getImageUrl();
     }
 
-    public int size() {
+    public int count() {
         return missionVerifications.size();
     }
 }

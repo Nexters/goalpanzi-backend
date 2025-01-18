@@ -47,7 +47,8 @@ public class HistoryService {
         var totalCount = missionMemberRepository.countByMemberIdAndMissionStatus(memberId, MissionStatus.COMPLETED);
 
         var histories = missions.stream()
-                .map(mission -> HistoryResponse.CompletedMission.of(memberId, mission, missionVerificationMap, missionMemberMap))
+                .map(mission -> HistoryResponse.CompletedMission.of(
+                        memberId, mission, missionVerificationMap.get(mission.getId()), missionMemberMap.get(mission.getId())))
                 .sorted(Comparator.comparing(HistoryResponse.CompletedMission::missionEndDate).reversed())
                 .toList();
 
