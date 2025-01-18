@@ -49,6 +49,13 @@ public class MemberRanks {
                 .orElseThrow(() -> new NoSuchElementException("No rank found for member " + member.getId()));
     }
 
+    public MemberRank getRankByMemberId(final Long memberId) {
+        return memberRanks.stream()
+                .filter(memberRank -> memberRank.member().getId().equals(memberId))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("No rank found for member " + memberId));
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
