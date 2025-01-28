@@ -11,7 +11,7 @@ public class MissionVerifications {
     private static final Random RANDOM = new Random();
     private final List<MissionVerification> missionVerifications;
 
-    public String getRandomImageUrl() {
+    public String getRandomImageUrlOrNull() {
         if (missionVerifications.isEmpty()) {
             return null;
         }

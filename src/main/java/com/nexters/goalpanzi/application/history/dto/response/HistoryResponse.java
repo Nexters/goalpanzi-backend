@@ -78,11 +78,36 @@ public class HistoryResponse {
 
             return CompletedMission.of(
                     mission,
-                    verifications.getRandomImageUrl(),
+                    verifications.getRandomImageUrlOrNull(),
                     verifications.count(),
                     missionMembers.size(),
                     memberRanks.getRankByMemberId(memberId).rank()
             );
         }
+    }
+
+    @Builder
+    public record VerificationWrapper(
+            @Schema(description = "총 개수", requiredMode = Schema.RequiredMode.REQUIRED)
+            Long totalCount,
+            @Schema(description = "닉네임", requiredMode = Schema.RequiredMode.REQUIRED)
+            String nickname,
+            @Schema(description = "미션 ID", requiredMode = Schema.RequiredMode.REQUIRED)
+            Long missionId,
+            @Schema(description = "미션 이름 (목표 행동)", requiredMode = Schema.RequiredMode.REQUIRED)
+            String description,
+            @Schema(description = "미션 인증 목록", requiredMode = Schema.RequiredMode.REQUIRED)
+            List<Verification> verifications
+    ) {
+
+    }
+
+    public record Verification(
+            @Schema(description = "인증 이미지 URL", requiredMode = Schema.RequiredMode.REQUIRED)
+            String imageUrl,
+            @Schema(description = "인증 날짜", requiredMode = Schema.RequiredMode.REQUIRED)
+            LocalDateTime date
+    ) {
+
     }
 }

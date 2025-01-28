@@ -1,6 +1,8 @@
 package com.nexters.goalpanzi.application.history;
 
 import com.nexters.goalpanzi.application.history.dto.response.HistoryResponse;
+import com.nexters.goalpanzi.domain.member.Member;
+import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.MissionMember;
 import com.nexters.goalpanzi.domain.mission.MissionStatus;
@@ -26,6 +28,7 @@ public class HistoryService {
     private final MissionRepository missionRepository;
     private final MissionMemberRepository missionMemberRepository;
     private final MissionVerificationRepository missionVerificationRepository;
+    private final MemberRepository memberRepository;
 
     public HistoryResponse.CompletedMissionWrapper getMissionHistories(
             final Long memberId,
@@ -56,7 +59,30 @@ public class HistoryService {
                 totalCount,
                 histories
         );
+    }
 
+    public HistoryResponse.VerificationWrapper getMissionVerificationHistories(
+            final Long missionId,
+            final Long memberId,
+            final PageRequest pageRequest
+    ) {
+        Mission mission = missionRepository.getMission(missionId);
+        Member member = memberRepository.getMember(memberId);
+        var missionVerifications = missionVerificationRepository.findByMemberIdAndMissionId(memberId, missionId, pageRequest)
+                .stream()
+                .map(it -> new HistoryResponse.Verification(
+                        it.getImageUrl(),
+                        it.getCreatedAt()))
+                .toList();
+        Long totalCount = missionVerificationRepository.countByMemberIdAndMissionId(memberId, missionId);
+
+        return HistoryResponse.VerificationWrapper.builder()
+                .totalCount(totalCount)
+                .nickname(member.getNickname())
+                .missionId(mission.getId())
+                .description(mission.getDescription())
+                .verifications(missionVerifications)
+                .build();
     }
 
     private List<Long> getCompletedMissionIds(final List<MissionMember> completedMissionMembers) {

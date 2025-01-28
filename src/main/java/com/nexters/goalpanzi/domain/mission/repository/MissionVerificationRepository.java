@@ -3,6 +3,7 @@ package com.nexters.goalpanzi.domain.mission.repository;
 import com.nexters.goalpanzi.domain.mission.MissionVerification;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -29,6 +30,10 @@ public interface MissionVerificationRepository extends JpaRepository<MissionVeri
     Optional<MissionVerification> findByMemberIdAndMissionIdAndDate(Long memberId, Long missionId, LocalDate date);
 
     List<MissionVerification> findByMemberIdAndMissionIdIn(final Long memberId, final List<Long> missionIds);
+
+    List<MissionVerification> findByMemberIdAndMissionId(final Long memberId, final Long missionId, final Pageable pageable);
+
+    long countByMemberIdAndMissionId(final Long memberId, final Long missionId);
 
     default MissionVerification getMyVerification(final Long memberId, final Long missionId, final Integer boardNumber) {
         return findByMemberIdAndMissionIdAndBoardNumber(memberId, missionId, boardNumber)
