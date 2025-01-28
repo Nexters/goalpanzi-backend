@@ -15,15 +15,21 @@ public record MissionBoardResponse(
         Reward reward,
         @Schema(description = "내 장기말 존재 여부", requiredMode = Schema.RequiredMode.REQUIRED)
         Boolean isMyPosition,
+        @Schema(description = "인증 이미지 URL (없으면 NULL)", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        String myVerificationImageUrl,
         @Schema(description = "해당 보드칸에 존재하는 장기말", requiredMode = Schema.RequiredMode.REQUIRED)
         List<MissionBoardMemberResponse> missionBoardMembers
 ) {
 
-    public static MissionBoardResponse of(final Long memberId, final Integer number, final List<Member> members) {
+    public static MissionBoardResponse of(
+            final Long memberId, final Integer number,
+            final List<Member> members, final String verificationImageUrl
+    ) {
         return new MissionBoardResponse(
                 number,
                 Reward.of(number),
                 isMyPosition(memberId, members),
+                verificationImageUrl,
                 members.stream()
                         .map(MissionBoardMemberResponse::from)
                         .collect(Collectors.toList())

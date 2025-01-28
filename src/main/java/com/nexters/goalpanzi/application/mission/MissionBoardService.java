@@ -10,15 +10,18 @@ import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -38,16 +41,32 @@ public class MissionBoardService {
         MissionMembers missionMembers = getMissionMembers(query.missionId(), query.sortType(), query.direction());
         missionMembers.verifyMissionMember(member);
 
+        // key: 보드칸 번호 value: 참여 멤버 목록
         Map<Integer, List<Member>> boardMap = groupByVerificationCount(mission, missionMembers);
-        List<MissionBoardResponse> boards = new ArrayList<>();
-        for (Map.Entry<Integer, List<Member>> entry : boardMap.entrySet()) {
-            boards.add(MissionBoardResponse.of(query.memberId(), entry.getKey(), entry.getValue()));
-        }
+
+        // key: 보드칸 번호 value: 미션 인증 정보
+        Map<Integer, MissionVerification> boardCountMap = missionVerificationRepository.findByMemberIdAndMissionId(
+                        member.getId(), mission.getId(), Pageable.unpaged())
+                .stream()
+                .collect(Collectors.toMap(MissionVerification::getBoardNumber, verification -> verification));
+
+        var boards = boardMap.entrySet().stream()
+                .map(board -> generateBoardInfo(query.memberId(), board, boardCountMap.getOrDefault(board.getKey(), null)))
+                .toList();
 
         return new MissionBoardsResponse(
                 getProgressCount(query.missionId()),
                 MemberRanks.from(missionMembers.getMissionMembers()).getRankByMember(member).rank(),
                 boards);
+    }
+
+    private MissionBoardResponse generateBoardInfo(final Long memberId, final Map.Entry<Integer, List<Member>> board,
+                                                   final MissionVerification missionVerification) {
+        var imageUrl = Optional.ofNullable(missionVerification)
+                .map(MissionVerification::getImageUrl)
+                .orElse(null);
+
+        return MissionBoardResponse.of(memberId, board.getKey(), board.getValue(), imageUrl);
     }
 
     private MissionMembers getMissionMembers(final Long missionId, final MissionBoardQuery.SortType sortType, final Sort.Direction direction) {
