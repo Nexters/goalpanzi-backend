@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,7 +18,7 @@ public class HistoryController implements HistoryControllerDocs {
     private final HistoryService historyService;
 
     @Override
-    @GetMapping("/api/missions/history")
+    @GetMapping("/api/missions/histories/me")
     public ResponseEntity<HistoryResponse.CompletedMissionWrapper> getMyMissionHistories(
             @LoginMemberId final Long memberId,
             @RequestParam(defaultValue = "0") final Integer page,
@@ -27,4 +28,20 @@ public class HistoryController implements HistoryControllerDocs {
 
         return ResponseEntity.ok(result);
     }
+
+    @Override
+    @GetMapping("/api/missions/{missionId}/histories/me")
+    public ResponseEntity<HistoryResponse.VerificationWrapper> getMyVerifications(
+            @PathVariable final Long missionId,
+            @LoginMemberId final Long memberId,
+            @RequestParam(defaultValue = "0") final Integer page,
+            @RequestParam(defaultValue = "30") final Integer pageSize
+    ) {
+        var result = historyService.getMissionVerificationHistories(
+                missionId, memberId, PageRequest.of(page, pageSize)
+        );
+
+        return ResponseEntity.ok(result);
+    }
+
 }

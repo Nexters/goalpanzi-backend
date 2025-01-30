@@ -41,7 +41,7 @@ public interface MissionMemberRepository extends JpaRepository<MissionMember, Lo
             final Pageable pageable
     );
 
-    Long countByMemberIdAndMissionStatus(final Long memberId, final MissionStatus status);
+    long countByMemberIdAndMissionStatus(final Long memberId, final MissionStatus status);
 
     default MissionMember getMissionMember(final Long memberId, final Long missionId) {
         return findByMemberIdAndMissionId(memberId, missionId)
