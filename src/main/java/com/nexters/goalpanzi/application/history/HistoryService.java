@@ -74,7 +74,7 @@ public class HistoryService {
                         it.getImageUrl(),
                         it.getCreatedAt()))
                 .toList();
-        Long totalCount = missionVerificationRepository.countByMemberIdAndMissionId(memberId, missionId);
+        long totalCount = missionVerificationRepository.countByMemberIdAndMissionId(memberId, missionId);
 
         return HistoryResponse.VerificationWrapper.builder()
                 .totalCount(totalCount)
