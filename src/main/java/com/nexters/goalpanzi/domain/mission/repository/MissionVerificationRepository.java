@@ -31,9 +31,9 @@ public interface MissionVerificationRepository extends JpaRepository<MissionVeri
 
     List<MissionVerification> findByMemberIdAndMissionIdIn(final Long memberId, final List<Long> missionIds);
 
-    List<MissionVerification> findByMemberIdAndMissionId(final Long memberId, final Long missionId, final Pageable pageable);
+    List<MissionVerification> findByMemberIdAndMissionIdAndDeletedAtIsNull(final Long memberId, final Long missionId, final Pageable pageable);
 
-    long countByMemberIdAndMissionId(final Long memberId, final Long missionId);
+    long countByMemberIdAndMissionIdAndDeletedAtIsNull(final Long memberId, final Long missionId);
 
     default MissionVerification getMyVerification(final Long memberId, final Long missionId, final Integer boardNumber) {
         return findByMemberIdAndMissionIdAndBoardNumber(memberId, missionId, boardNumber)

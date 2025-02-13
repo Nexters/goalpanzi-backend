@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,8 @@ public class HistoryService {
 
         var histories = missions.stream()
                 .map(mission -> HistoryResponse.CompletedMission.of(
-                        memberId, mission, missionVerificationMap.get(mission.getId()), missionMemberMap.get(mission.getId())))
+                        memberId, mission, missionVerificationMap.getOrDefault(mission.getId(), Collections.emptyList())
+                        , missionMemberMap.getOrDefault(mission.getId(), Collections.emptyList())))
                 .sorted(Comparator.comparing(HistoryResponse.CompletedMission::missionEndDate).reversed())
                 .toList();
 
@@ -68,13 +70,13 @@ public class HistoryService {
     ) {
         Mission mission = missionRepository.getMission(missionId);
         Member member = memberRepository.getMember(memberId);
-        var missionVerifications = missionVerificationRepository.findByMemberIdAndMissionId(memberId, missionId, pageRequest)
+        var missionVerifications = missionVerificationRepository.findByMemberIdAndMissionIdAndDeletedAtIsNull(memberId, missionId, pageRequest)
                 .stream()
                 .map(it -> new HistoryResponse.Verification(
                         it.getImageUrl(),
                         it.getCreatedAt()))
                 .toList();
-        long totalCount = missionVerificationRepository.countByMemberIdAndMissionId(memberId, missionId);
+        long totalCount = missionVerificationRepository.countByMemberIdAndMissionIdAndDeletedAtIsNull(memberId, missionId);
 
         return HistoryResponse.VerificationWrapper.builder()
                 .totalCount(totalCount)
