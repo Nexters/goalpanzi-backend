@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MissionMemberRepository extends JpaRepository<MissionMember, Long> {
+
+    List<MissionMember> findAllByMissionIdInAndDeletedAtIsNull(List<Long> missionIds);
+
     Optional<MissionMember> findByMemberIdAndMissionId(final Long memberId, final Long missionId);
 
     @Query("SELECT mm FROM MissionMember mm"

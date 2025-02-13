@@ -38,13 +38,13 @@ public class HistoryService {
             final PageRequest pageRequest
     ) {
         // 1. 완료한 미션 참여 멤버 목록 조회
-        List<MissionMember> completedMissionMembers = getCompletedMissionMembers(memberId, pageRequest);
+        List<MissionMember> completedMissionMembers = getParticipatedMissionMembers(memberId, pageRequest);
         Map<Long, List<MissionMember>> missionMemberMap = completedMissionMembers.stream()
                 .collect(Collectors.groupingBy(missionMember -> missionMember.getMission().getId()));
 
         // 2. 완료한 미션 목록 조회
         List<Long> completedMissionIds = getCompletedMissionIds(completedMissionMembers);
-        List<Mission> missions = missionRepository.findAllById(completedMissionIds);
+        List<Mission> missions = missionRepository.findAllByIdInAndDeletedAtIsNull(completedMissionIds);
 
         // 3. 미션 별 인증 목록 조회
         Map<Long, List<MissionVerification>> missionVerificationMap = getMissionVerificationMap(memberId, completedMissionIds);
@@ -111,12 +111,18 @@ public class HistoryService {
                 .collect(Collectors.groupingBy(missionVerification -> missionVerification.getMission().getId()));
     }
 
-    private List<MissionMember> getCompletedMissionMembers(final Long memberId, final PageRequest pageRequest) {
-        return missionMemberRepository.findByMemberIdAndMissionStatusAndDeletedAtIsNull(
+    private List<MissionMember> getParticipatedMissionMembers(final Long memberId, final PageRequest pageRequest) {
+        var myCompletedMissions = missionMemberRepository.findByMemberIdAndMissionStatusAndDeletedAtIsNull(
                         memberId,
                         MissionStatus.COMPLETED,
                         pageRequest
                 ).stream()
                 .toList();
+
+        var missionIds = myCompletedMissions.stream()
+                .map(it -> it.getMission().getId())
+                .toList();
+
+        return missionMemberRepository.findAllByMissionIdInAndDeletedAtIsNull(missionIds);
     }
 }

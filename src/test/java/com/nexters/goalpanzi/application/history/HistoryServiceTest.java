@@ -61,7 +61,7 @@ class HistoryServiceTest {
         ReflectionTestUtils.setField(member, "id", 1L);
 
         when(missionRepository.findAllById(any())).thenReturn(List.of(mission));
-        when(missionMemberRepository.findByMemberIdAndMissionStatus(any(), eq(MissionStatus.COMPLETED), any())).thenReturn(List.of(missionMember));
+        when(missionMemberRepository.findByMemberIdAndMissionStatusAndDeletedAtIsNull(any(), eq(MissionStatus.COMPLETED), any())).thenReturn(List.of(missionMember));
         when(missionMemberRepository.countByMemberIdAndMissionStatus(any(), eq(MissionStatus.COMPLETED))).thenReturn(COMPLETED_MISSION_COUNT);
         when(missionVerificationRepository.findByMemberIdAndMissionIdIn(any(), any())).thenReturn(List.of(missionVerification));
 

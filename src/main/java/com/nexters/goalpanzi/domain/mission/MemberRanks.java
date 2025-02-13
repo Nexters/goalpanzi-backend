@@ -1,6 +1,8 @@
 package com.nexters.goalpanzi.domain.mission;
 
 import com.nexters.goalpanzi.domain.member.Member;
+import com.nexters.goalpanzi.exception.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,6 +10,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+import static com.nexters.goalpanzi.exception.ErrorCode.NOT_FOUND_MISSION_MEMBER;
+
+@Slf4j
 public class MemberRanks {
 
     private final List<MemberRank> memberRanks;
@@ -17,6 +22,10 @@ public class MemberRanks {
     }
 
     public static MemberRanks from(final List<MissionMember> missionMembers) {
+        if (missionMembers == null || missionMembers.isEmpty()) {
+            throw new NotFoundException(NOT_FOUND_MISSION_MEMBER);
+        }
+
         List<MissionMember> sortedMissionMembers = sortedMembersByVerificationCountDesc(missionMembers);
 
         List<MemberRank> memberRanks = new ArrayList<>();
