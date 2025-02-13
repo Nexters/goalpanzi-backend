@@ -45,7 +45,7 @@ public class MissionBoardService {
         Map<Integer, List<Member>> boardMap = groupByVerificationCount(mission, missionMembers);
 
         // key: 보드칸 번호 value: 미션 인증 정보
-        Map<Integer, MissionVerification> boardCountMap = missionVerificationRepository.findByMemberIdAndMissionId(
+        Map<Integer, MissionVerification> boardCountMap = missionVerificationRepository.findByMemberIdAndMissionIdAndDeletedAtIsNull(
                         member.getId(), mission.getId(), Pageable.unpaged())
                 .stream()
                 .collect(Collectors.toMap(MissionVerification::getBoardNumber, verification -> verification));
