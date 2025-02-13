@@ -11,6 +11,7 @@ import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class HistoryService {
 
     private final MissionRepository missionRepository;
@@ -49,7 +51,14 @@ public class HistoryService {
 
         // 4. 완료한 미션 총 개수 조회
         var totalCount = missionMemberRepository.countByMemberIdAndMissionStatus(memberId, MissionStatus.COMPLETED);
-
+        if (memberId == 104L) {
+            missionMemberMap.values().forEach(it -> {
+                log.error("석준 테스트");
+                it.forEach(m -> {
+                    log.error(m.toString());
+                });
+            });
+        }
         var histories = missions.stream()
                 .map(mission -> HistoryResponse.CompletedMission.of(
                         memberId, mission, missionVerificationMap.getOrDefault(mission.getId(), Collections.emptyList())
