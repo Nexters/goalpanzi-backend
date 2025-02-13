@@ -103,7 +103,7 @@ public class HistoryService {
     }
 
     private List<MissionMember> getCompletedMissionMembers(final Long memberId, final PageRequest pageRequest) {
-        return missionMemberRepository.findByMemberIdAndMissionStatus(
+        return missionMemberRepository.findByMemberIdAndMissionStatusAndDeletedAtIsNull(
                         memberId,
                         MissionStatus.COMPLETED,
                         pageRequest

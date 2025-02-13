@@ -35,7 +35,7 @@ public interface MissionMemberRepository extends JpaRepository<MissionMember, Lo
 
     Optional<MissionMember> findTop1ByMemberIdOrderByUpdatedAtDesc(final Long memberId);
 
-    List<MissionMember> findByMemberIdAndMissionStatus(
+    List<MissionMember> findByMemberIdAndMissionStatusAndDeletedAtIsNull(
             final Long memberId,
             final MissionStatus status,
             final Pageable pageable
