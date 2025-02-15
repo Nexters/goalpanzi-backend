@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public interface MissionMemberRepository extends JpaRepository<MissionMember, Long> {
 
-    List<MissionMember> findAllByMissionIdInAndDeletedAtIsNull(List<Long> missionIds);
+    List<MissionMember> findAllByMissionIdIn(List<Long> missionIds);
 
     Optional<MissionMember> findByMemberIdAndMissionId(final Long memberId, final Long missionId);
 
@@ -38,7 +38,7 @@ public interface MissionMemberRepository extends JpaRepository<MissionMember, Lo
 
     Optional<MissionMember> findTop1ByMemberIdOrderByUpdatedAtDesc(final Long memberId);
 
-    List<MissionMember> findByMemberIdAndMissionStatusAndDeletedAtIsNull(
+    List<MissionMember> findByMemberIdAndMissionStatus(
             final Long memberId,
             final MissionStatus status,
             final Pageable pageable

@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface MissionRepository extends JpaRepository<Mission, Long> {
 
-    List<Mission> findAllByIdInAndDeletedAtIsNull(List<Long> missionIds);
+    List<Mission> findAllByIdIn(List<Long> missionIds);
 
     Optional<Mission> findByInvitationCode(final InvitationCode invitationCode);
 

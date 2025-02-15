@@ -44,25 +44,20 @@ public class HistoryService {
 
         // 2. 완료한 미션 목록 조회
         List<Long> completedMissionIds = getCompletedMissionIds(completedMissionMembers);
-        List<Mission> missions = missionRepository.findAllByIdInAndDeletedAtIsNull(completedMissionIds);
+        List<Mission> missions = missionRepository.findAllByIdIn(completedMissionIds);
 
         // 3. 미션 별 인증 목록 조회
         Map<Long, List<MissionVerification>> missionVerificationMap = getMissionVerificationMap(memberId, completedMissionIds);
 
         // 4. 완료한 미션 총 개수 조회
         var totalCount = missionMemberRepository.countByMemberIdAndMissionStatus(memberId, MissionStatus.COMPLETED);
-        if (memberId == 104L) {
-            missionMemberMap.values().forEach(it -> {
-                log.error("석준 테스트");
-                it.forEach(m -> {
-                    log.error(m.toString());
-                });
-            });
-        }
+
         var histories = missions.stream()
+                .filter(mission -> missionMemberMap.get(mission.getId()) != null)
                 .map(mission -> HistoryResponse.CompletedMission.of(
-                        memberId, mission, missionVerificationMap.getOrDefault(mission.getId(), Collections.emptyList())
-                        , missionMemberMap.getOrDefault(mission.getId(), Collections.emptyList())))
+                        memberId, mission,
+                        missionVerificationMap.getOrDefault(mission.getId(), Collections.emptyList()),
+                        missionMemberMap.getOrDefault(mission.getId(), Collections.emptyList())))
                 .sorted(Comparator.comparing(HistoryResponse.CompletedMission::missionEndDate).reversed())
                 .toList();
 
@@ -79,13 +74,13 @@ public class HistoryService {
     ) {
         Mission mission = missionRepository.getMission(missionId);
         Member member = memberRepository.getMember(memberId);
-        var missionVerifications = missionVerificationRepository.findByMemberIdAndMissionIdAndDeletedAtIsNull(memberId, missionId, pageRequest)
+        var missionVerifications = missionVerificationRepository.findByMemberIdAndMissionId(memberId, missionId, pageRequest)
                 .stream()
                 .map(it -> new HistoryResponse.Verification(
                         it.getImageUrl(),
                         it.getCreatedAt()))
                 .toList();
-        long totalCount = missionVerificationRepository.countByMemberIdAndMissionIdAndDeletedAtIsNull(memberId, missionId);
+        long totalCount = missionVerificationRepository.countByMemberIdAndMissionId(memberId, missionId);
 
         return HistoryResponse.VerificationWrapper.builder()
                 .totalCount(totalCount)
@@ -98,7 +93,7 @@ public class HistoryService {
 
     private List<Long> getCompletedMissionIds(final List<MissionMember> completedMissionMembers) {
         return completedMissionMembers.stream()
-                .map(MissionMember::getId)
+                .map(it -> it.getMission().getId())
                 .collect(Collectors.toList());
     }
 
@@ -112,7 +107,7 @@ public class HistoryService {
     }
 
     private List<MissionMember> getParticipatedMissionMembers(final Long memberId, final PageRequest pageRequest) {
-        var myCompletedMissions = missionMemberRepository.findByMemberIdAndMissionStatusAndDeletedAtIsNull(
+        var myCompletedMissions = missionMemberRepository.findByMemberIdAndMissionStatus(
                         memberId,
                         MissionStatus.COMPLETED,
                         pageRequest
@@ -123,6 +118,6 @@ public class HistoryService {
                 .map(it -> it.getMission().getId())
                 .toList();
 
-        return missionMemberRepository.findAllByMissionIdInAndDeletedAtIsNull(missionIds);
+        return missionMemberRepository.findAllByMissionIdIn(missionIds);
     }
 }
