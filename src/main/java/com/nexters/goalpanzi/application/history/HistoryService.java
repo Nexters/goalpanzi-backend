@@ -3,10 +3,12 @@ package com.nexters.goalpanzi.application.history;
 import com.nexters.goalpanzi.application.history.dto.response.HistoryResponse;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
+import com.nexters.goalpanzi.domain.mission.MemberRanks;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.MissionMember;
 import com.nexters.goalpanzi.domain.mission.MissionStatus;
 import com.nexters.goalpanzi.domain.mission.MissionVerification;
+import com.nexters.goalpanzi.domain.mission.MissionVerifications;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationRepository;
@@ -54,16 +56,36 @@ public class HistoryService {
 
         var histories = missions.stream()
                 .filter(mission -> missionMemberMap.get(mission.getId()) != null)
-                .map(mission -> HistoryResponse.CompletedMission.of(
-                        memberId, mission,
-                        missionVerificationMap.getOrDefault(mission.getId(), Collections.emptyList()),
-                        missionMemberMap.getOrDefault(mission.getId(), Collections.emptyList())))
+                .map(mission -> {
+                            var missionVerifications = missionVerificationMap.getOrDefault(mission.getId(), Collections.emptyList());
+                            var missionMembers = missionMemberMap.getOrDefault(mission.getId(), Collections.emptyList());
+                            return convertToCompletedMission(memberId, mission, missionVerifications, missionMembers);
+                        }
+                )
                 .sorted(Comparator.comparing(HistoryResponse.CompletedMission::missionEndDate).reversed())
                 .toList();
 
         return new HistoryResponse.CompletedMissionWrapper(
                 totalCount,
                 histories
+        );
+    }
+
+    private HistoryResponse.CompletedMission convertToCompletedMission(
+            final Long memberId, final Mission mission,
+            final List<MissionVerification> missionVerifications,
+            final List<MissionMember> missionMembers) {
+        return HistoryResponse.CompletedMission.of(
+                memberId,
+                mission,
+                new MissionVerifications(missionVerifications),
+                missionMembers.stream()
+                        .map(mm -> new HistoryResponse.MissionMemberInfo(
+                                mm.getMember().getId(),
+                                mm.getMember().getNickname(),
+                                mm.getMember().getCharacterType()
+                        )).toList(),
+                MemberRanks.from(missionMembers)
         );
     }
 

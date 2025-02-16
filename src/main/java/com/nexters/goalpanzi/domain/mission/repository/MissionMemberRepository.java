@@ -16,7 +16,8 @@ import java.util.Optional;
 
 public interface MissionMemberRepository extends JpaRepository<MissionMember, Long> {
 
-    List<MissionMember> findAllByMissionIdIn(List<Long> missionIds);
+    @Query("SELECT mm FROM MissionMember mm JOIN FETCH mm.member WHERE mm.mission.id IN :missionIds")
+    List<MissionMember> findAllByMissionIdIn(final List<Long> missionIds);
 
     Optional<MissionMember> findByMemberIdAndMissionId(final Long memberId, final Long missionId);
 

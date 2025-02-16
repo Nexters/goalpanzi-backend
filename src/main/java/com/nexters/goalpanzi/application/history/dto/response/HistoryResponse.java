@@ -1,9 +1,8 @@
 package com.nexters.goalpanzi.application.history.dto.response;
 
+import com.nexters.goalpanzi.domain.member.CharacterType;
 import com.nexters.goalpanzi.domain.mission.MemberRanks;
 import com.nexters.goalpanzi.domain.mission.Mission;
-import com.nexters.goalpanzi.domain.mission.MissionMember;
-import com.nexters.goalpanzi.domain.mission.MissionVerification;
 import com.nexters.goalpanzi.domain.mission.MissionVerifications;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
@@ -40,18 +39,20 @@ public class HistoryResponse {
             Integer totalVerificationCount,
             @Schema(description = "최종 등수", requiredMode = Schema.RequiredMode.REQUIRED)
             Integer rank,
-            @Schema(description = "나의 미션 인증 사진(랜덤)", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-            String randomImageUrl,
+            @Schema(description = "나의 미션 인증 사진(랜덤) 리스트 (최대 30개)", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+            List<String> randomImageUrlList,
             @Schema(description = "참여 인원 수", requiredMode = Schema.RequiredMode.REQUIRED)
-            Integer memberCount
+            Integer memberCount,
+            @Schema(description = "참여 인원 목록", requiredMode = Schema.RequiredMode.REQUIRED)
+            List<MissionMemberInfo> missionMembers
     ) {
 
         public static CompletedMission of(
                 final Mission mission,
-                final String randomImageUrl,
+                final List<String> randomImageUrlList,
                 final Integer myVerificationCount,
-                final Integer memberCount,
-                final Integer rank
+                final Integer rank,
+                final List<MissionMemberInfo> missionMembers
         ) {
             return CompletedMission.builder()
                     .missionId(mission.getId())
@@ -60,28 +61,27 @@ public class HistoryResponse {
                     .missionEndDate(mission.getMissionEndDate())
                     .totalVerificationCount(mission.getBoardCount())
                     .myVerificationCount(myVerificationCount)
-                    .memberCount(memberCount)
-                    .randomImageUrl(randomImageUrl)
+                    .randomImageUrlList(randomImageUrlList)
                     .rank(rank)
+                    .memberCount(missionMembers.size())
+                    .missionMembers(missionMembers)
                     .build();
         }
-
 
         public static CompletedMission of(
                 final Long memberId,
                 final Mission mission,
-                final List<MissionVerification> missionVerifications,
-                final List<MissionMember> missionMembers
+                final MissionVerifications missionVerifications,
+                final List<MissionMemberInfo> missionMembers,
+                final MemberRanks memberRanks
         ) {
-            MissionVerifications verifications = new MissionVerifications(missionVerifications);
-            MemberRanks memberRanks = MemberRanks.from(missionMembers);
 
             return CompletedMission.of(
                     mission,
-                    verifications.getRandomImageUrlOrNull(),
-                    verifications.count(),
-                    missionMembers.size(),
-                    memberRanks.getRankByMemberId(memberId).rank()
+                    missionVerifications.shuffled(),
+                    missionVerifications.count(),
+                    memberRanks.getRankByMemberId(memberId).rank(),
+                    missionMembers
             );
         }
     }
@@ -107,6 +107,17 @@ public class HistoryResponse {
             String imageUrl,
             @Schema(description = "인증 날짜", requiredMode = Schema.RequiredMode.REQUIRED)
             LocalDateTime date
+    ) {
+
+    }
+
+    public record MissionMemberInfo(
+            @Schema(description = "참여자 ID", requiredMode = Schema.RequiredMode.REQUIRED)
+            Long memberId,
+            @Schema(description = "닉네임", requiredMode = Schema.RequiredMode.REQUIRED)
+            String nickname,
+            @Schema(description = "캐릭터 타입", requiredMode = Schema.RequiredMode.REQUIRED)
+            CharacterType characterType
     ) {
 
     }
