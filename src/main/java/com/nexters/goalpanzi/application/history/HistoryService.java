@@ -15,6 +15,7 @@ import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationReposi
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +41,8 @@ public class HistoryService {
             final PageRequest pageRequest
     ) {
         // 1. 완료한 미션 참여 멤버 목록 조회
-        List<MissionMember> completedMissionMembers = getParticipatedMissionMembers(memberId, pageRequest);
+        var myCompletedMissionSlice = missionMemberRepository.findByMemberIdAndMissionStatus(memberId, MissionStatus.COMPLETED, pageRequest);
+        List<MissionMember> completedMissionMembers = getParticipatedMissionMembers(myCompletedMissionSlice);
         Map<Long, List<MissionMember>> missionMemberMap = completedMissionMembers.stream()
                 .collect(Collectors.groupingBy(missionMember -> missionMember.getMission().getId()));
 
@@ -50,9 +52,6 @@ public class HistoryService {
 
         // 3. 미션 별 인증 목록 조회
         Map<Long, List<MissionVerification>> missionVerificationMap = getMissionVerificationMap(memberId, completedMissionIds);
-
-        // 4. 완료한 미션 총 개수 조회
-        var totalCount = missionMemberRepository.countByMemberIdAndMissionStatus(memberId, MissionStatus.COMPLETED);
 
         var histories = missions.stream()
                 .filter(mission -> missionMemberMap.get(mission.getId()) != null)
@@ -66,7 +65,7 @@ public class HistoryService {
                 .toList();
 
         return new HistoryResponse.CompletedMissionWrapper(
-                totalCount,
+                myCompletedMissionSlice.hasNext(),
                 histories
         );
     }
@@ -96,16 +95,15 @@ public class HistoryService {
     ) {
         Mission mission = missionRepository.getMission(missionId);
         Member member = memberRepository.getMember(memberId);
-        var missionVerifications = missionVerificationRepository.findByMemberIdAndMissionId(memberId, missionId, pageRequest)
-                .stream()
+        var missionVerificationSlice = missionVerificationRepository.findByMemberIdAndMissionId(memberId, missionId, pageRequest);
+        var missionVerifications = missionVerificationSlice.stream()
                 .map(it -> new HistoryResponse.Verification(
                         it.getImageUrl(),
                         it.getCreatedAt()))
                 .toList();
-        long totalCount = missionVerificationRepository.countByMemberIdAndMissionId(memberId, missionId);
 
         return HistoryResponse.VerificationWrapper.builder()
-                .totalCount(totalCount)
+                .hasNext(missionVerificationSlice.hasNext())
                 .nickname(member.getNickname())
                 .missionId(mission.getId())
                 .description(mission.getDescription())
@@ -128,15 +126,8 @@ public class HistoryService {
                 .collect(Collectors.groupingBy(missionVerification -> missionVerification.getMission().getId()));
     }
 
-    private List<MissionMember> getParticipatedMissionMembers(final Long memberId, final PageRequest pageRequest) {
-        var myCompletedMissions = missionMemberRepository.findByMemberIdAndMissionStatus(
-                        memberId,
-                        MissionStatus.COMPLETED,
-                        pageRequest
-                ).stream()
-                .toList();
-
-        var missionIds = myCompletedMissions.stream()
+    private List<MissionMember> getParticipatedMissionMembers(Slice<MissionMember> completedMissions) {
+        var missionIds = completedMissions.stream()
                 .map(it -> it.getMission().getId())
                 .toList();
 

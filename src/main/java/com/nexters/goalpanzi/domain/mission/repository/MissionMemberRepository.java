@@ -5,6 +5,7 @@ import com.nexters.goalpanzi.domain.mission.MissionStatus;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -39,7 +40,7 @@ public interface MissionMemberRepository extends JpaRepository<MissionMember, Lo
 
     Optional<MissionMember> findTop1ByMemberIdOrderByUpdatedAtDesc(final Long memberId);
 
-    List<MissionMember> findByMemberIdAndMissionStatus(
+    Slice<MissionMember> findByMemberIdAndMissionStatus(
             final Long memberId,
             final MissionStatus status,
             final Pageable pageable
