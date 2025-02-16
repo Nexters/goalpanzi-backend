@@ -13,6 +13,8 @@ import java.util.Optional;
 
 public interface MissionRepository extends JpaRepository<Mission, Long> {
 
+    List<Mission> findAllByIdIn(List<Long> missionIds);
+
     Optional<Mission> findByInvitationCode(final InvitationCode invitationCode);
 
     List<Mission> findByMissionStartDateGreaterThanEqual(final LocalDateTime todayStart);

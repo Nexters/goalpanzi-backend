@@ -5,6 +5,7 @@ import com.nexters.goalpanzi.domain.mission.MissionStatus;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MissionMemberRepository extends JpaRepository<MissionMember, Long> {
+
+    @Query("SELECT mm FROM MissionMember mm JOIN FETCH mm.member WHERE mm.mission.id IN :missionIds")
+    List<MissionMember> findAllByMissionIdIn(final List<Long> missionIds);
+
     Optional<MissionMember> findByMemberIdAndMissionId(final Long memberId, final Long missionId);
 
     @Query("SELECT mm FROM MissionMember mm"
@@ -35,13 +40,11 @@ public interface MissionMemberRepository extends JpaRepository<MissionMember, Lo
 
     Optional<MissionMember> findTop1ByMemberIdOrderByUpdatedAtDesc(final Long memberId);
 
-    List<MissionMember> findByMemberIdAndMissionStatus(
+    Slice<MissionMember> findByMemberIdAndMissionStatus(
             final Long memberId,
             final MissionStatus status,
             final Pageable pageable
     );
-
-    long countByMemberIdAndMissionStatus(final Long memberId, final MissionStatus status);
 
     default MissionMember getMissionMember(final Long memberId, final Long missionId) {
         return findByMemberIdAndMissionId(memberId, missionId)

@@ -40,6 +40,7 @@ public enum ErrorCode {
     NOT_JOINED_MISSION_MEMBER("해당 미션에 참여하지 않았습니다."),
     EXCEED_MAX_PERSONNEL("미션 최대 인원을 초과했습니다. [%s]"),
     CAN_NOT_JOIN_MISSION("미션 참여가능 날짜가 아닙니다."),
+    NOT_FOUND_MISSION_MEMBER("미션에 참여한 회원이 존재하지 않습니다."),
 
     // MISSION VERIFICATION
     NOT_FOUND_VERIFICATION("존재하지 않는 미션 인증입니다."),
