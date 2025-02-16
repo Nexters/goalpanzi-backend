@@ -12,7 +12,6 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLRestriction;
 
 import java.util.Objects;
 
@@ -20,7 +19,6 @@ import java.util.Objects;
 @Table(name = "member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLRestriction("deleted_at is NULL")
 public class Member extends BaseEntity {
 
     @Id

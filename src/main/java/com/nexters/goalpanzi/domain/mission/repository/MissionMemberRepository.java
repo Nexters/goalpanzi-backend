@@ -46,8 +46,6 @@ public interface MissionMemberRepository extends JpaRepository<MissionMember, Lo
             final Pageable pageable
     );
 
-    long countByMemberIdAndMissionStatus(final Long memberId, final MissionStatus status);
-
     default MissionMember getMissionMember(final Long memberId, final Long missionId) {
         return findByMemberIdAndMissionId(memberId, missionId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_JOINED_MISSION_MEMBER));

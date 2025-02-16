@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -54,15 +56,14 @@ class HistoryServiceTest {
         Mission mission = MissionFixture.create();
 
         int VERIFICATION_COUNT = 1;
-        Long COMPLETED_MISSION_COUNT = 1L;
         MissionMember missionMember = new MissionMember(member, mission, VERIFICATION_COUNT);
         MissionVerification missionVerification = MissionVerificationFixture.create(mission, member, MissionFixture.UPLOADED_IMAGE_URL, mission.getBoardCount());
         ReflectionTestUtils.setField(mission, "id", 1L);
         ReflectionTestUtils.setField(member, "id", 1L);
-
-        when(missionRepository.findAllByIdInAndDeletedAtIsNull(any())).thenReturn(List.of(mission));
+        when(missionRepository.findAllByIdIn(any())).thenReturn(List.of(mission));
+        when(missionMemberRepository.findByMemberIdAndMissionStatus(any(),any(),any())).thenReturn(
+                new SliceImpl<>(List.of(missionMember),PageRequest.ofSize(1), false));
         when(missionMemberRepository.findAllByMissionIdIn(any())).thenReturn(List.of(missionMember));
-        when(missionMemberRepository.countByMemberIdAndMissionStatus(any(), eq(MissionStatus.COMPLETED))).thenReturn(COMPLETED_MISSION_COUNT);
         when(missionVerificationRepository.findByMemberIdAndMissionIdIn(any(), any())).thenReturn(List.of(missionVerification));
 
         // when
@@ -73,7 +74,7 @@ class HistoryServiceTest {
 
         // then
         assertAll(
-                () -> assertThat(actual.totalCount()).isEqualTo(COMPLETED_MISSION_COUNT),
+                () -> assertThat(actual.hasNext()).isEqualTo(false),
                 () -> assertThat(actual.resultList()).hasSize(1),
                 () -> assertThat(actual.resultList().getFirst().myVerificationCount()).isEqualTo(VERIFICATION_COUNT),
                 () -> assertThat(actual.resultList().getFirst().totalVerificationCount()).isEqualTo(mission.getBoardCount()),
