@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.application.mission;
 
-import com.nexters.goalpanzi.application.firebase.TopicGenerator;
+import com.nexters.goalpanzi.application.firebase.Topic;
 import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
 import com.nexters.goalpanzi.config.redis.RedisInitializer;
 import com.nexters.goalpanzi.domain.device.Device;
@@ -14,7 +14,7 @@ import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationViewRepository;
-import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageProxy;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -64,7 +64,7 @@ class MissionVerificationServiceTest {
     private MissionMemberRepository missionMemberRepository;
 
     @MockBean
-    private PushMessageSender pushMessageSender;
+    private PushMessageProxy pushMessageProxy;
 
     private final Long MISSION_ID = 1L;
 
@@ -91,11 +91,11 @@ class MissionVerificationServiceTest {
         Map<String, String> data = new HashMap<>();
         data.put("missionId", MISSION_ID.toString());
 
-        verify(pushMessageSender).sendGroupNotificationWithData(
+        verify(pushMessageProxy).sendGroupNotificationWithData(
                 MISSION_VERIFIED.getTitle(verifications.size()),
                 MISSION_VERIFIED.getBody(),
                 data,
-                TopicGenerator.getTopic(MISSION_ID)
+                Topic.generate(MISSION_ID)
         );
     }
 
@@ -114,11 +114,11 @@ class MissionVerificationServiceTest {
         Map<String, String> data = new HashMap<>();
         data.put("missionId", MISSION_ID.toString());
 
-        verify(pushMessageSender).sendGroupNotificationWithData(
+        verify(pushMessageProxy).sendGroupNotificationWithData(
                 MISSION_NO_ONE_VERIFIED.getTitle(),
                 MISSION_NO_ONE_VERIFIED.getBody(),
                 data,
-                TopicGenerator.getTopic(MISSION_ID)
+                Topic.generate(MISSION_ID)
         );
     }
 
@@ -154,7 +154,7 @@ class MissionVerificationServiceTest {
         Map<String, String> data = new HashMap<>();
         data.put("missionId", MISSION_ID.toString());
 
-        verify(pushMessageSender).sendIndividualNotificationWithData(
+        verify(pushMessageProxy).sendIndividualNotificationWithData(
                 MISSION_VERIFICATION_WARNING.getTitle(),
                 MISSION_VERIFICATION_WARNING.getBody(),
                 data,

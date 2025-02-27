@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.application.mission;
 
-import com.nexters.goalpanzi.application.firebase.TopicGenerator;
+import com.nexters.goalpanzi.application.firebase.Topic;
 import com.nexters.goalpanzi.application.mission.dto.response.MemberRankResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionDetailResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
@@ -18,7 +18,7 @@ import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.exception.AlreadyExistsException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
-import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageProxy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -45,7 +45,7 @@ public class MissionMemberService {
     private final DeviceRepository deviceRepository;
 
     private final ApplicationEventPublisher eventPublisher;
-    private final PushMessageSender pushMessageSender;
+    private final PushMessageProxy pushMessageProxy;
 
     public MissionDetailResponse getJoinableMission(final InvitationCode invitationCode) {
         missionValidator.validateJoinableMission(invitationCode);
@@ -162,11 +162,11 @@ public class MissionMemberService {
         List<Mission> missions = missionRepository.getReadyMissions();
         missions.forEach(mission -> {
             if (mission.isReadyTime(now) && missionValidator.hasEnoughMember(mission.getId())) {
-                String topic = TopicGenerator.getTopic(mission.getId());
+                String topic = Topic.generate(mission.getId());
                 Map<String, String> data = new HashMap<>();
                 data.put("missionId", mission.getId().toString());
 
-                pushMessageSender.sendGroupNotificationWithData(
+                pushMessageProxy.sendGroupNotificationWithData(
                         MISSION_READY.getTitle(),
                         MISSION_READY.getBody(),
                         data,
@@ -182,11 +182,11 @@ public class MissionMemberService {
         List<Mission> missions = missionRepository.getReadyMissions();
         missions.forEach(mission -> {
             if (mission.isReadyTime(now) && !missionValidator.hasEnoughMember(mission.getId())) {
-                String topic = TopicGenerator.getTopic(mission.getId());
+                String topic = Topic.generate(mission.getId());
                 Map<String, String> data = new HashMap<>();
                 data.put("missionId", mission.getId().toString());
 
-                pushMessageSender.sendGroupNotificationWithData(
+                pushMessageProxy.sendGroupNotificationWithData(
                         MISSION_CANCELLATION_WARNING.getTitle(),
                         MISSION_CANCELLATION_WARNING.getBody(),
                         data,

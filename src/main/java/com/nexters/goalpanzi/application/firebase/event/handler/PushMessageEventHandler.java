@@ -1,9 +1,9 @@
 package com.nexters.goalpanzi.application.firebase.event.handler;
 
-import com.nexters.goalpanzi.application.firebase.TopicGenerator;
+import com.nexters.goalpanzi.application.firebase.Topic;
 import com.nexters.goalpanzi.application.mission.event.CompleteMissionEvent;
 import com.nexters.goalpanzi.application.mission.event.JoinMissionEvent;
-import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageProxy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -22,7 +22,7 @@ import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_JOINED;
 @Component
 public class PushMessageEventHandler {
 
-    private final PushMessageSender pushMessageSender;
+    private final PushMessageProxy pushMessageProxy;
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -30,7 +30,7 @@ public class PushMessageEventHandler {
         Map<String, String> data = new HashMap<>();
         data.put("missionId", event.missionId().toString());
 
-        pushMessageSender.sendIndividualNotificationWithData(
+        pushMessageProxy.sendIndividualNotificationWithData(
                 MISSION_JOINED.getTitle(),
                 MISSION_JOINED.getBody(event.nickname()),
                 data,
@@ -42,11 +42,11 @@ public class PushMessageEventHandler {
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     void handleCompleteMissionEvent(final CompleteMissionEvent event) {
-        String topic = TopicGenerator.getTopic(event.missionId());
+        String topic = Topic.generate(event.missionId());
         Map<String, String> data = new HashMap<>();
         data.put("missionId", event.missionId().toString());
 
-        pushMessageSender.sendGroupNotificationWithData(
+        pushMessageProxy.sendGroupNotificationWithData(
                 MISSION_COMPLETED.getTitle(),
                 MISSION_COMPLETED.getBody(),
                 data,

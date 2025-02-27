@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.application.device;
 
-import com.nexters.goalpanzi.application.firebase.TopicGenerator;
+import com.nexters.goalpanzi.application.firebase.Topic;
 import com.nexters.goalpanzi.config.redis.RedisInitializer;
 import com.nexters.goalpanzi.domain.device.Device;
 import com.nexters.goalpanzi.domain.device.DeviceSubscription;
@@ -11,7 +11,7 @@ import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.MissionMember;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
-import com.nexters.goalpanzi.infrastructure.firebase.TopicSubscriber;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageProxy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ class DeviceSubscriptionServiceTest {
     private MissionMemberRepository missionMemberRepository;
 
     @MockBean
-    private TopicSubscriber topicSubscriber;
+    private PushMessageProxy pushMessageProxy;
 
     private static final Long MISSION_ID = 1L;
     private static final Long DEVICE_ID = 1L;
@@ -77,8 +77,8 @@ class DeviceSubscriptionServiceTest {
 
         deviceSubscriptionService.subscribeToMission(MEMBER_ID, MOCK_MISSION);
 
-        verify(topicSubscriber)
-                .subscribeToTopic(List.of(DEVICE_TOKEN), TopicGenerator.getTopic(MISSION_ID));
+        verify(pushMessageProxy)
+                .subscribeToTopic(List.of(DEVICE_TOKEN), Topic.generate(MISSION_ID));
     }
 
     @Test
@@ -90,8 +90,8 @@ class DeviceSubscriptionServiceTest {
 
         deviceSubscriptionService.subscribeToMission(MEMBER_ID, MOCK_MISSION);
 
-        verify(topicSubscriber)
-                .subscribeToTopic(List.of(), TopicGenerator.getTopic(MISSION_ID));
+        verify(pushMessageProxy)
+                .subscribeToTopic(List.of(), Topic.generate(MISSION_ID));
     }
 
     @Test
@@ -107,8 +107,8 @@ class DeviceSubscriptionServiceTest {
 
         deviceSubscriptionService.unsubscribeFromMission(MISSION_ID);
 
-        verify(topicSubscriber)
-                .unsubscribeFromTopic(List.of(DEVICE_TOKEN), TopicGenerator.getTopic(MISSION_ID));
+        verify(pushMessageProxy)
+                .unsubscribeFromTopic(List.of(DEVICE_TOKEN), Topic.generate(MISSION_ID));
     }
 
     @Test
@@ -127,8 +127,8 @@ class DeviceSubscriptionServiceTest {
 
         deviceSubscriptionService.unsubscribeFromDeletedMissionForHost(MEMBER_ID, MISSION_ID);
 
-        verify(topicSubscriber)
-                .unsubscribeFromTopic(List.of(DEVICE_TOKEN), TopicGenerator.getTopic(MISSION_ID));
+        verify(pushMessageProxy)
+                .unsubscribeFromTopic(List.of(DEVICE_TOKEN), Topic.generate(MISSION_ID));
     }
 
     @Test
@@ -164,10 +164,10 @@ class DeviceSubscriptionServiceTest {
 
         deviceSubscriptionService.subscribeToMyMissions(MEMBER_ID, DEVICE_IDENTIFIER);
 
-        verify(topicSubscriber)
-                .subscribeToTopic(List.of(DEVICE_TOKEN), TopicGenerator.getTopic(SUBSCRIBED_MISSION_ID));
-        verify(topicSubscriber)
-                .subscribeToTopic(List.of(DEVICE_TOKEN), TopicGenerator.getTopic(UNSUBSCRIBED_MISSION_ID));
+        verify(pushMessageProxy)
+                .subscribeToTopic(List.of(DEVICE_TOKEN), Topic.generate(SUBSCRIBED_MISSION_ID));
+        verify(pushMessageProxy)
+                .subscribeToTopic(List.of(DEVICE_TOKEN), Topic.generate(UNSUBSCRIBED_MISSION_ID));
     }
 
     @Test
@@ -188,7 +188,7 @@ class DeviceSubscriptionServiceTest {
 
         deviceSubscriptionService.unsubscribeFromMyMissions(MEMBER_ID, DEVICE_IDENTIFIER);
 
-        verify(topicSubscriber)
-                .unsubscribeFromTopic(List.of(DEVICE_TOKEN), TopicGenerator.getTopic(MISSION_ID));
+        verify(pushMessageProxy)
+                .unsubscribeFromTopic(List.of(DEVICE_TOKEN), Topic.generate(MISSION_ID));
     }
 }

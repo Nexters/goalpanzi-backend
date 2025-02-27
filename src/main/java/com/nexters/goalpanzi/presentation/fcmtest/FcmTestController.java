@@ -1,7 +1,6 @@
 package com.nexters.goalpanzi.presentation.fcmtest;
 
-import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
-import com.nexters.goalpanzi.infrastructure.firebase.TopicSubscriber;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageProxy;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,15 +21,14 @@ import java.util.Map;
 @RestController
 public class FcmTestController {
 
-    private final PushMessageSender pushMessageSender;
-    private final TopicSubscriber topicSubscriber;
+    private final PushMessageProxy pushMessageProxy;
 
     @Operation(summary = "개별 메시지 전송")
     @GetMapping("individual-message")
     ResponseEntity<Void> sendIndividualNotification(
             @Schema(description = "deviceToken", requiredMode = Schema.RequiredMode.REQUIRED)
             @RequestParam final String deviceToken) {
-        pushMessageSender.sendIndividualNotification("개별 메시지 테스트", deviceToken + "으로 개별 메시지를 전송합니다.", deviceToken);
+        pushMessageProxy.sendIndividualNotification("개별 메시지 테스트", deviceToken + "으로 개별 메시지를 전송합니다.", deviceToken);
 
         return ResponseEntity.ok().build();
     }
@@ -42,9 +40,9 @@ public class FcmTestController {
             @RequestParam final String deviceToken
     ) {
         String topic = "topic-test";
-        topicSubscriber.subscribeToTopic(List.of(deviceToken), topic);
-        pushMessageSender.sendGroupNotification("그룹 메시지 테스트", topic + "으로 그룹 메시지를 전송합니다.", topic);
-        topicSubscriber.unsubscribeFromTopic(List.of(deviceToken), topic);
+        pushMessageProxy.subscribeToTopic(List.of(deviceToken), topic);
+        pushMessageProxy.sendGroupNotification("그룹 메시지 테스트", topic + "으로 그룹 메시지를 전송합니다.", topic);
+        pushMessageProxy.unsubscribeFromTopic(List.of(deviceToken), topic);
 
         return ResponseEntity.ok().build();
     }
@@ -59,7 +57,7 @@ public class FcmTestController {
         data.put("title", "Data 타입 테스트");
         data.put("body", deviceToken);
         data.put("missionId", "1L");
-        pushMessageSender.sendIndividualData(data, deviceToken);
+        pushMessageProxy.sendIndividualData(data, deviceToken);
 
         return ResponseEntity.ok().build();
     }
@@ -72,7 +70,7 @@ public class FcmTestController {
     ) {
         Map<String, String> data = new HashMap<>();
         data.put("missionId", "1L");
-        pushMessageSender.sendIndividualNotificationWithData(
+        pushMessageProxy.sendIndividualNotificationWithData(
                 "혼합 메시지 테스트",
                 "혼합 메시지의 바디입니다.",
                 data,

@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.application.mission;
 
-import com.nexters.goalpanzi.application.firebase.TopicGenerator;
+import com.nexters.goalpanzi.application.firebase.Topic;
 import com.nexters.goalpanzi.application.mission.event.JoinMissionEvent;
 import com.nexters.goalpanzi.config.redis.RedisInitializer;
 import com.nexters.goalpanzi.domain.device.Device;
@@ -12,8 +12,7 @@ import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRetryMessageRepository;
-import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
-import com.nexters.goalpanzi.infrastructure.firebase.TopicSubscriber;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageProxy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,10 +67,7 @@ class MissionMemberServiceTest {
     private ApplicationEventPublisher eventPublisher;
 
     @MockBean
-    private PushMessageSender pushMessageSender;
-
-    @MockBean
-    private TopicSubscriber topicSubscriber;
+    private PushMessageProxy pushMessageProxy;
 
     private static Long MISSION_ID = 1L;
 
@@ -194,11 +190,11 @@ class MissionMemberServiceTest {
         Map<String, String> data = new HashMap<>();
         data.put("missionId", MISSION_ID.toString());
 
-        verify(pushMessageSender).sendGroupNotificationWithData(
+        verify(pushMessageProxy).sendGroupNotificationWithData(
                 MISSION_READY.getTitle(),
                 MISSION_READY.getBody(),
                 data,
-                TopicGenerator.getTopic(MISSION_ID)
+                Topic.generate(MISSION_ID)
         );
     }
 
@@ -217,11 +213,11 @@ class MissionMemberServiceTest {
         Map<String, String> data = new HashMap<>();
         data.put("missionId", MISSION_ID.toString());
 
-        verify(pushMessageSender).sendGroupNotificationWithData(
+        verify(pushMessageProxy).sendGroupNotificationWithData(
                 MISSION_CANCELLATION_WARNING.getTitle(),
                 MISSION_CANCELLATION_WARNING.getBody(),
                 data,
-                TopicGenerator.getTopic(MISSION_ID)
+                Topic.generate(MISSION_ID)
         );
     }
 }

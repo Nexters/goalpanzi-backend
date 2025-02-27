@@ -1,14 +1,14 @@
 package com.nexters.goalpanzi.application.mission.event.handler;
 
 import com.nexters.goalpanzi.application.device.DeviceSubscriptionService;
-import com.nexters.goalpanzi.application.firebase.TopicGenerator;
+import com.nexters.goalpanzi.application.firebase.Topic;
 import com.nexters.goalpanzi.application.member.event.DeleteMemberEvent;
 import com.nexters.goalpanzi.application.mission.MissionMemberService;
 import com.nexters.goalpanzi.application.mission.MissionRetryPushMessageService;
 import com.nexters.goalpanzi.application.mission.MissionVerificationService;
 import com.nexters.goalpanzi.application.mission.event.*;
 import com.nexters.goalpanzi.domain.mission.InvitationCode;
-import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageProxy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -33,7 +33,7 @@ public class MissionMemberEventHandler {
     private final MissionRetryPushMessageService missionRetryPushMessageService;
     private final DeviceSubscriptionService deviceSubscriptionService;
 
-    private final PushMessageSender pushMessageSender;
+    private final PushMessageProxy pushMessageProxy;
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     void handleCreateMissionEvent(final CreateMissionEvent event) {
@@ -57,12 +57,12 @@ public class MissionMemberEventHandler {
         missionMemberService.deleteAllByMissionId(event.missionId());
         missionVerificationService.deleteAllByMissionId(event.missionId());
 
-        String topic = TopicGenerator.getTopic(event.missionId());
+        String topic = Topic.generate(event.missionId());
         Map<String, String> data = new HashMap<>();
         data.put("missionId", event.missionId().toString());
 
         deviceSubscriptionService.unsubscribeFromDeletedMissionForHost(event.memberId(), event.missionId());
-        pushMessageSender.sendGroupNotificationWithData(
+        pushMessageProxy.sendGroupNotificationWithData(
                 MISSION_DELETED.getTitle(),
                 MISSION_DELETED.getBody(),
                 data,

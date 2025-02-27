@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.application.mission;
 
-import com.nexters.goalpanzi.application.firebase.TopicGenerator;
+import com.nexters.goalpanzi.application.firebase.Topic;
 import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionVerificationCommand;
 import com.nexters.goalpanzi.application.mission.dto.request.MissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificationQuery;
@@ -22,7 +22,7 @@ import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationReposi
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationViewRepository;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
-import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageProxy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -51,7 +51,7 @@ public class MissionVerificationService {
     private final DeviceRepository deviceRepository;
 
     private final ObjectStorageClient objectStorageClient;
-    private final PushMessageSender pushMessageSender;
+    private final PushMessageProxy pushMessageProxy;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     private final MissionVerificationValidator missionVerificationValidator;
@@ -144,11 +144,11 @@ public class MissionVerificationService {
     }
 
     private void sendVerifiedPushMessage(final Long missionId, final int verificationCount) {
-        String topic = TopicGenerator.getTopic(missionId);
+        String topic = Topic.generate(missionId);
         Map<String, String> data = new HashMap<>();
         data.put("missionId", missionId.toString());
 
-        pushMessageSender.sendGroupNotificationWithData(
+        pushMessageProxy.sendGroupNotificationWithData(
                 MISSION_VERIFIED.getTitle(verificationCount),
                 MISSION_VERIFIED.getBody(),
                 data,
@@ -157,11 +157,11 @@ public class MissionVerificationService {
     }
 
     private void sendNoOneVerifiedPushMessage(final Long missionId) {
-        String topic = TopicGenerator.getTopic(missionId);
+        String topic = Topic.generate(missionId);
         Map<String, String> data = new HashMap<>();
         data.put("missionId", missionId.toString());
 
-        pushMessageSender.sendGroupNotificationWithData(
+        pushMessageProxy.sendGroupNotificationWithData(
                 MISSION_NO_ONE_VERIFIED.getTitle(),
                 MISSION_NO_ONE_VERIFIED.getBody(),
                 data,
@@ -199,7 +199,7 @@ public class MissionVerificationService {
 
         devices.getActivatedDeviceTokens()
                 .forEach(deviceToken ->
-                        pushMessageSender.sendIndividualNotificationWithData(
+                        pushMessageProxy.sendIndividualNotificationWithData(
                                 MISSION_VERIFICATION_WARNING.getTitle(),
                                 MISSION_VERIFICATION_WARNING.getBody(),
                                 data,
