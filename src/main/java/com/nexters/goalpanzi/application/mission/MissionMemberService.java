@@ -7,6 +7,7 @@ import com.nexters.goalpanzi.application.mission.dto.response.MissionsResponse;
 import com.nexters.goalpanzi.application.mission.event.CancelMissionRetryPushMessageEvent;
 import com.nexters.goalpanzi.application.mission.event.JoinMissionEvent;
 import com.nexters.goalpanzi.application.mission.event.SubscribeToMissionEvent;
+import com.nexters.goalpanzi.common.time.TimeProvider;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.device.Devices;
 import com.nexters.goalpanzi.domain.device.repository.DeviceRepository;
@@ -37,6 +38,7 @@ import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_READY;
 @Service
 public class MissionMemberService {
 
+    private final TimeProvider timeProvider;
     private final MissionValidator missionValidator;
 
     private final MissionMemberRepository missionMemberRepository;
@@ -158,7 +160,7 @@ public class MissionMemberService {
 
     @Transactional
     public void sendReadyPushMessage() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = timeProvider.now();
         List<Mission> missions = missionRepository.getReadyMissions();
         missions.forEach(mission -> {
             if (mission.isReadyTime(now) && missionValidator.hasEnoughMember(mission.getId())) {
@@ -178,7 +180,7 @@ public class MissionMemberService {
 
     @Transactional
     public void sendCancellationWarningPushMessage() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = timeProvider.now();
         List<Mission> missions = missionRepository.getReadyMissions();
         missions.forEach(mission -> {
             if (mission.isReadyTime(now) && !missionValidator.hasEnoughMember(mission.getId())) {

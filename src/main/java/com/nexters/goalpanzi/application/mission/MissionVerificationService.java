@@ -10,6 +10,7 @@ import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificatio
 import com.nexters.goalpanzi.application.mission.event.CompleteMissionEvent;
 import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
 import com.nexters.goalpanzi.common.annotation.RedissonLock;
+import com.nexters.goalpanzi.common.time.TimeProvider;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.device.Devices;
 import com.nexters.goalpanzi.domain.device.repository.DeviceRepository;
@@ -29,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +54,7 @@ public class MissionVerificationService {
     private final PushMessageProxy pushMessageProxy;
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private final TimeProvider timeProvider;
     private final MissionVerificationValidator missionVerificationValidator;
     private final MissionVerificationResponseSorter missionVerificationResponseSorter;
 
@@ -126,7 +127,7 @@ public class MissionVerificationService {
     @Transactional
     public void sendVerificationPushMessage() {
         LocalDate today = LocalDate.now();
-        int hour = LocalDateTime.now().getHour();
+        int hour = timeProvider.getHour();
         List<Mission> missions = missionRepository.getInProgressMissions();
 
         missions.forEach(mission -> {
@@ -172,7 +173,7 @@ public class MissionVerificationService {
     @Transactional
     public void sendVerificationWarningPushMessage() {
         LocalDate today = LocalDate.now();
-        LocalTime time = LocalTime.now();
+        LocalTime time = timeProvider.now().toLocalTime();
         List<Mission> missions = missionRepository.getInProgressMissions();
 
         missions.forEach(mission -> {
