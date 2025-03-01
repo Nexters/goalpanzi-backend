@@ -183,9 +183,10 @@ public class DeviceSubscriptionService {
                 .flatMap(device -> findMySubscribedTopics(device.getId()).stream())
                 .toList();
 
-        topics.forEach(topic ->
-                pushMessageProxy.unsubscribeFromTopic(devices.getActivatedDeviceTokens(), topic)
-        );
+        topics.forEach(topic -> {
+            deviceSubscriptionRepository.deleteAllByMissionId(Topic.parse(topic));
+            pushMessageProxy.unsubscribeFromTopic(devices.getActivatedDeviceTokens(), topic);
+        });
 
         devices.getFilteredMemberIds(memberId)
                 .forEach(it ->

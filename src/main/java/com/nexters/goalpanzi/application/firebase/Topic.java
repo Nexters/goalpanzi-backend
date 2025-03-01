@@ -9,13 +9,12 @@ public class Topic {
 
     private final Long missionId;
 
-    public static String generate(Long missionId) {
+    public static String generate(final Long missionId) {
         return new Topic(missionId).toString();
     }
 
-    public String parse() {
-        return toString()
-                .replace(TOPIC_PREFIX, "");
+    public static long parse(final String topic) {
+        return Long.parseLong(topic.replace(TOPIC_PREFIX, ""));
     }
 
     @Override
