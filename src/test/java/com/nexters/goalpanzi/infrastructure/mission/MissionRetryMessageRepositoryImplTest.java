@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.infrastructure.mission;
 
-import com.nexters.goalpanzi.config.redis.RedisInitializer;
+import com.nexters.goalpanzi.config.RedisInitializer;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRetryMessageRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

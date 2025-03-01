@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.application.auth.apple;
 
-import com.nexters.goalpanzi.config.redis.RedisInitializer;
+import com.nexters.goalpanzi.config.RedisInitializer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

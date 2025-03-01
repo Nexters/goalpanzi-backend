@@ -1,5 +1,6 @@
-package com.nexters.goalpanzi.config.redisson;
+package com.nexters.goalpanzi.config;
 
+import com.nexters.goalpanzi.common.redisson.RedissonLockTestBean;
 import org.redisson.spring.starter.RedissonAutoConfigurationV2;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.TestConfiguration;

@@ -1,6 +1,7 @@
-package com.nexters.goalpanzi.config.redisson;
+package com.nexters.goalpanzi.common.redisson;
 
-import com.nexters.goalpanzi.config.redis.RedisInitializer;
+import com.nexters.goalpanzi.config.RedisInitializer;
+import com.nexters.goalpanzi.config.RedissonTestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

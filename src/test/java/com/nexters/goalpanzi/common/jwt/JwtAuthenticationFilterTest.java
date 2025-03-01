@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.config.jwt;
+package com.nexters.goalpanzi.common.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nexters.goalpanzi.common.auth.jwt.JwtParser;
