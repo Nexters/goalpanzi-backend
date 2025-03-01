@@ -1,25 +1,24 @@
 package com.nexters.goalpanzi.domain.mission.repository;
 
+import com.nexters.goalpanzi.common.support.IntegrationTest;
 import com.nexters.goalpanzi.domain.mission.InvitationCode;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.TimeOfDay;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.nexters.goalpanzi.fixture.MemberFixture.MEMBER_ID;
 import static com.nexters.goalpanzi.fixture.MissionFixture.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.assertj.core.api.BDDAssertions.then;
 
-@DataJpaTest
-class MissionRepositoryTest {
+class MissionRepositoryTest extends IntegrationTest {
 
     @Autowired
-    private MissionRepository missionRepository;
+    private MissionRepository sut;
 
     private final Mission READY_MISSION = Mission.create(
             MEMBER_ID,
@@ -52,31 +51,34 @@ class MissionRepositoryTest {
             InvitationCode.generate()
     );
 
+    @AfterEach
+    void tearDown() {
+        sut.deleteAllInBatch();
+    }
+
     @Test
     void 준비_상태의_미션을_조회한다() {
-        Mission readyMission = missionRepository.save(READY_MISSION);
-        Mission inProgressMission = missionRepository.save(IN_PROGRESS_MISSION);
-        Mission completedMission = missionRepository.save(COMPLETED_MISSION);
+        final Mission readyMission = sut.save(READY_MISSION);
+        final Mission inProgressMission = sut.save(IN_PROGRESS_MISSION);
+        final Mission completedMission = sut.save(COMPLETED_MISSION);
 
-        List<Mission> missions = missionRepository.getReadyMissions();
+        final List<Mission> actual = sut.getReadyMissions();
 
-        assertAll(
-                () -> assertThat(missions.size()).isEqualTo(1),
-                () -> assertThat(missions.get(0).getId()).isEqualTo(readyMission.getId())
-        );
+        then(actual)
+                .hasSize(1)
+                .containsExactly(readyMission);
     }
 
     @Test
     void 진행중인_미션을_조회한다() {
-        Mission readyMission = missionRepository.save(READY_MISSION);
-        Mission inProgressMission = missionRepository.save(IN_PROGRESS_MISSION);
-        Mission completedMission = missionRepository.save(COMPLETED_MISSION);
+        final Mission readyMission = sut.save(READY_MISSION);
+        final Mission inProgressMission = sut.save(IN_PROGRESS_MISSION);
+        final Mission completedMission = sut.save(COMPLETED_MISSION);
 
-        List<Mission> missions = missionRepository.getInProgressMissions();
+        final List<Mission> actual = sut.getInProgressMissions();
 
-        assertAll(
-                () -> assertThat(missions.size()).isEqualTo(1),
-                () -> assertThat(missions.get(0).getId()).isEqualTo(inProgressMission.getId())
-        );
+        then(actual)
+                .hasSize(1)
+                .containsExactly(inProgressMission);
     }
 }

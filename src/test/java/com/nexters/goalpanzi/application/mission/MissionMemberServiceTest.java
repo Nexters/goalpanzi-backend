@@ -2,66 +2,67 @@ package com.nexters.goalpanzi.application.mission;
 
 import com.nexters.goalpanzi.application.firebase.Topic;
 import com.nexters.goalpanzi.application.mission.event.JoinMissionEvent;
-import com.nexters.goalpanzi.config.redis.RedisInitializer;
+import com.nexters.goalpanzi.common.support.IntegrationTest;
+import com.nexters.goalpanzi.common.time.TimeProvider;
 import com.nexters.goalpanzi.domain.device.Device;
+import com.nexters.goalpanzi.domain.device.OsType;
 import com.nexters.goalpanzi.domain.device.repository.DeviceRepository;
 import com.nexters.goalpanzi.domain.member.Member;
+import com.nexters.goalpanzi.domain.member.SocialType;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.InvitationCode;
 import com.nexters.goalpanzi.domain.mission.Mission;
+import com.nexters.goalpanzi.domain.mission.MissionMember;
+import com.nexters.goalpanzi.domain.mission.TimeOfDay;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
-import com.nexters.goalpanzi.domain.mission.repository.MissionRetryMessageRepository;
 import com.nexters.goalpanzi.infrastructure.firebase.PushMessageProxy;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_CANCELLATION_WARNING;
 import static com.nexters.goalpanzi.domain.firebase.PushMessage.MISSION_READY;
+import static com.nexters.goalpanzi.fixture.DeviceFixture.DEVICE_IDENTIFIER;
 import static com.nexters.goalpanzi.fixture.DeviceFixture.DEVICE_TOKEN;
 import static com.nexters.goalpanzi.fixture.MemberFixture.*;
+import static com.nexters.goalpanzi.fixture.MissionFixture.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 
-@SpringBootTest
-@ContextConfiguration(
-        initializers = {RedisInitializer.class}
-)
-@MockBeans({
-        @MockBean(MissionRetryMessageRepository.class)
-})
-class MissionMemberServiceTest {
+class MissionMemberServiceTest extends IntegrationTest {
 
     @Autowired
-    private MissionMemberService missionMemberService;
+    private MissionMemberService sut;
 
     @MockBean
+    private TimeProvider timeProvider;
+
+    @Autowired
     private MissionValidator missionValidator;
 
-    @MockBean
-    private MissionMemberRepository missionMemberRepository;
-
-    @MockBean
-    private MissionRepository missionRepository;
-
-    @MockBean
+    @Autowired
     private MemberRepository memberRepository;
 
-    @MockBean
+    @Autowired
     private DeviceRepository deviceRepository;
+
+    @Autowired
+    private MissionRepository missionRepository;
+
+    @Autowired
+    private MissionMemberRepository missionMemberRepository;
 
     @MockBean
     private ApplicationEventPublisher eventPublisher;
@@ -69,155 +70,212 @@ class MissionMemberServiceTest {
     @MockBean
     private PushMessageProxy pushMessageProxy;
 
-    private static Long MISSION_ID = 1L;
-
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(
-                missionMemberService, "eventPublisher", eventPublisher
+                sut, "eventPublisher", eventPublisher
         );
     }
 
-    @Test
-    void 호스트가_아닌_멤버가_미션에_참여했을_때_JoinMissionEvent를_게시한다() {
-        InvitationCode INVITATION_CODE = InvitationCode.generate();
-        Long HOST_ID = MEMBER_ID + 1;
-
-        Member mockMember = mock(Member.class);
-        when(mockMember.getId()).thenReturn(MEMBER_ID);
-        when(mockMember.getNickname()).thenReturn(NICKNAME_MEMBER_A);
-
-        Member mockHostMember = mock(Member.class);
-        when(mockHostMember.getId()).thenReturn(HOST_ID);
-
-        Device mockDevice = mock(Device.class);
-        when(mockDevice.getDeviceToken()).thenReturn(DEVICE_TOKEN);
-        when(mockDevice.getPushActivationStatus()).thenReturn(true);
-
-        Mission mockMission = mock(Mission.class);
-        when(mockMission.getId()).thenReturn(MISSION_ID);
-        when(mockMission.getHostMemberId()).thenReturn(HOST_ID);
-        when(mockMission.isHostMember(MEMBER_ID)).thenReturn(false);
-
-        when(memberRepository.getMember(MEMBER_ID)).thenReturn(mockMember);
-        when(memberRepository.getMember(HOST_ID)).thenReturn(mockHostMember);
-        when(deviceRepository.findAllByMemberId(HOST_ID)).thenReturn(List.of(mockDevice));
-
-        when(missionRepository.findByInvitationCode(INVITATION_CODE)).thenReturn(Optional.of(mockMission));
-        when(missionMemberRepository.findByMemberIdAndMissionId(MEMBER_ID, MISSION_ID)).thenReturn(Optional.empty());
-
-        missionMemberService.joinMission(MEMBER_ID, INVITATION_CODE);
-
-        verify(eventPublisher).publishEvent(
-                eq(new JoinMissionEvent(MISSION_ID, DEVICE_TOKEN, NICKNAME_MEMBER_A))
-        );
+    @AfterEach
+    void tearDown() {
+        missionMemberRepository.deleteAllInBatch();
+        missionRepository.deleteAllInBatch();
+        deviceRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
     }
 
-    @Test
-    void 호스트가_아닌_멤버가_미션에_참여했더라도_호스트가_알림을_비활성화했다면_JoinMissionEvent를_게시하지_않는다() {
-        InvitationCode INVITATION_CODE = InvitationCode.generate();
-        Long HOST_ID = MEMBER_ID + 1;
+    @Nested
+    class joinMission {
 
-        Member mockMember = mock(Member.class);
-        when(mockMember.getId()).thenReturn(MEMBER_ID);
-        when(mockMember.getNickname()).thenReturn(NICKNAME_MEMBER_A);
+        @Nested
+        @DisplayName("호스트가 아닌 멤버가 미션에 참여하면")
+        class whenMemberJoinMission {
 
-        Member mockHostMember = mock(Member.class);
-        when(mockHostMember.getId()).thenReturn(HOST_ID);
+            @Nested
+            @DisplayName("푸시 알림을 활성화한 경우")
+            class whenPushNotificationActivated {
 
-        Device mockDevice = mock(Device.class);
-        when(mockDevice.getDeviceToken()).thenReturn(DEVICE_TOKEN);
-        when(mockDevice.getPushActivationStatus()).thenReturn(false);
+                @Transactional
+                @Test
+                void JoinMissionEvent를_게시한다() {
+                    final Member hostMember = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
+                    deviceRepository.save(new Device(hostMember, DEVICE_IDENTIFIER, DEVICE_TOKEN, OsType.AOS));
+                    final Member member = memberRepository.save(Member.socialLogin("socialId2", EMAIL_MEMBER_A, SocialType.GOOGLE));
+                    member.updateNickname(NICKNAME_MEMBER_A);
 
-        Mission mockMission = mock(Mission.class);
-        when(mockMission.getId()).thenReturn(MISSION_ID);
-        when(mockMission.getHostMemberId()).thenReturn(HOST_ID);
-        when(mockMission.isHostMember(MEMBER_ID)).thenReturn(false);
+                    final InvitationCode invitationCode = InvitationCode.generate();
+                    final Mission mission = missionRepository.save(Mission.create(
+                            hostMember.getId(),
+                            DESCRIPTION,
+                            LocalDateTime.now().minusDays(30),
+                            LocalDateTime.now().minusDays(1),
+                            TimeOfDay.EVERYDAY,
+                            WEEK,
+                            BOARD_COUNT,
+                            invitationCode
+                    ));
+                    missionMemberRepository.save(new MissionMember(hostMember, mission, 0));
 
-        when(memberRepository.getMember(MEMBER_ID)).thenReturn(mockMember);
-        when(memberRepository.getMember(HOST_ID)).thenReturn(mockHostMember);
-        when(deviceRepository.findAllByMemberId(HOST_ID)).thenReturn(List.of(mockDevice));
+                    sut.joinMission(member.getId(), invitationCode);
 
-        when(missionRepository.findByInvitationCode(INVITATION_CODE)).thenReturn(Optional.of(mockMission));
-        when(missionMemberRepository.findByMemberIdAndMissionId(MEMBER_ID, MISSION_ID)).thenReturn(Optional.empty());
+                    then(eventPublisher)
+                            .should()
+                            .publishEvent(eq(new JoinMissionEvent(mission.getId(), DEVICE_TOKEN, NICKNAME_MEMBER_A)));
+                }
+            }
 
-        missionMemberService.joinMission(MEMBER_ID, INVITATION_CODE);
+            @Nested
+            @DisplayName("푸시 알림을 비활성화한 경우")
+            class whenPushNotificationDeactivated {
 
-        verify(eventPublisher, times(0))
-                .publishEvent(any(JoinMissionEvent.class));
+                @Transactional
+                @Test
+                void JoinMissionEvent를_게시하지_않는다() {
+                    final Member hostMember = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
+                    final Device device = deviceRepository.save(new Device(hostMember, DEVICE_IDENTIFIER, DEVICE_TOKEN, OsType.AOS));
+                    device.updatePushActivationStatus(false);
+                    final Member member = memberRepository.save(Member.socialLogin("socialId2", EMAIL_MEMBER_A, SocialType.GOOGLE));
+                    member.updateNickname(NICKNAME_MEMBER_A);
+
+                    final InvitationCode invitationCode = InvitationCode.generate();
+                    final Mission mission = missionRepository.save(Mission.create(
+                            hostMember.getId(),
+                            DESCRIPTION,
+                            LocalDateTime.now().minusDays(30),
+                            LocalDateTime.now().minusDays(1),
+                            TimeOfDay.EVERYDAY,
+                            WEEK,
+                            BOARD_COUNT,
+                            invitationCode
+                    ));
+                    missionMemberRepository.save(new MissionMember(hostMember, mission, 0));
+
+                    sut.joinMission(member.getId(), invitationCode);
+
+                    then(eventPublisher)
+                            .should(never())
+                            .publishEvent(any(JoinMissionEvent.class));
+                }
+            }
+        }
+
+        @Nested
+        @DisplayName("호스트가 미션에 참여하면")
+        class whenHostJoinMission {
+
+            @Transactional
+            @Test
+            void JoinMissionEvent를_게시하지_않는다() {
+                final Member hostMember = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
+                final InvitationCode invitationCode = InvitationCode.generate();
+                final Mission mission = missionRepository.save(Mission.create(
+                        hostMember.getId(),
+                        DESCRIPTION,
+                        LocalDateTime.now().minusDays(30),
+                        LocalDateTime.now().minusDays(1),
+                        TimeOfDay.EVERYDAY,
+                        WEEK,
+                        BOARD_COUNT,
+                        invitationCode
+                ));
+
+                sut.joinMission(hostMember.getId(), invitationCode);
+
+                then(eventPublisher)
+                        .should(never())
+                        .publishEvent(any(JoinMissionEvent.class));
+            }
+        }
     }
 
-    @Test
-    void 호스트가_미션에_참여했을_때_JoinMissionEvent를_게시하지_않는다() {
-        InvitationCode INVITATION_CODE = InvitationCode.generate();
+    @Nested
+    class sendReadyPushMessage {
 
-        Member mockMember = mock(Member.class);
-        when(mockMember.getId()).thenReturn(MEMBER_ID);
-        when(mockMember.getNickname()).thenReturn(NICKNAME_HOST);
+        @Nested
+        @DisplayName("최소 인원을 채워 미션이 곧 시작될 예정이면")
+        class whenSatisfyMinimum {
 
-        Device mockDevice = mock(Device.class);
-        when(mockDevice.getDeviceToken()).thenReturn(DEVICE_TOKEN);
-        when(mockDevice.getPushActivationStatus()).thenReturn(true);
+            @Test
+            void MISSION_READY_푸시_알림을_전송한다() {
+                final LocalDateTime start = LocalDateTime.now();
+                final Member hostMember = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
+                deviceRepository.save(new Device(hostMember, DEVICE_IDENTIFIER, DEVICE_TOKEN, OsType.AOS));
+                final Member member = memberRepository.save(Member.socialLogin("socialId2", EMAIL_MEMBER_A, SocialType.GOOGLE));
 
-        Mission mockMission = mock(Mission.class);
-        when(mockMission.getId()).thenReturn(MISSION_ID);
-        when(mockMission.getHostMemberId()).thenReturn(MEMBER_ID);
-        when(mockMission.isHostMember(MEMBER_ID)).thenReturn(true);
+                final Mission mission = missionRepository.save(Mission.create(
+                        hostMember.getId(),
+                        DESCRIPTION,
+                        start,
+                        start.plusDays(30),
+                        TimeOfDay.EVERYDAY,
+                        WEEK,
+                        BOARD_COUNT,
+                        InvitationCode.generate()
+                ));
+                missionMemberRepository.saveAll(List.of(
+                        new MissionMember(hostMember, mission, 0),
+                        new MissionMember(member, mission, 0)
+                ));
 
-        when(memberRepository.getMember(MEMBER_ID)).thenReturn(mockMember);
+                given(timeProvider.now()).willReturn(start.toLocalDate().atStartOfDay().minusHours(1));
+                sut.sendReadyPushMessage();
 
-        when(missionRepository.findByInvitationCode(INVITATION_CODE)).thenReturn(Optional.of(mockMission));
-        when(missionMemberRepository.findByMemberIdAndMissionId(MEMBER_ID, MISSION_ID)).thenReturn(Optional.empty());
+                final Map<String, String> data = new HashMap<>();
+                data.put("missionId", mission.getId().toString());
 
-        missionMemberService.joinMission(MEMBER_ID, INVITATION_CODE);
-
-        verify(eventPublisher, times(0))
-                .publishEvent(any(JoinMissionEvent.class));
+                then(pushMessageProxy)
+                        .should()
+                        .sendGroupNotificationWithData(
+                                MISSION_READY.getTitle(),
+                                MISSION_READY.getBody(),
+                                data,
+                                Topic.generate(mission.getId())
+                        );
+            }
+        }
     }
 
-    @Test
-    void 최소_인원을_채워_미션이_곧_시작될_경우_MISSION_READY_푸시_알림을_보낸다() {
-        Mission mockMission = mock(Mission.class);
+    @Nested
+    class sendCancellationWarningPushMessage {
 
-        when(mockMission.isReadyTime(any(LocalDateTime.class))).thenReturn(true);
-        when(mockMission.getId()).thenReturn(MISSION_ID);
+        @Nested
+        @DisplayName("최소 인원을 채우지 못해 미션이 곧 삭제될 예정이면")
+        class whenNotSatisfyMinimum {
 
-        when(missionRepository.getReadyMissions()).thenReturn(List.of(mockMission));
-        when(missionValidator.hasEnoughMember(MISSION_ID)).thenReturn(true);
+            @Test
+            void MISSION_CANCELLATION_WARNING_푸시_알림을_전송한다() {
+                final LocalDateTime start = LocalDateTime.now();
+                final Member hostMember = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
+                deviceRepository.save(new Device(hostMember, DEVICE_IDENTIFIER, DEVICE_TOKEN, OsType.AOS));
 
-        missionMemberService.sendReadyPushMessage();
+                final Mission mission = missionRepository.save(Mission.create(
+                        hostMember.getId(),
+                        DESCRIPTION,
+                        start,
+                        start.plusDays(30),
+                        TimeOfDay.EVERYDAY,
+                        WEEK,
+                        BOARD_COUNT,
+                        InvitationCode.generate()
+                ));
+                missionMemberRepository.save(new MissionMember(hostMember, mission, 0));
 
-        Map<String, String> data = new HashMap<>();
-        data.put("missionId", MISSION_ID.toString());
+                given(timeProvider.now()).willReturn(start.toLocalDate().atStartOfDay().minusHours(1));
+                sut.sendCancellationWarningPushMessage();
 
-        verify(pushMessageProxy).sendGroupNotificationWithData(
-                MISSION_READY.getTitle(),
-                MISSION_READY.getBody(),
-                data,
-                Topic.generate(MISSION_ID)
-        );
-    }
+                final Map<String, String> data = new HashMap<>();
+                data.put("missionId", mission.getId().toString());
 
-    @Test
-    void 최소_인원을_채우지_못해_미션이_취소될_위험이_있는_경우_MISSION_CANCELLATION_WARNING_푸시_알림을_보낸다() {
-        Mission mockMission = mock(Mission.class);
-
-        when(mockMission.isReadyTime(any(LocalDateTime.class))).thenReturn(true);
-        when(mockMission.getId()).thenReturn(MISSION_ID);
-
-        when(missionRepository.getReadyMissions()).thenReturn(List.of(mockMission));
-        when(missionValidator.hasEnoughMember(MISSION_ID)).thenReturn(false);
-
-        missionMemberService.sendCancellationWarningPushMessage();
-
-        Map<String, String> data = new HashMap<>();
-        data.put("missionId", MISSION_ID.toString());
-
-        verify(pushMessageProxy).sendGroupNotificationWithData(
-                MISSION_CANCELLATION_WARNING.getTitle(),
-                MISSION_CANCELLATION_WARNING.getBody(),
-                data,
-                Topic.generate(MISSION_ID)
-        );
+                then(pushMessageProxy)
+                        .should()
+                        .sendGroupNotificationWithData(
+                                MISSION_CANCELLATION_WARNING.getTitle(),
+                                MISSION_CANCELLATION_WARNING.getBody(),
+                                data,
+                                Topic.generate(mission.getId())
+                        );
+            }
+        }
     }
 }

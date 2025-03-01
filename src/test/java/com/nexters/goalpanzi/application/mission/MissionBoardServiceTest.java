@@ -1,98 +1,84 @@
 package com.nexters.goalpanzi.application.mission;
 
 import com.nexters.goalpanzi.application.mission.dto.request.MissionBoardQuery;
+import com.nexters.goalpanzi.application.mission.dto.response.MissionBoardResponse;
 import com.nexters.goalpanzi.application.mission.dto.response.MissionBoardsResponse;
-import com.nexters.goalpanzi.config.redis.RedisInitializer;
+import com.nexters.goalpanzi.common.support.IntegrationTest;
 import com.nexters.goalpanzi.domain.member.Member;
+import com.nexters.goalpanzi.domain.member.SocialType;
 import com.nexters.goalpanzi.domain.member.repository.MemberRepository;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.MissionMember;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.fixture.MissionFixture;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.context.ContextConfiguration;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.nexters.goalpanzi.fixture.MemberFixture.EMAIL_HOST;
+import static org.assertj.core.api.BDDAssertions.then;
+import static org.assertj.core.api.BDDAssertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-@SpringBootTest
-@ContextConfiguration(
-        initializers = {RedisInitializer.class}
-)
-class MissionBoardServiceTest {
+class MissionBoardServiceTest extends IntegrationTest {
 
-    Member me;
-    List<Member> members;
+    @Autowired
+    MissionBoardService sut;
 
-    @MockBean
-    MissionRepository missionRepository;
-
-    @MockBean
-    MissionMemberRepository missionMemberRepository;
-
-    @MockBean
+    @Autowired
     MemberRepository memberRepository;
 
     @Autowired
-    MissionBoardService missionBoardService;
+    MissionRepository missionRepository;
 
-    @BeforeEach
-    void setUp() {
-        me = mock(Member.class);
-        when(me.getId()).thenReturn(1L);
+    @Autowired
+    MissionMemberRepository missionMemberRepository;
 
-        Member member1 = mock(Member.class);
-        when(member1.getId()).thenReturn(2L);
-
-        Member member2 = mock(Member.class);
-        when(member2.getId()).thenReturn(3L);
-
-        members = List.of(me, member1, member2);
+    @AfterEach
+    void tearDown() {
+        missionMemberRepository.deleteAllInBatch();
+        missionRepository.deleteAllInBatch();
+        memberRepository.deleteAllInBatch();
     }
 
     @Test
     void 보드판_정보를_조회한다() {
-        Mission mission = MissionFixture.create();
-        MissionMember missionMember1 = mock(MissionMember.class);
-        MissionMember missionMember2 = mock(MissionMember.class);
-        MissionMember missionMember3 = mock(MissionMember.class);
-        MissionBoardQuery query = new MissionBoardQuery(me.getId(), 1L, MissionBoardQuery.SortType.RANK, Sort.Direction.ASC);
+        final Member member1 = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
+        final Member member2 = memberRepository.save(Member.socialLogin("socialId2", EMAIL_HOST, SocialType.GOOGLE));
+        final Member member3 = memberRepository.save(Member.socialLogin("socialId3", EMAIL_HOST, SocialType.GOOGLE));
+        final Mission mission = missionRepository.save(MissionFixture.create());
+        final MissionMember missionMember1 = missionMemberRepository.save(new MissionMember(member1, mission, 1));
+        final MissionMember missionMember2 = missionMemberRepository.save(new MissionMember(member2, mission, 1));
+        final MissionMember missionMember3 = missionMemberRepository.save(new MissionMember(member3, mission, 2));
 
-        when(missionMember1.getVerificationCount()).thenReturn(1);
-        when(missionMember1.getMember()).thenReturn(members.get(0));
+        final MissionBoardQuery query =
+                new MissionBoardQuery(member1.getId(), 1L, MissionBoardQuery.SortType.RANK, Sort.Direction.ASC);
+        final MissionBoardsResponse actual = sut.getBoard(query);
 
-        when(missionMember2.getVerificationCount()).thenReturn(1);
-        when(missionMember2.getMember()).thenReturn(members.get(1));
-
-        when(missionMember3.getVerificationCount()).thenReturn(2);
-        when(missionMember3.getMember()).thenReturn(members.get(2));
-
-        when(memberRepository.getMember(me.getId())).thenReturn(me);
-
-        when(missionRepository.getMission(anyLong())).thenReturn(mission);
-
-        when(missionMemberRepository.findAllByMissionId(anyLong(), any())).thenReturn(List.of(missionMember1, missionMember2, missionMember3));
-
-        MissionBoardsResponse response = missionBoardService.getBoard(query);
         assertAll(
-                () -> assertThat(response.missionBoards().size()).isEqualTo(mission.getBoardCount() + 1),
-                () -> assertThat(response.rank()).isEqualTo(2),
-
-                () -> assertThat(response.missionBoards().get(1).isMyPosition()).isTrue(),
-                () -> assertThat(response.missionBoards().get(1).missionBoardMembers().size()).isEqualTo(2),
-                () -> assertThat(response.missionBoards().get(2).missionBoardMembers().size()).isEqualTo(1)
+                () -> then(actual.rank()).isEqualTo(2),
+                () -> then(actual.missionBoards())
+                        .hasSize(mission.getBoardCount() + 1)
+                        .extracting(
+                                MissionBoardResponse::number,
+                                MissionBoardResponse::isMyPosition,
+                                it -> it.missionBoardMembers().size()
+                        )
+                        .containsExactly(
+                                tuple(0, false, 0),
+                                tuple(1, true, 2),
+                                tuple(2, false, 1),
+                                tuple(3, false, 0),
+                                tuple(4, false, 0),
+                                tuple(5, false, 0),
+                                tuple(6, false, 0),
+                                tuple(7, false, 0),
+                                tuple(8, false, 0),
+                                tuple(9, false, 0),
+                                tuple(10, false, 0)
+                        )
         );
     }
 }
