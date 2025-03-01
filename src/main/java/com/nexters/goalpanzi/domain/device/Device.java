@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "device")
 @NoArgsConstructor
@@ -48,5 +50,17 @@ public class Device extends BaseEntity {
 
     public void updatePushActivationStatus(final boolean pushActivationStatus) {
         this.pushActivationStatus = pushActivationStatus;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Device that = (Device) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
     }
 }
