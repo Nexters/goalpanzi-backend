@@ -45,6 +45,7 @@ public class HistoryService {
         List<MissionMember> completedMissionMembers = getParticipatedMissionMembers(myCompletedMissionSlice);
         Map<Long, List<MissionMember>> missionMemberMap = completedMissionMembers.stream()
                 .collect(Collectors.groupingBy(missionMember -> missionMember.getMission().getId()));
+        var totalMissionCount = missionMemberRepository.countByMemberIdAndMissionStatus(memberId, MissionStatus.COMPLETED);
 
         // 2. 완료한 미션 목록 조회
         List<Long> completedMissionIds = getCompletedMissionIds(completedMissionMembers);
@@ -65,6 +66,7 @@ public class HistoryService {
                 .toList();
 
         return new HistoryResponse.CompletedMissionWrapper(
+                totalMissionCount,
                 myCompletedMissionSlice.hasNext(),
                 histories
         );

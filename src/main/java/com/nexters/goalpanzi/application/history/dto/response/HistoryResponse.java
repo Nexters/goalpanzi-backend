@@ -16,6 +16,8 @@ import java.util.List;
 public class HistoryResponse {
 
     public record CompletedMissionWrapper(
+            @Schema(description = "총 완료 미션 개수", requiredMode = Schema.RequiredMode.REQUIRED)
+            Long totalCount,
             @Schema(description = "다음 페이지 존재 여부", requiredMode = Schema.RequiredMode.REQUIRED)
             Boolean hasNext,
             @Schema(description = "내 미션 히스토리 목록", requiredMode = Schema.RequiredMode.REQUIRED)
