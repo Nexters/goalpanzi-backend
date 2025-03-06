@@ -40,10 +40,21 @@ public interface MissionMemberRepository extends JpaRepository<MissionMember, Lo
 
     Optional<MissionMember> findTop1ByMemberIdOrderByUpdatedAtDesc(final Long memberId);
 
+    @Query("""
+            SELECT mm
+            FROM MissionMember mm JOIN FETCH mm.mission m
+            WHERE mm.member.id =:memberId AND mm.missionStatus =:status
+            ORDER BY m.missionEndDate DESC
+            """)
     Slice<MissionMember> findByMemberIdAndMissionStatus(
             final Long memberId,
             final MissionStatus status,
             final Pageable pageable
+    );
+
+    Long countByMemberIdAndMissionStatus(
+            final Long memberId,
+            final MissionStatus status
     );
 
     default MissionMember getMissionMember(final Long memberId, final Long missionId) {
