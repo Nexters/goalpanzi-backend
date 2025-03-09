@@ -20,6 +20,7 @@ import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationViewRepository;
+import com.nexters.goalpanzi.exception.BadRequestException;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
 import com.nexters.goalpanzi.infrastructure.firebase.PushMessageProxy;
@@ -137,7 +138,7 @@ class MissionVerificationServiceTest extends IntegrationTest {
 
             @Test
             void NOT_FOUND_VERIFICATION_예외를_반환한다() {
-                final Member member = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
+                final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.GOOGLE));
                 final Mission mission = missionRepository.save(Mission.create(
                         member.getId(),
                         DESCRIPTION,
@@ -329,7 +330,7 @@ class MissionVerificationServiceTest extends IntegrationTest {
 
             @Test
             void 미션_인증한다() {
-                final Member member = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
+                final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.GOOGLE));
                 final Mission mission = missionRepository.save(Mission.create(
                         member.getId(),
                         DESCRIPTION,
@@ -357,26 +358,27 @@ class MissionVerificationServiceTest extends IntegrationTest {
 
             @Test
             void DUPLICATE_VERIFICATION_예외를_반환한다() {
-//                final Member member = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
-//                final Mission mission = missionRepository.save(Mission.create(
-//                        member.getId(),
-//                        DESCRIPTION,
-//                        LocalDateTime.now(),
-//                        LocalDateTime.now().plusDays(30),
-//                        TimeOfDay.EVERYDAY,
-//                        WEEK,
-//                        BOARD_COUNT,
-//                        InvitationCode.generate()
-//                ));
-//                missionMemberRepository.save(new MissionMember(member, mission, 1));
-//                missionVerificationRepository.save(new MissionVerification(member, mission, UPLOADED_IMAGE_URL, 1));
-//
-//                given(objectStorageClient.uploadFile(IMAGE_FILE)).willReturn(UPLOADED_IMAGE_URL);
-//
-//                thenThrownBy(() -> sut.createVerification(
-//                        new CreateMissionVerificationCommand(member.getId(), mission.getId(), IMAGE_FILE)))
-//                        .isInstanceOf(BadRequestException.class)
-//                        .hasMessage(ErrorCode.DUPLICATE_VERIFICATION.getMessage());
+                final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.GOOGLE));
+                final Mission mission = missionRepository.save(Mission.create(
+                        member.getId(),
+                        DESCRIPTION,
+                        LocalDateTime.now(),
+                        LocalDateTime.now().plusDays(30),
+                        TimeOfDay.EVERYDAY,
+                        WEEK,
+                        BOARD_COUNT,
+                        InvitationCode.generate()
+                ));
+                missionMemberRepository.save(new MissionMember(member, mission, 1));
+                missionVerificationRepository.save(new MissionVerification(member, mission, UPLOADED_IMAGE_URL, 1));
+
+                given(objectStorageClient.uploadFile(IMAGE_FILE)).willReturn(UPLOADED_IMAGE_URL);
+                given(timeProvider.now()).willReturn(LocalDateTime.now());
+
+                thenThrownBy(() -> sut.createVerification(
+                        new CreateMissionVerificationCommand(member.getId(), mission.getId(), IMAGE_FILE)))
+                        .isInstanceOf(BadRequestException.class)
+                        .hasMessage(ErrorCode.DUPLICATE_VERIFICATION.getMessage());
             }
         }
     }
@@ -390,7 +392,7 @@ class MissionVerificationServiceTest extends IntegrationTest {
 
             @Test
             void 미션_인증_내역을_확인한다() {
-                final Member member = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
+                final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.GOOGLE));
                 final Mission mission = missionRepository.save(Mission.create(
                         member.getId(),
                         DESCRIPTION,
@@ -416,7 +418,7 @@ class MissionVerificationServiceTest extends IntegrationTest {
 
             @Test
             void NOT_FOUND_VERIFICATION_예외를_반환한다() {
-                final Member member = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
+                final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.GOOGLE));
 
                 thenThrownBy(() -> sut.viewMissionVerification(new ViewMissionVerificationCommand(1L, member.getId())))
                         .isInstanceOf(NotFoundException.class)
@@ -525,7 +527,7 @@ class MissionVerificationServiceTest extends IntegrationTest {
             @Test
             void 푸시_알림을_전송하지_않는다() {
                 final LocalDateTime start = LocalDate.now().atStartOfDay();
-                final Member member = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
+                final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.GOOGLE));
                 final Mission mission = missionRepository.save(Mission.create(
                         member.getId(),
                         DESCRIPTION,
