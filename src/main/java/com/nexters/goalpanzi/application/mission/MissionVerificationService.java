@@ -126,12 +126,12 @@ public class MissionVerificationService {
 
     @Transactional
     public void sendVerificationPushMessage() {
-        LocalDate today = LocalDate.now();
+        LocalDate today = timeProvider.now().toLocalDate();
         int hour = timeProvider.getHour();
         List<Mission> missions = missionRepository.getInProgressMissions();
 
         missions.forEach(mission -> {
-            if (mission.isMissionDay() && mission.isVerificationStatusPushTime(hour)) {
+            if (mission.isMissionDay(today) && mission.isVerificationStatusPushTime(hour)) {
                 List<MissionVerification> verifications = missionVerificationRepository.findAllByMissionIdAndDate(mission.getId(), today);
                 int verificationCount = verifications.size();
 
@@ -172,12 +172,12 @@ public class MissionVerificationService {
 
     @Transactional
     public void sendVerificationWarningPushMessage() {
-        LocalDate today = LocalDate.now();
+        LocalDate today = timeProvider.now().toLocalDate();
         LocalTime time = timeProvider.now().toLocalTime();
         List<Mission> missions = missionRepository.getInProgressMissions();
 
         missions.forEach(mission -> {
-            if (mission.isMissionDay() && mission.isVerificationWarningPushTime(time)) {
+            if (mission.isMissionDay(today) && mission.isVerificationWarningPushTime(time)) {
                 List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(mission.getId());
 
                 missionMembers.forEach(missionMember -> {

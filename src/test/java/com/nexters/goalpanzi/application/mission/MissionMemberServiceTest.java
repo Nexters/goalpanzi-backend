@@ -117,6 +117,7 @@ class MissionMemberServiceTest extends IntegrationTest {
                     ));
                     missionMemberRepository.save(new MissionMember(hostMember, mission, 0));
 
+                    given(timeProvider.now()).willReturn(LocalDateTime.now());
                     sut.joinMission(member.getId(), invitationCode);
 
                     then(eventPublisher)
@@ -151,6 +152,7 @@ class MissionMemberServiceTest extends IntegrationTest {
                     ));
                     missionMemberRepository.save(new MissionMember(hostMember, mission, 0));
 
+                    given(timeProvider.now()).willReturn(LocalDateTime.now());
                     sut.joinMission(member.getId(), invitationCode);
 
                     then(eventPublisher)
@@ -179,6 +181,8 @@ class MissionMemberServiceTest extends IntegrationTest {
                         BOARD_COUNT,
                         invitationCode
                 ));
+
+                given(timeProvider.now()).willReturn(LocalDateTime.now());
 
                 sut.joinMission(hostMember.getId(), invitationCode);
 

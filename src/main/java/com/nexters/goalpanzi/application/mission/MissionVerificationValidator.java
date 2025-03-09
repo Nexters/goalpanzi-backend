@@ -1,5 +1,6 @@
 package com.nexters.goalpanzi.application.mission;
 
+import com.nexters.goalpanzi.common.time.TimeProvider;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.MissionMember;
 import com.nexters.goalpanzi.domain.mission.MissionVerification;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Slf4j // TODO 오류 확인 후 삭제
@@ -19,6 +21,7 @@ import java.util.Optional;
 public class MissionVerificationValidator {
 
     private final MissionVerificationRepository missionVerificationRepository;
+    private final TimeProvider timeProvider;
 
     public void validate(final MissionMember missionMember) {
         Mission mission = missionMember.getMission();
@@ -55,13 +58,14 @@ public class MissionVerificationValidator {
     }
 
     private void validateTime(final Mission mission) {
-        if (!mission.isMissionPeriod()) {
+        LocalDateTime now = timeProvider.now();
+        if (!mission.isMissionPeriod(now)) {
             throw new BadRequestException(ErrorCode.NOT_VERIFICATION_PERIOD);
         }
-        if (!mission.isMissionDay()) {
+        if (!mission.isMissionDay(now.toLocalDate())) {
             throw new BadRequestException(ErrorCode.NOT_VERIFICATION_DAY);
         }
-        if (!mission.isMissionTime()) {
+        if (!mission.isMissionTime(now.toLocalTime())) {
             throw new BadRequestException(ErrorCode.NOT_VERIFICATION_TIME);
         }
     }

@@ -58,9 +58,10 @@ public class MissionMemberService {
     public void joinMission(final Long memberId, final InvitationCode invitationCode) {
         Member member = memberRepository.getMember(memberId);
         Mission mission = getMissionByCode(invitationCode);
+        LocalDateTime now = timeProvider.now();
         validateAlreadyJoin(member, mission);
         missionValidator.validateMaxPersonnel(mission);
-        missionMemberRepository.save(MissionMember.join(member, mission));
+        missionMemberRepository.save(MissionMember.join(member, mission, now));
 
         sendJoinPushMessage(member, mission);
 
@@ -142,12 +143,13 @@ public class MissionMemberService {
 
     @Transactional
     public void batchUpdateStatus() {
+        LocalDateTime now = timeProvider.now();
         List<Mission> missions = missionRepository.findAll();
         missions.forEach(mission -> {
             List<MissionMember> missionMembers = missionMemberRepository.findAllWithMemberByMissionId(mission.getId());
             int memberCount = missionMembers.size();
             missionMembers.forEach(missionMember ->
-                    missionMember.updateMissionStatus(mission, memberCount)
+                    missionMember.updateMissionStatus(mission, memberCount, now)
             );
         });
     }

@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -341,6 +342,7 @@ class MissionVerificationServiceTest extends IntegrationTest {
                 ));
                 missionMemberRepository.save(new MissionMember(member, mission, 0));
 
+                given(timeProvider.now()).willReturn(LocalDateTime.now());
                 sut.createVerification(
                         new CreateMissionVerificationCommand(member.getId(), mission.getId(), IMAGE_FILE)
                 );
@@ -456,6 +458,7 @@ class MissionVerificationServiceTest extends IntegrationTest {
                     missionVerificationRepository.save(new MissionVerification(member, mission, UPLOADED_IMAGE_URL, 1));
 
                     given(timeProvider.getHour()).willReturn(15);
+                    given(timeProvider.now()).willReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(15, 0)));
                     sut.sendVerificationPushMessage();
 
                     final Map<String, String> data = new HashMap<>();
@@ -497,6 +500,7 @@ class MissionVerificationServiceTest extends IntegrationTest {
                     ));
 
                     given(timeProvider.getHour()).willReturn(15);
+                    given(timeProvider.now()).willReturn(LocalDateTime.of(LocalDate.now(), LocalTime.of(15, 0)));
                     sut.sendVerificationPushMessage();
 
                     final Map<String, String> data = new HashMap<>();
@@ -535,6 +539,7 @@ class MissionVerificationServiceTest extends IntegrationTest {
                 missionMemberRepository.save(new MissionMember(member, mission, 0));
 
                 given(timeProvider.getHour()).willReturn(12);
+                given(timeProvider.now()).willReturn(LocalDateTime.of(LocalDate.now(), LocalTime.NOON));
                 sut.sendVerificationPushMessage();
 
                 BDDMockito.then(pushMessageProxy)

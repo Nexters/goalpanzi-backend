@@ -52,7 +52,7 @@ class MissionMemberRepositoryTest extends IntegrationTest {
                         InvitationCode.generate()
                 )
         );
-        sut.save(MissionMember.join(member, mission));
+        sut.save(MissionMember.join(member, mission, LocalDateTime.now()));
 
         final MissionMember actual = sut.getMissionMemberWithMemberAndMission(member.getId(), mission.getId());
 
