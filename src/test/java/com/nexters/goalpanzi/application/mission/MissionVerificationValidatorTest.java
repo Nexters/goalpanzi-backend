@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -98,12 +97,13 @@ public class MissionVerificationValidatorTest extends IntegrationTest {
 
                 @Test
                 void DUPLICATE_VERIFICATION_예외를_반환한다() {
+                    final LocalDateTime now = LocalDateTime.now();
                     final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_MEMBER_A, SocialType.GOOGLE));
                     final Mission mission = missionRepository.save(Mission.create(
                             member.getId(),
                             DESCRIPTION,
-                            LocalDateTime.now(),
-                            LocalDateTime.now().plusDays(30),
+                            now,
+                            now.plusDays(30),
                             TimeOfDay.EVERYDAY,
                             WEEK,
                             BOARD_COUNT,
@@ -112,6 +112,7 @@ public class MissionVerificationValidatorTest extends IntegrationTest {
                     final MissionMember missionMember = missionMemberRepository.save(new MissionMember(member, mission, 1));
                     missionVerificationRepository.save(new MissionVerification(member, mission, UPLOADED_IMAGE_URL, 1));
 
+                    given(timeProvider.now()).willReturn(now);
                     thenThrownBy(() -> sut.validate(missionMember))
                             .isInstanceOf(BadRequestException.class)
                             .hasMessage(ErrorCode.DUPLICATE_VERIFICATION.getMessage());
@@ -199,12 +200,13 @@ public class MissionVerificationValidatorTest extends IntegrationTest {
 
                             @Test
                             void NOT_VERIFICATION_TIME_예외를_반환한다() {
+                                final LocalDateTime now = LocalDateTime.now();
                                 final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_MEMBER_A, SocialType.GOOGLE));
                                 final Mission mission = missionRepository.save(Mission.create(
                                         member.getId(),
                                         DESCRIPTION,
-                                        LocalDateTime.now(),
-                                        LocalDateTime.now().plusDays(30),
+                                        now,
+                                        now.plusDays(30),
                                         TimeOfDay.MORNING,
                                         WEEK,
                                         BOARD_COUNT,
@@ -212,7 +214,7 @@ public class MissionVerificationValidatorTest extends IntegrationTest {
                                 ));
                                 final MissionMember missionMember = missionMemberRepository.save(new MissionMember(member, mission, 1));
 
-                                given(timeProvider.now()).willReturn(LocalDateTime.of(LocalDate.now(), LocalTime.MAX));
+                                given(timeProvider.now()).willReturn(LocalDateTime.of(now.toLocalDate(), LocalTime.MAX));
                                 thenThrownBy(() -> sut.validate(missionMember))
                                         .isInstanceOf(BadRequestException.class)
                                         .hasMessage(ErrorCode.NOT_VERIFICATION_TIME.getMessage());
