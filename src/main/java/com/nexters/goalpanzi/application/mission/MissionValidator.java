@@ -1,5 +1,6 @@
 package com.nexters.goalpanzi.application.mission;
 
+import com.nexters.goalpanzi.common.time.TimeProvider;
 import com.nexters.goalpanzi.domain.mission.InvitationCode;
 import com.nexters.goalpanzi.domain.mission.Mission;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
@@ -10,6 +11,8 @@ import com.nexters.goalpanzi.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 import static com.nexters.goalpanzi.domain.mission.Mission.MAX_MISSION_MEMBER;
 import static com.nexters.goalpanzi.domain.mission.Mission.MIN_MISSION_MEMBER;
 
@@ -19,6 +22,7 @@ public class MissionValidator {
 
     private final MissionMemberRepository missionMemberRepository;
     private final MissionRepository missionRepository;
+    private final TimeProvider timeProvider;
 
     public void validateJoinableMission(final InvitationCode invitationCode) {
         Mission mission = missionRepository.findByInvitationCode(invitationCode)
@@ -34,7 +38,8 @@ public class MissionValidator {
     }
 
     public void validateMissionPeriod(final Mission mission) {
-        if (mission.isMissionPeriod() || mission.isExpired()) {
+        LocalDateTime now = timeProvider.now();
+        if (mission.isMissionPeriod(now) || mission.isExpired(now.toLocalDate())) {
             throw new BadRequestException(ErrorCode.CAN_NOT_JOIN_MISSION);
         }
     }

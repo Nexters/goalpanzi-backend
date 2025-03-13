@@ -1,6 +1,5 @@
 package com.nexters.goalpanzi.domain.mission;
 
-import com.nexters.goalpanzi.exception.BadRequestException;
 import com.nexters.goalpanzi.exception.BaseException;
 import lombok.Getter;
 
@@ -37,9 +36,9 @@ public enum MissionStatus {
     public static MissionStatus fromMission(
             final Mission mission,
             final Integer currentMemberCount,
-            final MissionMember missionMember
+            final MissionMember missionMember,
+            final LocalDateTime now
     ) {
-        LocalDateTime now = LocalDateTime.now();
         LocalDateTime missionStart = mission.getMissionUploadStartDateTime();
         LocalDateTime missionEnd = mission.getMissionUploadEndDateTime();
 
@@ -47,11 +46,11 @@ public enum MissionStatus {
             return CREATED;
         }
 
-        if (mission.isMissionPeriod() && currentMemberCount < MIN_MISSION_MEMBER) {
+        if (mission.isMissionPeriod(now) && currentMemberCount < MIN_MISSION_MEMBER) {
             return CANCELED;
         }
 
-        if (mission.isMissionPeriod() && currentMemberCount >= MIN_MISSION_MEMBER) {
+        if (mission.isMissionPeriod(now) && currentMemberCount >= MIN_MISSION_MEMBER) {
             return IN_PROGRESS;
         }
 

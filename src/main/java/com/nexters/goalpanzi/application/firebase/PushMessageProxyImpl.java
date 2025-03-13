@@ -3,15 +3,16 @@ package com.nexters.goalpanzi.application.firebase;
 import com.google.firebase.messaging.*;
 import com.nexters.goalpanzi.exception.BaseException;
 import com.nexters.goalpanzi.exception.ErrorCode;
-import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageProxy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 @Component
-public class PushMessageSenderImpl implements PushMessageSender {
+public class PushMessageProxyImpl implements PushMessageProxy {
 
     public void sendIndividualNotification(String title, String body, String token) {
         Notification notification = makeNotification(title, body);
@@ -89,6 +90,30 @@ public class PushMessageSenderImpl implements PushMessageSender {
             } else {
                 throw new BaseException(errorCode, e);
             }
+        }
+    }
+
+    public void subscribeToTopic(final List<String> registrationTokens, final String topic) {
+        if (registrationTokens.isEmpty()) {
+            return;
+        }
+
+        try {
+            FirebaseMessaging.getInstance().subscribeToTopic(registrationTokens, topic);
+        } catch (FirebaseMessagingException e) {
+            throw new BaseException(ErrorCode.FAILED_TO_SUBSCRIBE_TO_TOPIC);
+        }
+    }
+
+    public void unsubscribeFromTopic(final List<String> registrationTokens, final String topic) {
+        if (registrationTokens.isEmpty()) {
+            return;
+        }
+
+        try {
+            FirebaseMessaging.getInstance().unsubscribeFromTopic(registrationTokens, topic);
+        } catch (FirebaseMessagingException e) {
+            throw new BaseException(ErrorCode.FAILED_TO_UNSUBSCRIBE_FROM_TOPIC);
         }
     }
 }

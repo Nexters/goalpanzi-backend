@@ -1,7 +1,7 @@
 package com.nexters.goalpanzi.application.mission;
 
 import com.nexters.goalpanzi.domain.mission.repository.MissionRetryMessageRepository;
-import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageProxy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.TimeoutUtils;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class MissionRetryPushMessageService {
 
     private final MissionRetryMessageRepository missionRetryMessageRepository;
 
-    private final PushMessageSender pushMessageSender;
+    private final PushMessageProxy pushMessageProxy;
 
     @Transactional
     public void sendRetryPushMessage() {
@@ -28,7 +28,7 @@ public class MissionRetryPushMessageService {
         keys.forEach(key -> {
             String deviceToken = missionRetryMessageRepository.find(key);
             if (deviceToken != null) {
-                pushMessageSender.sendIndividualNotification(
+                pushMessageProxy.sendIndividualNotification(
                         MISSION_RETRY.getTitle(),
                         MISSION_RETRY.getBody(),
                         deviceToken

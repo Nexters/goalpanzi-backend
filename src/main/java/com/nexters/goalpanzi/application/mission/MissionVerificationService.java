@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.application.mission;
 
-import com.nexters.goalpanzi.application.firebase.TopicGenerator;
+import com.nexters.goalpanzi.application.firebase.Topic;
 import com.nexters.goalpanzi.application.mission.dto.request.CreateMissionVerificationCommand;
 import com.nexters.goalpanzi.application.mission.dto.request.MissionVerificationQuery;
 import com.nexters.goalpanzi.application.mission.dto.request.MyMissionVerificationQuery;
@@ -10,6 +10,7 @@ import com.nexters.goalpanzi.application.mission.dto.response.MissionVerificatio
 import com.nexters.goalpanzi.application.mission.event.CompleteMissionEvent;
 import com.nexters.goalpanzi.application.upload.ObjectStorageClient;
 import com.nexters.goalpanzi.common.annotation.RedissonLock;
+import com.nexters.goalpanzi.common.time.TimeProvider;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.device.Devices;
 import com.nexters.goalpanzi.domain.device.repository.DeviceRepository;
@@ -22,14 +23,13 @@ import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationReposi
 import com.nexters.goalpanzi.domain.mission.repository.MissionVerificationViewRepository;
 import com.nexters.goalpanzi.exception.ErrorCode;
 import com.nexters.goalpanzi.exception.NotFoundException;
-import com.nexters.goalpanzi.infrastructure.firebase.PushMessageSender;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageProxy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -51,9 +51,10 @@ public class MissionVerificationService {
     private final DeviceRepository deviceRepository;
 
     private final ObjectStorageClient objectStorageClient;
-    private final PushMessageSender pushMessageSender;
+    private final PushMessageProxy pushMessageProxy;
     private final ApplicationEventPublisher applicationEventPublisher;
 
+    private final TimeProvider timeProvider;
     private final MissionVerificationValidator missionVerificationValidator;
     private final MissionVerificationResponseSorter missionVerificationResponseSorter;
 
@@ -125,12 +126,12 @@ public class MissionVerificationService {
 
     @Transactional
     public void sendVerificationPushMessage() {
-        LocalDate today = LocalDate.now();
-        int hour = LocalDateTime.now().getHour();
+        LocalDate today = timeProvider.now().toLocalDate();
+        int hour = timeProvider.getHour();
         List<Mission> missions = missionRepository.getInProgressMissions();
 
         missions.forEach(mission -> {
-            if (mission.isMissionDay() && mission.isVerificationStatusPushTime(hour)) {
+            if (mission.isMissionDay(today) && mission.isVerificationStatusPushTime(hour)) {
                 List<MissionVerification> verifications = missionVerificationRepository.findAllByMissionIdAndDate(mission.getId(), today);
                 int verificationCount = verifications.size();
 
@@ -144,11 +145,11 @@ public class MissionVerificationService {
     }
 
     private void sendVerifiedPushMessage(final Long missionId, final int verificationCount) {
-        String topic = TopicGenerator.getTopic(missionId);
+        String topic = Topic.generate(missionId);
         Map<String, String> data = new HashMap<>();
         data.put("missionId", missionId.toString());
 
-        pushMessageSender.sendGroupNotificationWithData(
+        pushMessageProxy.sendGroupNotificationWithData(
                 MISSION_VERIFIED.getTitle(verificationCount),
                 MISSION_VERIFIED.getBody(),
                 data,
@@ -157,11 +158,11 @@ public class MissionVerificationService {
     }
 
     private void sendNoOneVerifiedPushMessage(final Long missionId) {
-        String topic = TopicGenerator.getTopic(missionId);
+        String topic = Topic.generate(missionId);
         Map<String, String> data = new HashMap<>();
         data.put("missionId", missionId.toString());
 
-        pushMessageSender.sendGroupNotificationWithData(
+        pushMessageProxy.sendGroupNotificationWithData(
                 MISSION_NO_ONE_VERIFIED.getTitle(),
                 MISSION_NO_ONE_VERIFIED.getBody(),
                 data,
@@ -171,12 +172,12 @@ public class MissionVerificationService {
 
     @Transactional
     public void sendVerificationWarningPushMessage() {
-        LocalDate today = LocalDate.now();
-        LocalTime time = LocalTime.now();
+        LocalDate today = timeProvider.now().toLocalDate();
+        LocalTime time = timeProvider.now().toLocalTime();
         List<Mission> missions = missionRepository.getInProgressMissions();
 
         missions.forEach(mission -> {
-            if (mission.isMissionDay() && mission.isVerificationWarningPushTime(time)) {
+            if (mission.isMissionDay(today) && mission.isVerificationWarningPushTime(time)) {
                 List<MissionMember> missionMembers = missionMemberRepository.findAllByMissionId(mission.getId());
 
                 missionMembers.forEach(missionMember -> {
@@ -199,7 +200,7 @@ public class MissionVerificationService {
 
         devices.getActivatedDeviceTokens()
                 .forEach(deviceToken ->
-                        pushMessageSender.sendIndividualNotificationWithData(
+                        pushMessageProxy.sendIndividualNotificationWithData(
                                 MISSION_VERIFICATION_WARNING.getTitle(),
                                 MISSION_VERIFICATION_WARNING.getBody(),
                                 data,

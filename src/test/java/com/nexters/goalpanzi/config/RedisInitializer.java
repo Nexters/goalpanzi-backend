@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.config.redis;
+package com.nexters.goalpanzi.config;
 
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;

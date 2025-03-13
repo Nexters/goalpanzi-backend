@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.acceptance;
 
-import com.nexters.goalpanzi.config.redis.RedisInitializer;
+import com.nexters.goalpanzi.config.RedisInitializer;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

@@ -3,22 +3,13 @@ package com.nexters.goalpanzi.domain.mission;
 import com.nexters.goalpanzi.domain.common.BaseEntity;
 import com.nexters.goalpanzi.domain.member.Member;
 import com.nexters.goalpanzi.exception.BadRequestException;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static com.nexters.goalpanzi.exception.ErrorCode.CAN_NOT_JOIN_MISSION;
@@ -61,8 +52,8 @@ public class MissionMember extends BaseEntity {
         this.missionStatus = MissionStatus.CREATED;
     }
 
-    public static MissionMember join(final Member member, final Mission mission) {
-        if (mission.isMissionPeriod()) {
+    public static MissionMember join(final Member member, final Mission mission, final LocalDateTime now) {
+        if (mission.isMissionPeriod(now)) {
             throw new BadRequestException(CAN_NOT_JOIN_MISSION);
         }
         return new MissionMember(member, mission, 0);
@@ -74,9 +65,10 @@ public class MissionMember extends BaseEntity {
 
     public void updateMissionStatus(
             final Mission mission,
-            final Integer currentMemberCount
+            final Integer currentMemberCount,
+            final LocalDateTime now
     ) {
-        missionStatus = MissionStatus.fromMission(mission, currentMemberCount, this);
+        missionStatus = MissionStatus.fromMission(mission, currentMemberCount, this, now);
     }
 
     public void checkCompleted() {

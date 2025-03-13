@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.config.redisson;
+package com.nexters.goalpanzi.common.redisson;
 
 import com.nexters.goalpanzi.common.annotation.RedissonLock;
 import org.springframework.transaction.annotation.Transactional;

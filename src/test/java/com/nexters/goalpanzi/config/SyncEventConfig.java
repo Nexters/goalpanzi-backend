@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.config.event;
+package com.nexters.goalpanzi.config;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.core.task.SyncTaskExecutor;

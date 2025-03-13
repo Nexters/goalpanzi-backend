@@ -76,7 +76,7 @@ class MissionTest {
                 BOARD_COUNT,
                 InvitationCode.generate()
         );
-        assertThat(mission.isExpired()).isTrue();
+        assertThat(mission.isExpired(LocalDate.now())).isTrue();
     }
 
     @Test
@@ -91,7 +91,7 @@ class MissionTest {
                 BOARD_COUNT,
                 InvitationCode.generate()
         );
-        assertThat(mission.isMissionDay()).isTrue();
+        assertThat(mission.isMissionDay(LocalDate.now())).isTrue();
     }
 
     @Test
@@ -109,7 +109,7 @@ class MissionTest {
                 BOARD_COUNT,
                 InvitationCode.generate()
         );
-        assertThat(mission.isMissionDay()).isFalse();
+        assertThat(mission.isMissionDay(LocalDate.now())).isFalse();
     }
 
     @Test
@@ -124,7 +124,7 @@ class MissionTest {
                 BOARD_COUNT,
                 InvitationCode.generate()
         );
-        assertThat(mission.isMissionTime()).isTrue();
+        assertThat(mission.isMissionTime(LocalTime.now())).isTrue();
     }
 
     @Test
@@ -141,7 +141,7 @@ class MissionTest {
                 BOARD_COUNT,
                 InvitationCode.generate()
         );
-        assertThat(mission.isMissionTime()).isFalse();
+        assertThat(mission.isMissionTime(LocalTime.now())).isFalse();
     }
 
     @Test

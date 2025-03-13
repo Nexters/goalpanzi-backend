@@ -10,9 +10,9 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 
-class TopicSubscriberImplTest {
+class PushMessageProxyImplTest {
 
-    private TopicSubscriberImpl topicSubscriber;
+    private PushMessageProxyImpl pushMessageProxy;
 
     @Mock
     private FirebaseMessaging firebaseMessaging;
@@ -21,7 +21,7 @@ class TopicSubscriberImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        topicSubscriber = new TopicSubscriberImpl();
+        pushMessageProxy = new PushMessageProxyImpl();
 
         mockStatic(FirebaseMessaging.class);
         when(FirebaseMessaging.getInstance()).thenReturn(firebaseMessaging);
@@ -29,8 +29,8 @@ class TopicSubscriberImplTest {
 
     @Test
     void 비어있는_토큰_리스트를_전달하는_경우_FirebaseMessaging을_호출하지_않는다() {
-        topicSubscriber.subscribeToTopic(List.of(), "topic");
-        topicSubscriber.unsubscribeFromTopic(List.of(), "topic");
+        pushMessageProxy.subscribeToTopic(List.of(), "topic");
+        pushMessageProxy.unsubscribeFromTopic(List.of(), "topic");
 
         verifyNoInteractions(firebaseMessaging);
     }

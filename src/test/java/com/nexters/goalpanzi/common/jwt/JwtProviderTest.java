@@ -1,4 +1,4 @@
-package com.nexters.goalpanzi.config.jwt;
+package com.nexters.goalpanzi.common.jwt;
 
 import com.nexters.goalpanzi.common.auth.jwt.Jwt;
 import com.nexters.goalpanzi.common.auth.jwt.JwtProvider;

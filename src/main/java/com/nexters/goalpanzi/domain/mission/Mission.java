@@ -116,35 +116,35 @@ public class Mission extends BaseEntity {
         }
     }
 
-    public boolean isMissionPeriod() {
+    public boolean isMissionPeriod(final LocalDateTime now) {
         LocalDateTime missionStart = getMissionUploadStartDateTime();
         LocalDateTime missionEnd = getMissionUploadEndDateTime();
 
-        LocalDateTime today = LocalDateTime.now();
-        return !today.isBefore(missionStart) && !today.isAfter(missionEnd);
+        return !now.isBefore(missionStart) && !now.isAfter(missionEnd);
     }
 
     /**
      * <b>오늘이 미션 인증 요일인지 검증</b>
      *
+     * @param today 오늘
      * @return 미션 인증 요일 여부
      */
-    public boolean isMissionDay() {
-        return this.missionDays.contains(DayOfWeek.valueOf(LocalDate.now().getDayOfWeek().name()));
+    public boolean isMissionDay(final LocalDate today) {
+        return this.missionDays.contains(DayOfWeek.from(today));
     }
 
     /**
      * <b>현재 시각이 미션 인증 시간인지 검증</b>
      *
+     * @param now 현재 시각
      * @return 미션 인증 시간 여부
      */
-    public boolean isMissionTime() {
-        String now = LocalTime.now().toString().substring(0, 5);
-        return now.compareTo(uploadStartTime) >= 0 && now.compareTo(uploadEndTime) <= 0;
+    public boolean isMissionTime(final LocalTime now) {
+        String time = now.toString().substring(0, 5);
+        return time.compareTo(uploadStartTime) >= 0 && time.compareTo(uploadEndTime) <= 0;
     }
 
-    public boolean isExpired() {
-        LocalDate today = LocalDate.now();
+    public boolean isExpired(final LocalDate today) {
         return today.isAfter(missionEndDate.toLocalDate());
     }
 

@@ -1,6 +1,6 @@
 package com.nexters.goalpanzi.application.device;
 
-import com.nexters.goalpanzi.application.firebase.TopicGenerator;
+import com.nexters.goalpanzi.application.firebase.Topic;
 import com.nexters.goalpanzi.application.mission.event.CancelMissionRetryPushMessageEvent;
 import com.nexters.goalpanzi.application.mission.event.ReserveMissionRetryPushMessageEvent;
 import com.nexters.goalpanzi.application.mission.event.UnsubscribeFromMissionEvent;
@@ -16,7 +16,7 @@ import com.nexters.goalpanzi.domain.mission.MissionMember;
 import com.nexters.goalpanzi.domain.mission.MissionStatus;
 import com.nexters.goalpanzi.domain.mission.repository.MissionMemberRepository;
 import com.nexters.goalpanzi.domain.mission.repository.MissionRepository;
-import com.nexters.goalpanzi.infrastructure.firebase.TopicSubscriber;
+import com.nexters.goalpanzi.infrastructure.firebase.PushMessageProxy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -38,7 +38,7 @@ public class DeviceSubscriptionService {
     private final MissionMemberRepository missionMemberRepository;
 
     private final ApplicationEventPublisher eventPublisher;
-    private final TopicSubscriber topicSubscriber;
+    private final PushMessageProxy pushMessageProxy;
 
     private static final List<MissionStatus> SUBSCRIBABLE_MISSION_STATUS
             = List.of(CREATED, IN_PROGRESS, PENDING_COMPLETION);
@@ -60,8 +60,8 @@ public class DeviceSubscriptionService {
                 .forEach(device ->
                         deviceSubscriptionRepository.save(new DeviceSubscription(device, mission))
                 );
-        topicSubscriber.subscribeToTopic(
-                devices.getActivatedDeviceTokens(), TopicGenerator.getTopic(mission.getId())
+        pushMessageProxy.subscribeToTopic(
+                devices.getActivatedDeviceTokens(), Topic.generate(mission.getId())
         );
     }
 
@@ -73,10 +73,10 @@ public class DeviceSubscriptionService {
      */
     @Transactional
     public void unsubscribeFromMission(final Long missionId) {
-        List<String> deviceTokens = findTopicSubscribers(missionId);
+        List<String> deviceTokens = findpushMessageProxys(missionId);
 
         deviceSubscriptionRepository.deleteAllByMissionId(missionId);
-        topicSubscriber.unsubscribeFromTopic(deviceTokens, TopicGenerator.getTopic(missionId));
+        pushMessageProxy.unsubscribeFromTopic(deviceTokens, Topic.generate(missionId));
     }
 
     /**
@@ -88,19 +88,19 @@ public class DeviceSubscriptionService {
      */
     @Transactional
     public void unsubscribeFromDeletedMissionForHost(final Long memberId, final Long missionId) {
-        String topic = TopicGenerator.getTopic(missionId);
+        String topic = Topic.generate(missionId);
         Devices devices = new Devices(
                 deviceRepository.findAllByMemberId(memberId)
         );
 
         deviceSubscriptionRepository.findAllWithDeviceByMissionIdAndDeviceIds(missionId, devices.getActivatedDeviceIds())
                 .forEach(it -> {
-                    topicSubscriber.unsubscribeFromTopic(List.of(it.getDevice().getDeviceToken()), topic);
+                    pushMessageProxy.unsubscribeFromTopic(List.of(it.getDevice().getDeviceToken()), topic);
                     deviceSubscriptionRepository.deleteById(it.getId());
                 });
     }
 
-    private List<String> findTopicSubscribers(final Long missionId) {
+    private List<String> findpushMessageProxys(final Long missionId) {
         List<DeviceSubscription> subscriptions = deviceSubscriptionRepository.findAllWithDeviceAndMissionByMissionId(missionId);
 
         return subscriptions.stream()
@@ -128,13 +128,13 @@ public class DeviceSubscriptionService {
         );
 
         topics.forEach(topic ->
-                topicSubscriber.subscribeToTopic(List.of(device.getDeviceToken()), topic)
+                pushMessageProxy.subscribeToTopic(List.of(device.getDeviceToken()), topic)
         );
         missions.forEach(mission -> {
             deviceSubscriptionRepository.save(new DeviceSubscription(device, mission));
 
-            String topic = TopicGenerator.getTopic(mission.getId());
-            topicSubscriber.subscribeToTopic(List.of(device.getDeviceToken()), topic);
+            String topic = Topic.generate(mission.getId());
+            pushMessageProxy.subscribeToTopic(List.of(device.getDeviceToken()), topic);
         });
     }
 
@@ -154,13 +154,13 @@ public class DeviceSubscriptionService {
         );
 
         topics.forEach(topic ->
-                topicSubscriber.subscribeToTopic(List.of(device.getDeviceToken()), topic)
+                pushMessageProxy.subscribeToTopic(List.of(device.getDeviceToken()), topic)
         );
         missions.forEach(mission -> {
             deviceSubscriptionRepository.save(new DeviceSubscription(device, mission));
 
-            String topic = TopicGenerator.getTopic(mission.getId());
-            topicSubscriber.subscribeToTopic(List.of(device.getDeviceToken()), topic);
+            String topic = Topic.generate(mission.getId());
+            pushMessageProxy.subscribeToTopic(List.of(device.getDeviceToken()), topic);
         });
         eventPublisher.publishEvent(
                 new UpdateMissionRetryPushMessageEvent(memberId, device.getDeviceToken())
@@ -183,9 +183,10 @@ public class DeviceSubscriptionService {
                 .flatMap(device -> findMySubscribedTopics(device.getId()).stream())
                 .toList();
 
-        topics.forEach(topic ->
-                topicSubscriber.unsubscribeFromTopic(devices.getActivatedDeviceTokens(), topic)
-        );
+        topics.forEach(topic -> {
+            deviceSubscriptionRepository.deleteAllByMissionId(Topic.parse(topic));
+            pushMessageProxy.unsubscribeFromTopic(devices.getActivatedDeviceTokens(), topic);
+        });
 
         devices.getFilteredMemberIds(memberId)
                 .forEach(it ->
@@ -208,7 +209,7 @@ public class DeviceSubscriptionService {
         List<String> topics = findMySubscribedTopics(deviceId);
 
         topics.forEach(topic ->
-                topicSubscriber.unsubscribeFromTopic(List.of(deviceToken), topic)
+                pushMessageProxy.unsubscribeFromTopic(List.of(deviceToken), topic)
         );
         eventPublisher.publishEvent(
                 new CancelMissionRetryPushMessageEvent(memberId)
@@ -219,7 +220,7 @@ public class DeviceSubscriptionService {
         List<DeviceSubscription> subscriptions = deviceSubscriptionRepository.findAllWithMissionAndDeviceByDeviceId(deviceId);
 
         return subscriptions.stream()
-                .map(it -> TopicGenerator.getTopic(it.getMission().getId()))
+                .map(it -> Topic.generate(it.getMission().getId()))
                 .toList();
     }
 
@@ -240,7 +241,7 @@ public class DeviceSubscriptionService {
     }
 
     private boolean isAlreadySubscribedMission(List<String> filter, final Long missionId) {
-        return filter.contains(TopicGenerator.getTopic(missionId));
+        return filter.contains(Topic.generate(missionId));
     }
 
     /**
