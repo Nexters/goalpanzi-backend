@@ -107,7 +107,8 @@ class MissionVerificationServiceTest extends IntegrationTest {
         class whenNumberFound {
 
             @Test
-            void 나의_미션_인증_내역을_조회한다() {
+            @DisplayName("나의 미션 인증 내역을 조회한다")
+            void shouldReturnMyVerification() {
                 final Member member = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
                 final Mission mission = missionRepository.save(Mission.create(
                         member.getId(),
@@ -137,7 +138,8 @@ class MissionVerificationServiceTest extends IntegrationTest {
         class whenNumberNotFound {
 
             @Test
-            void NOT_FOUND_VERIFICATION_예외를_반환한다() {
+            @DisplayName("NOT_FOUND_VERIFICATION 예외를 던진다")
+            void shouldThrowException() {
                 final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.GOOGLE));
                 final Mission mission = missionRepository.save(Mission.create(
                         member.getId(),
@@ -168,7 +170,8 @@ class MissionVerificationServiceTest extends IntegrationTest {
 
             @Transactional
             @Test
-            void 오늘_인증한_미션_인증_내역들을_조회한다() {
+            @DisplayName("오늘 인증한 미션 인증 내역들을 조회한다")
+            void shouldReturnVerifications() {
                 final Member hostMember = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
                 hostMember.updateNickname(NICKNAME_HOST);
                 final Member member = memberRepository.save(Member.socialLogin("socialId2", EMAIL_MEMBER_A, SocialType.GOOGLE));
@@ -209,7 +212,8 @@ class MissionVerificationServiceTest extends IntegrationTest {
 
             @Transactional
             @Test
-            void 해당_일자의_미션_인증_내역들을_조회한다() {
+            @DisplayName("해당 일자의 미션 인증 내역들을 조회한다")
+            void shouldReturnVerifications() {
                 final Member hostMember = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
                 hostMember.updateNickname(NICKNAME_HOST);
                 final Member member = memberRepository.save(Member.socialLogin("socialId2", EMAIL_MEMBER_A, SocialType.GOOGLE));
@@ -250,7 +254,8 @@ class MissionVerificationServiceTest extends IntegrationTest {
 
             @Transactional
             @Test
-            void 인증_시간_오름차순으로_인증_내역들을_조회한다() {
+            @DisplayName("인증 시간 오름차순으로 인증 내역들을 조회한다")
+            void shouldReturnSortedVerifications() {
                 final Member hostMember = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
                 hostMember.updateNickname(NICKNAME_HOST);
                 final Member member = memberRepository.save(Member.socialLogin("socialId2", EMAIL_MEMBER_A, SocialType.GOOGLE));
@@ -288,7 +293,8 @@ class MissionVerificationServiceTest extends IntegrationTest {
 
             @Transactional
             @Test
-            void 인증_시간_내림차순으로_인증_내역들을_조회한다() {
+            @DisplayName("인증 시간 내림차순으로 인증 내역들을 조회한다")
+            void shouldReturnSortedVerifications() {
                 final Member hostMember = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
                 hostMember.updateNickname(NICKNAME_HOST);
                 final Member member = memberRepository.save(Member.socialLogin("socialId2", EMAIL_MEMBER_A, SocialType.GOOGLE));
@@ -329,7 +335,8 @@ class MissionVerificationServiceTest extends IntegrationTest {
         class whenNotVerified {
 
             @Test
-            void 미션_인증한다() {
+            @DisplayName("미션을 인증한다")
+            void shouldVerify() {
                 final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.GOOGLE));
                 final Mission mission = missionRepository.save(Mission.create(
                         member.getId(),
@@ -357,7 +364,8 @@ class MissionVerificationServiceTest extends IntegrationTest {
         class whenVerified {
 
             @Test
-            void DUPLICATE_VERIFICATION_예외를_반환한다() {
+            @DisplayName("DUPLICATE_VERIFICATION 예외를 던진다")
+            void shouldThrowException() {
                 final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.GOOGLE));
                 final Mission mission = missionRepository.save(Mission.create(
                         member.getId(),
@@ -391,7 +399,8 @@ class MissionVerificationServiceTest extends IntegrationTest {
         class whenVerificationFound {
 
             @Test
-            void 미션_인증_내역을_확인한다() {
+            @DisplayName("미션 인증 내역을 확인한다")
+            void shouldView() {
                 final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.GOOGLE));
                 final Mission mission = missionRepository.save(Mission.create(
                         member.getId(),
@@ -417,7 +426,8 @@ class MissionVerificationServiceTest extends IntegrationTest {
         class whenVerificationNotFound {
 
             @Test
-            void NOT_FOUND_VERIFICATION_예외를_반환한다() {
+            @DisplayName("NOT_FOUND_VERIFICATION 예외를 던진다")
+            void shouldThrowException() {
                 final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.GOOGLE));
 
                 thenThrownBy(() -> sut.viewMissionVerification(new ViewMissionVerificationCommand(1L, member.getId())))
@@ -439,7 +449,8 @@ class MissionVerificationServiceTest extends IntegrationTest {
             class whenAnyOneVerified {
 
                 @Test
-                void MISSION_VERIFIED_푸시_알림을_전송한다() {
+                @DisplayName("MISSION_VERIFIED 푸시 알림을 전송한다")
+                void shouldSendPushNotification() {
                     final LocalDateTime start = LocalDate.now().atStartOfDay();
                     final Member hostMember = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
                     final Member member = memberRepository.save(Member.socialLogin("socialId2", EMAIL_MEMBER_A, SocialType.GOOGLE));
@@ -482,7 +493,8 @@ class MissionVerificationServiceTest extends IntegrationTest {
             class whenNoOneVerified {
 
                 @Test
-                void MISSION_NO_ONE_VERIFIED_푸시_알림을_전송한다() {
+                @DisplayName("MISSION_NO_ONE_VERIFIED 푸시 알림을 전송한다")
+                void shouldSendPushNotification() {
                     final LocalDateTime start = LocalDate.now().atStartOfDay();
                     final Member hostMember = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
                     final Member member = memberRepository.save(Member.socialLogin("socialId2", EMAIL_MEMBER_A, SocialType.GOOGLE));
@@ -525,7 +537,8 @@ class MissionVerificationServiceTest extends IntegrationTest {
         class whenNotPushTime {
 
             @Test
-            void 푸시_알림을_전송하지_않는다() {
+            @DisplayName("푸시 알림을 전송하지 않는다")
+            void shouldNotSendPushNotification() {
                 final LocalDateTime start = LocalDate.now().atStartOfDay();
                 final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_HOST, SocialType.GOOGLE));
                 final Mission mission = missionRepository.save(Mission.create(
@@ -563,7 +576,8 @@ class MissionVerificationServiceTest extends IntegrationTest {
             class whenPushTime {
 
                 @Test
-                void MISSION_VERIFICATION_WARNING_푸시_알림을_전송한다() {
+                @DisplayName("MISSION_VERIFICATION_WARNING 푸시 알림을 전송한다")
+                void shouldSendPushNotification() {
                     final LocalDateTime start = LocalDate.now().atStartOfDay();
                     final Member hostMember = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
                     deviceRepository.save(new Device(hostMember, DEVICE_IDENTIFIER, DEVICE_TOKEN, OsType.AOS));
@@ -603,7 +617,8 @@ class MissionVerificationServiceTest extends IntegrationTest {
             class whenNotPushTime {
 
                 @Test
-                void 푸시_알림을_전송하지_않는다() {
+                @DisplayName("푸시 알림을 전송하지 않는다")
+                void shouldNotSendPushNotification() {
                     final LocalDateTime start = LocalDate.now().atStartOfDay();
                     final Member hostMember = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
                     final Member member = memberRepository.save(Member.socialLogin("socialId2", EMAIL_MEMBER_A, SocialType.GOOGLE));

@@ -67,7 +67,8 @@ public class MissionVerificationValidatorTest extends IntegrationTest {
         class whenMissionCompleted {
 
             @Test
-            void ALREADY_COMPLETED_MISSION_예외를_반환한다() {
+            @DisplayName("ALREADY_COMPLETED_MISSION 예외를 던진다")
+            void shouldThrowException() {
                 final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_MEMBER_A, SocialType.GOOGLE));
                 final Mission mission = missionRepository.save(Mission.create(
                         member.getId(),
@@ -96,7 +97,8 @@ public class MissionVerificationValidatorTest extends IntegrationTest {
             class whenTryDuplicateVerification {
 
                 @Test
-                void DUPLICATE_VERIFICATION_예외를_반환한다() {
+                @DisplayName("DUPLICATE_VERIFICATION 예외를 던진다")
+                void shouldThrowException() {
                     final LocalDateTime now = LocalDateTime.now();
                     final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_MEMBER_A, SocialType.GOOGLE));
                     final Mission mission = missionRepository.save(Mission.create(
@@ -128,7 +130,8 @@ public class MissionVerificationValidatorTest extends IntegrationTest {
                 class whenNotMissionPeriod {
 
                     @Test
-                    void NOT_VERIFICATION_PERIOD_예외를_반환한다() {
+                    @DisplayName("NOT_VERIFICATION_PERIOD 예외를 던진다")
+                    void shouldThrowException() {
                         final LocalDateTime now = LocalDateTime.now();
                         final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_MEMBER_A, SocialType.GOOGLE));
                         final Mission mission = missionRepository.save(Mission.create(
@@ -159,7 +162,8 @@ public class MissionVerificationValidatorTest extends IntegrationTest {
                     class whenNotMissionDay {
 
                         @Test
-                        void NOT_VERIFICATION_DAY_예외를_반환한다() {
+                        @DisplayName("NOT_VERIFICATION_DAY 예외를 던진다")
+                        void shouldThrowException() {
                             final LocalDateTime now = LocalDateTime.now();
                             final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_MEMBER_A, SocialType.GOOGLE));
                             final Mission mission = missionRepository.save(Mission.create(
@@ -199,7 +203,8 @@ public class MissionVerificationValidatorTest extends IntegrationTest {
                         class whenNotMissionTime {
 
                             @Test
-                            void NOT_VERIFICATION_TIME_예외를_반환한다() {
+                            @DisplayName("NOT_VERIFICATION_TIME 예외를 던진다")
+                            void shouldThrowException() {
                                 final LocalDateTime now = LocalDateTime.now();
                                 final Member member = memberRepository.save(Member.socialLogin(SOCIAL_ID, EMAIL_MEMBER_A, SocialType.GOOGLE));
                                 final Mission mission = missionRepository.save(Mission.create(

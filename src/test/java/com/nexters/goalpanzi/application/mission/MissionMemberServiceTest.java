@@ -98,7 +98,8 @@ class MissionMemberServiceTest extends IntegrationTest {
 
                 @Transactional
                 @Test
-                void JoinMissionEvent를_게시한다() {
+                @DisplayName("JoinMissionEvent를_게시한다")
+                void shouldPublishEvent() {
                     final Member hostMember = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
                     deviceRepository.save(new Device(hostMember, DEVICE_IDENTIFIER, DEVICE_TOKEN, OsType.AOS));
                     final Member member = memberRepository.save(Member.socialLogin("socialId2", EMAIL_MEMBER_A, SocialType.GOOGLE));
@@ -132,7 +133,8 @@ class MissionMemberServiceTest extends IntegrationTest {
 
                 @Transactional
                 @Test
-                void JoinMissionEvent를_게시하지_않는다() {
+                @DisplayName("JoinMissionEvent를_게시하지_않는다")
+                void shouldNotPublishEvent() {
                     final Member hostMember = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
                     final Device device = deviceRepository.save(new Device(hostMember, DEVICE_IDENTIFIER, DEVICE_TOKEN, OsType.AOS));
                     device.updatePushActivationStatus(false);
@@ -168,7 +170,8 @@ class MissionMemberServiceTest extends IntegrationTest {
 
             @Transactional
             @Test
-            void JoinMissionEvent를_게시하지_않는다() {
+            @DisplayName("JoinMissionEvent를_게시하지_않는다")
+            void shouldNotPublishEvent() {
                 final Member hostMember = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
                 final InvitationCode invitationCode = InvitationCode.generate();
                 final Mission mission = missionRepository.save(Mission.create(
@@ -201,7 +204,8 @@ class MissionMemberServiceTest extends IntegrationTest {
         class whenSatisfyMinimum {
 
             @Test
-            void MISSION_READY_푸시_알림을_전송한다() {
+            @DisplayName("MISSION_READY_푸시_알림을_전송한다")
+            void shouldPublishEvent() {
                 final LocalDateTime start = LocalDateTime.now();
                 final Member hostMember = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
                 deviceRepository.save(new Device(hostMember, DEVICE_IDENTIFIER, DEVICE_TOKEN, OsType.AOS));
@@ -248,7 +252,8 @@ class MissionMemberServiceTest extends IntegrationTest {
         class whenNotSatisfyMinimum {
 
             @Test
-            void MISSION_CANCELLATION_WARNING_푸시_알림을_전송한다() {
+            @DisplayName("MISSION_CANCELLATION_WARNING_푸시_알림을_전송한다")
+            void shouldPublishEvent() {
                 final LocalDateTime start = LocalDateTime.now();
                 final Member hostMember = memberRepository.save(Member.socialLogin("socialId1", EMAIL_HOST, SocialType.GOOGLE));
                 deviceRepository.save(new Device(hostMember, DEVICE_IDENTIFIER, DEVICE_TOKEN, OsType.AOS));
