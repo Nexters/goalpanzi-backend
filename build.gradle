@@ -66,6 +66,10 @@ dependencies {
     // redisson
     implementation 'org.redisson:redisson-spring-boot-starter:3.38.1'
 
+    // aws
+    implementation 'com.amazonaws:aws-java-sdk-s3'
+    implementation 'com.amazonaws.serverless:aws-serverless-java-container-springboot3:2.1.2'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -73,6 +77,10 @@ dependencies {
     testImplementation 'io.rest-assured:rest-assured'
     testImplementation "org.testcontainers:testcontainers:1.19.0"
     testImplementation "org.testcontainers:junit-jupiter:1.19.0"
+}
+
+bootJar {
+    exclude("org/springframework/boot/**/spring-boot-starter-tomcat*")
 }
 
 tasks.named('test') {
