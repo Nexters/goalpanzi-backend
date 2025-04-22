@@ -2,7 +2,7 @@ resource "aws_elasticache_cluster" "redis" {
   cluster_id           = "goalpanzi-redis"
   engine               = "redis"
   engine_version       = "7.1"
-  node_type            = "cache.t4g.micro"
+  node_type            = "cache.t2.micro"
   num_cache_nodes      = 1
   port                 = var.redis_port
   parameter_group_name = "default.redis7"

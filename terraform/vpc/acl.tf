@@ -13,6 +13,15 @@ resource "aws_network_acl" "public" {
 
   # inbound
   ingress {
+    rule_no    = 100
+    action     = "allow"
+    protocol   = "tcp"
+    from_port  = var.ssh_port
+    to_port    = var.ssh_port
+    cidr_block = "0.0.0.0/0"
+  }
+
+  ingress {
     rule_no    = 110
     action     = "allow"
     protocol   = "tcp"
@@ -27,6 +36,33 @@ resource "aws_network_acl" "public" {
     protocol   = "tcp"
     from_port  = var.redis_port
     to_port    = var.redis_port
+    cidr_block = "0.0.0.0/0"
+  }
+
+  ingress {
+    rule_no    = 130
+    action     = "allow"
+    protocol   = "tcp"
+    from_port  = 80
+    to_port    = 80
+    cidr_block = "0.0.0.0/0"
+  }
+
+  ingress {
+    rule_no    = 140
+    action     = "allow"
+    protocol   = "tcp"
+    from_port  = 443
+    to_port    = 443
+    cidr_block = "0.0.0.0/0"
+  }
+
+  ingress {
+    rule_no    = 200
+    action     = "allow"
+    protocol   = "tcp"
+    from_port  = 1024
+    to_port    = 65535
     cidr_block = "0.0.0.0/0"
   }
 }

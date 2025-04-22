@@ -15,6 +15,12 @@ variable "secret_key" {
   description = "AWS secret key"
 }
 
+# SSH
+variable "ssh_port" {
+  sensitive   = true
+  description = "SSH port"
+}
+
 # RDS
 variable "mysql_db_name" {
   sensitive   = true

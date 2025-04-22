@@ -1,5 +1,9 @@
+locals {
+  rds_mysql_sg_name = "goalpanzi-mysql-sg"
+}
+
 resource "aws_security_group" "mysql_sg" {
-  name   = "goalpanzi-mysql-sg"
+  name   = local.rds_mysql_sg_name
   vpc_id = var.vpc_id
 
   # outbound
@@ -19,6 +23,6 @@ resource "aws_security_group" "mysql_sg" {
   }
 
   tags = {
-    Name = "goalpanzi-mysql-sg"
+    Name = local.rds_mysql_sg_name
   }
 }

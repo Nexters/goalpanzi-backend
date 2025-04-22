@@ -10,8 +10,8 @@ variable "azs" {
   description = "The List of Availability Zone"
 }
 
-variable "mysql_port" {
-}
+variable "ssh_port" {}
 
-variable "redis_port" {
-}
+variable "mysql_port" {}
+
+variable "redis_port" {}

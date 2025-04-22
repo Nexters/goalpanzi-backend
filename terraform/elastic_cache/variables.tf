@@ -1,8 +1,5 @@
-variable "redis_port" {
-}
+variable "redis_port" {}
 
-variable "vpc_id" {
-}
+variable "vpc_id" {}
 
-variable "private_subnet_ids" {
-}
+variable "private_subnet_ids" {}

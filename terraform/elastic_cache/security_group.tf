@@ -1,5 +1,9 @@
+locals {
+  elasticcache_redis_sg = "goalpanzi-redis-sg"
+}
+
 resource "aws_security_group" "redis_sg" {
-  name   = "goalpanzi-redis-sg"
+  name   = local.elasticcache_redis_sg
   vpc_id = var.vpc_id
 
   # outbound
@@ -19,6 +23,6 @@ resource "aws_security_group" "redis_sg" {
   }
 
   tags = {
-    Name = "goalpanzi-redis-sg"
+    Name = local.elasticcache_redis_sg
   }
 }

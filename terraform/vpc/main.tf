@@ -1,11 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "5.54.1"
-    }
-  }
-}
 resource "aws_vpc" "vpc" {
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
@@ -21,13 +13,5 @@ resource "aws_internet_gateway" "igw" {
 
   tags = {
     Name = "goalpanzi-igw"
-  }
-}
-
-resource "aws_eip" "nat" {
-  domain = "vpc"
-
-  tags = {
-    Name = "goalpanzi-nat-eip"
   }
 }

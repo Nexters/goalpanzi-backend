@@ -25,8 +25,18 @@ module "budget" {
 
 module "vpc" {
   source     = "./vpc"
+  ssh_port   = var.ssh_port
   mysql_port = var.mysql_port
   redis_port = var.redis_port
+}
+
+module "ec2" {
+  source           = "./ec2"
+  ssh_port         = var.ssh_port
+  vpc_id           = module.vpc.vpc_id
+  public_subnet_id = module.vpc.public_subnet_id
+  mysql_port       = var.mysql_port
+  redis_port       = var.redis_port
 }
 
 module "s3" {
@@ -48,9 +58,4 @@ module "elastic_cache" {
   vpc_id             = module.vpc.vpc_id
   private_subnet_ids = module.vpc.private_subnet_ids
   redis_port         = var.redis_port
-}
-
-module "lambda" {
-  source = "./lambda"
-  vpc_id = module.vpc.vpc_id
 }
