@@ -5,8 +5,32 @@ on:
     branches:
       - main
       - develop
+      - feat/#123-aws-migration # TODO: 추후 삭제
+#    TODO: 추후 활성화
+#    paths:
+#      - "src/**"
+#      - "build.gradle"
+#      - "docker*"
 
 jobs:
+  copy-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Copy files to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.AWS_API_INSTANCE_HOST }}
+          port: ${{ secrets.AWS_API_INSTANCE_SSH_PORT }}
+          username: ${{ secrets.AWS_API_INSTANCE_USERNAME }}
+          key: ${{ secrets.AWS_API_INSTANCE_KEY }}
+          source: scripts/*,nginx/*
+          target: .
+          strip_components: 1
+          overwrite: true
+
   build-and-push:
     runs-on: ubuntu-latest
     steps:
@@ -37,49 +61,72 @@ jobs:
       - name: Set up Docker Build
         uses: docker/setup-buildx-action@v2
 
-      - name: Docker build and push to NCP container registry
-        run: |
-          sudo docker build --build-arg DEPENDENCY=build/dependency -t ${{ secrets.NCP_CONTAINER_REGISTRY_API }}/goalpanzi-api --platform linux/amd64 .
-          sudo docker login ${{ secrets.NCP_CONTAINER_REGISTRY_API }} -u ${{ secrets.NCP_ACCESS_KEY }} -p ${{ secrets.NCP_SECRET_KEY }}
-          sudo docker push ${{ secrets.NCP_CONTAINER_REGISTRY_API }}/goalpanzi-api
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
 
-          sshpass -p ${{ secrets.API_SERVER_PASSWORD }} scp -P ${{ secrets.SSH_PORT }} -o StrictHostKeyChecking=no ./docker-compose.yml ${{ secrets.API_SERVER_USERNAME }}@${{ secrets.API_SERVER_HOST }}:${{ secrets.DOCKER_COMPOSE_PATH }}
-        shell: bash
+      - name: Docker build and upload to S3
+        run: |
+          sudo docker build --build-arg DEPENDENCY=build/dependency -t goalpanzi-api --platform linux/amd64 .
+          sudo docker save goalpanzi-api | gzip > goalpanzi-api.tar.gz
+          
+          aws s3 cp goalpanzi-api.tar.gz s3://${{ secrets.AWS_S3_BUCKET_NAME }}/docker/images/goalpanzi-api.tar.gz
+          aws s3 cp ./docker-compose.yml s3://${{ secrets.AWS_S3_BUCKET_NAME }}/docker/docker-compose.yml
 
   deploy-to-server:
-    name: Connect api server ssh and pull from container registry
-    needs: build-and-push
+    needs:
+      - copy-files
+      - build-and-push
     runs-on: ubuntu-latest
     steps:
-      ## docker compose up
-      - name: Deploy to api server
+      # TODO: 추후 슬랙 웹훅 주석 처리 해제
+      - name: Deploy api server to EC2
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.API_SERVER_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.API_SERVER_USERNAME }}
-          password: ${{ secrets.API_SERVER_PASSWORD }}
+          host: ${{ secrets.AWS_API_INSTANCE_HOST }}
+          port: ${{ secrets.AWS_API_INSTANCE_SSH_PORT }}
+          username: ${{ secrets.AWS_API_INSTANCE_USERNAME }}
+          key: ${{ secrets.AWS_API_INSTANCE_KEY }}
           script: |
-            export DB_HOSTNAME=${{ secrets.DB_HOSTNAME }}
-            export DB_PORT=${{ secrets.DB_PORT }}
-            export DB_DATABASE=${{ secrets.DB_DATABASE }}
-            export DB_USERNAME=${{ secrets.DB_USERNAME }}
-            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            export OAUTH_APPLE_CLIENT_ID=${{ secrets.OAUTH_APPLE_CLIENT_ID }}
-            export NCP_CONTAINER_REGISTRY_API=${{ secrets.NCP_CONTAINER_REGISTRY_API }}
-            export NCP_CONTAINER_REGISTRY_BATCH=${{ secrets.NCP_CONTAINER_REGISTRY_BATCH }}
-            export JWT_SECRET=${{ secrets.JWT_SECRET }}
-            export REDIS_HOST=${{ secrets.REDIS_HOST }}
-            export OBJECT_STORAGE_BUCKET_NAME=${{ secrets.OBJECT_STORAGE_BUCKET_NAME }}
-            export OBJECT_STORAGE_ACCESS_KEY_ID=${{ secrets.OBJECT_STORAGE_ACCESS_KEY_ID }}
-            export OBJECT_STORAGE_SECRET_KEY=${{ secrets.OBJECT_STORAGE_SECRET_KEY }}
-            export ENCODED_FIREBASE_ADMIN_SDK=${{ secrets.ENCODED_FIREBASE_ADMIN_SDK }}
-            export SLACK_WEBHOOK_URI=${{ secrets.SLACK_WEBHOOK_URI }}
+            export AWS_DEFAULT_REGION=${{ secrets.AWS_REGION }}
+            export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY }}
+            export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_KEY }}
 
-            sudo docker rm -f $(docker ps -qa)
+            echo "DB_HOSTNAME=${{ secrets.AWS_RDS_MYSQL_ENDPOINT }}" > .env
+            echo "DB_DATABASE=${{ secrets.AWS_RDS_MYSQL_DATABASE }}" >> .env
+            echo "DB_USERNAME=${{ secrets.AWS_RDS_MYSQL_USERNAME }}" >> .env
+            echo "DB_PASSWORD=${{ secrets.AWS_RDS_MYSQL_PASSWORD }}" >> .env
+            echo "DB_PORT=${{ secrets.AWS_RDS_MYSQL_PORT }}" >> .env
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            echo "REDIS_HOST=${{ secrets.AWS_ELASTIC_CACHE_REDIS_ENDPOINT }}" >> .env
+            echo "STORAGE_REGION=${{ secrets.AWS_REGION }}"
+            echo "STORAGE_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}" >> .env
+            echo "STORAGE_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY }}" >> .env
+            echo "STORAGE_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}" >> .env
+            echo "OAUTH_APPLE_CLIENT_ID=${{ secrets.OAUTH_APPLE_CLIENT_ID }}" >> .env
+            echo "ENCODED_FIREBASE_ADMIN_SDK=${{ secrets.ENCODED_FIREBASE_ADMIN_SDK }}" >> .env
+            # echo "SLACK_WEBHOOK_URI=${{ secrets.SLACK_WEBHOOK_URI }}" >> .env
+            
+            if ! command -v aws &> /dev/null; then
+              chmod +x ./setup_aws.sh
+              ./setup_aws.sh
+            fi
+            if ! command -v docker &> /dev/null; then
+              chmod +x ./setup_docker.sh
+              ./setup_docker.sh
+            fi
+            
+            aws s3 cp s3://${{ secrets.AWS_S3_BUCKET_NAME }}/docker/images/goalpanzi-api.tar.gz ./goalpanzi-api.tar.gz
+            aws s3 cp s3://${{ secrets.AWS_S3_BUCKET_NAME }}/docker/docker-compose.yml ./docker-compose.yml
+            
+            CONTAINERS=$(sudo docker ps -qa)
+            if [ -n "$CONTAINERS" ]; then
+              sudo docker rm -f $CONTAINERS
+            fi
 
-            sudo docker login ${{ secrets.NCP_CONTAINER_REGISTRY_API }} -u ${{ secrets.NCP_ACCESS_KEY }} -p ${{ secrets.NCP_SECRET_KEY }}
-            sudo docker pull ${{ secrets.NCP_CONTAINER_REGISTRY_API }}/goalpanzi-api
-
-            docker-compose -f ${{ secrets.DOCKER_COMPOSE_PATH }}/docker-compose.yml up -d
-            docker image prune -f
+            sudo gunzip -c goalpanzi-api.tar.gz | sudo docker load
+            sudo docker compose -f docker-compose.yml --env-file .env up -d
+            sudo docker image prune -f
