@@ -5,8 +5,11 @@ on:
     branches:
       - main
       - develop
-
-    types: [opened, synchronize]
+    paths:
+      - "src/**"
+      - "build.gradle"
+      - "docker*"
+    types: [ opened, synchronize ]
 
 jobs:
   build:
