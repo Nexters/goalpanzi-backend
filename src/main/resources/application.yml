@@ -56,16 +56,16 @@ oauth:
 cloud:
   aws:
     credentials:
-      access-key: ${OBJECT_STORAGE_ACCESS_KEY_ID}
-      secret-key: ${OBJECT_STORAGE_SECRET_KEY}
-      bucket: ${OBJECT_STORAGE_BUCKET_NAME}
+      access-key: ${STORAGE_ACCESS_KEY_ID}
+      secret-key: ${STORAGE_SECRET_KEY}
+      bucket: ${STORAGE_BUCKET_NAME}
     region:
-      static: ap-southeast-2
+      static: ${STORAGE_REGION}
       auto: false
     stack:
       auto: false
     s3:
-      endpoint: https://kr.object.ncloudstorage.com
+      endpoint: https://${STORAGE_BUCKET_NAME}.s3.${STORAGE_REGION}.amazonaws.com
 
 firebase:
   enabled: true

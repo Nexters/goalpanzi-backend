@@ -41,7 +41,7 @@ cloud:
     stack:
       auto: false
     s3:
-      endpoint: https://kr.object.ncloudstorage.com
+      endpoint: --
 
 firebase:
   enabled: false
