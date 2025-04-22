@@ -30,7 +30,7 @@ public class S3Client implements ObjectStorageClient {
     private final AmazonS3 amazonS3;
 
     public String uploadFile(final MultipartFile file) {
-        String fileObjKeyName = UUID.randomUUID().toString();
+        String fileObjKeyName = "upload/" + UUID.randomUUID().toString();
         File tempFile = convert(file);
 
         try {
