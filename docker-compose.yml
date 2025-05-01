@@ -38,8 +38,8 @@ services:
     volumes:
       - /var/log/nginx:/var/log/nginx
       - ./default.conf:/etc/nginx/conf.d/default.conf
-  #      - /etc/letsencrypt:/etc/letsencrypt
-  #      - /var/www/certbot:/var/www/certbot
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/www/certbot:/var/www/certbot
 
   certbot:
     image: certbot/certbot:latest
