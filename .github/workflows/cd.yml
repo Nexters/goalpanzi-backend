@@ -102,7 +102,7 @@ jobs:
             echo "DB_PORT=${{ secrets.AWS_RDS_MYSQL_PORT }}" >> .env
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
             echo "REDIS_HOST=${{ secrets.AWS_ELASTIC_CACHE_REDIS_ENDPOINT }}" >> .env
-            echo "STORAGE_REGION=${{ secrets.AWS_REGION }}"
+            echo "STORAGE_REGION=${{ secrets.AWS_REGION }}" >> .env
             echo "STORAGE_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}" >> .env
             echo "STORAGE_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY }}" >> .env
             echo "STORAGE_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}" >> .env

@@ -65,7 +65,7 @@ cloud:
     stack:
       auto: false
     s3:
-      endpoint: https://${STORAGE_BUCKET_NAME}.s3.${STORAGE_REGION}.amazonaws.com
+      endpoint: https://s3.${STORAGE_REGION}.amazonaws.com
 
 firebase:
   enabled: true
