@@ -5,12 +5,10 @@ on:
     branches:
       - main
       - develop
-      - feat/#123-aws-migration # TODO: 추후 삭제
-#    TODO: 추후 활성화
-#    paths:
-#      - "src/**"
-#      - "build.gradle"
-#      - "docker*"
+    paths:
+      - "src/**"
+      - "build.gradle"
+      - "docker*"
 
 jobs:
   copy-files:
@@ -82,7 +80,6 @@ jobs:
       - build-and-push
     runs-on: ubuntu-latest
     steps:
-      # TODO: 추후 슬랙 웹훅 주석 처리 해제
       - name: Deploy api server to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -108,7 +105,7 @@ jobs:
             echo "STORAGE_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}" >> .env
             echo "OAUTH_APPLE_CLIENT_ID=${{ secrets.OAUTH_APPLE_CLIENT_ID }}" >> .env
             echo "ENCODED_FIREBASE_ADMIN_SDK=${{ secrets.ENCODED_FIREBASE_ADMIN_SDK }}" >> .env
-            # echo "SLACK_WEBHOOK_URI=${{ secrets.SLACK_WEBHOOK_URI }}" >> .env
+            echo "SLACK_WEBHOOK_URI=${{ secrets.SLACK_WEBHOOK_URI }}" >> .env
             
             if ! command -v aws &> /dev/null; then
               chmod +x ./setup_aws.sh
