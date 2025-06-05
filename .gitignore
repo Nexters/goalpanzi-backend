@@ -37,3 +37,14 @@ out/
 .vscode/
 *.env
 *.log
+
+### Terraform ###
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+*.terraformrc
+*terraform.rc
+*terraform.lock.hcl
+*.tfplan
