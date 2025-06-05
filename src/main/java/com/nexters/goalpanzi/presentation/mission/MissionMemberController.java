@@ -33,7 +33,7 @@ public class MissionMemberController implements MissionMemberControllerDocs {
     @GetMapping("/mission-members/me")
     public ResponseEntity<MissionsResponse> getMissions(
             @LoginMemberId final Long memberId,
-            @RequestParam(required = false, defaultValue = "PENDING,ONGOING") List<MissionStatus> filter
+            @RequestParam(required = false, defaultValue = "PENDING,ONGOING,PENDING_COMPLETION") List<MissionStatus> filter
     ) {
         // 레거시 상태 반영 위함
         var newFilter = filter.stream()
