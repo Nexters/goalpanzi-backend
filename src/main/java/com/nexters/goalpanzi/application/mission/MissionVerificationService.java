@@ -183,7 +183,7 @@ public class MissionVerificationService {
                 missionMembers.forEach(missionMember -> {
                     Member member = missionMember.getMember();
                     Optional<MissionVerification> verification = missionVerificationRepository.findByMemberIdAndMissionIdAndDate(member.getId(), mission.getId(), today);
-                    if (verification.isEmpty()) {
+                    if (verification.isEmpty() && missionMember.getMissionStatus() == MissionStatus.IN_PROGRESS) {
                         sendVerificationWarningMessageForMissionMember(member.getId(), mission.getId());
                     }
                 });
